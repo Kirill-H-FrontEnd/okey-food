@@ -1,0 +1,9 @@
+.link {
+	position: relative;
+	cursor: pointer;
+	transition: color 0.2s ease;
+}
+
+.activeLink {
+	color: var(--color-yellowSecondary);
+}

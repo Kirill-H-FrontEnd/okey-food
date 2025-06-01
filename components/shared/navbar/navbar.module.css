@@ -1,0 +1,41 @@
+/* navbar.module.css */
+:root {
+	--bar-color: var(--color-greenPrimary, #22c55e);
+}
+
+/* базовый вид ссылки */
+.link {
+	position: relative;
+	padding-inline: 4px;
+	cursor: pointer;
+	transition: color 0.2s ease;
+}
+
+/* подчёркивающая полоска */
+.link::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: -26px; /* располагаем под текстом */
+	width: 100%;
+	height: 3px; /* конечная высота */
+	background: var(--bar-color);
+	border-radius: 10px;
+	/* ← анимация «снизу-вверх» */
+	transform: scaleY(0);
+	transform-origin: bottom;
+	transition: transform 0.3s ease;
+}
+
+/* ховер-эффект */
+.link:hover {
+	color: #3db72b;
+}
+
+/* класс, который react-scroll добавляет активной ссылке */
+.activeLink::after {
+	transform: scaleY(1);
+}
+.activeLink {
+	color: #3db72b;
+}
