@@ -15,5 +15,9 @@ import {
 type THero = {};
 
 export const Hero: FC = ({}) => {
-  return <section className="h-lvh">hero</section>;
+  return (
+    <section id="hero" className="h-lvh">
+      hero
+    </section>
+  );
 };

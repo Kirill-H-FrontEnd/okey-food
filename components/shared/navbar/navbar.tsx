@@ -11,6 +11,8 @@ import { MobileMenu } from "../MobileMenu/mobile-menu";
 import React from "react";
 import Image from "next/image";
 import { Phone } from "lucide-react";
+import { FaInstagram } from "react-icons/fa6";
+import { RiTelegram2Fill } from "react-icons/ri";
 type TNavbar = {};
 
 export const Navbar: FC = ({}) => {
@@ -25,8 +27,8 @@ export const Navbar: FC = ({}) => {
   return (
     <header
       className={`${
-        openMenu ? "shadow-sm transition-shadow" : ""
-      } w-full fixed top-0 left-0 py-3  bg-white z-[100] border-b-[1px]`}
+        openMenu ? "" : ""
+      } w-full fixed top-0 left-0 py-3  bg-white z-[100] border-b-[1px] border-greenPrimary/20`}
     >
       <Container>
         <section className="flex justify-between items-center">
@@ -36,22 +38,18 @@ export const Navbar: FC = ({}) => {
               <Link className="hover:opacity-80" href={"tel:+375447256666"}>
                 +375 44 725 66 66
               </Link>
-              <div className="flex gap-4 items-center">
-                <Link href="">
-                  <Image
-                    src={"/images/icons/instagram.svg"}
-                    width={22}
-                    height={22}
-                    alt="Instagram"
-                  />
+              <div className="flex gap-3 items-center">
+                <Link
+                  className="text-greenPrimary hover:text-yellowSecondary transition-colors"
+                  href=""
+                >
+                  <FaInstagram size={26} />
                 </Link>
-                <Link href="">
-                  <Image
-                    src={"/images/icons/telegram.svg"}
-                    width={22}
-                    height={22}
-                    alt="Telegram"
-                  />
+                <Link
+                  className="text-greenPrimary hover:text-yellowSecondary transition-colors"
+                  href=""
+                >
+                  <RiTelegram2Fill size={26} />
                 </Link>
               </div>
             </div>

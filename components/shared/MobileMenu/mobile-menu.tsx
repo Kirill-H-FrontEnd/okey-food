@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { RemoveScroll } from "react-remove-scroll";
 import { Link as ScrollLink } from "react-scroll";
 import s from "./mobile-menu.module.css";
+import { StatusIndicator } from "@/components/ui/status-indicator";
 
 type TMobileMenu = {
   openMenu: boolean;
@@ -111,8 +112,8 @@ export const MobileMenu: FC<TMobileMenu> = ({
               <p>10:00 – 20:00</p>
             </div>
           </div>
+          <StatusIndicator />
         </RemoveScroll>
-
         <div className="w-[45px] h-[4px] bg-yellowSecondary absolute bottom-[20px] left-1/2 -translate-x-1/2 rounded-full" />
       </SheetContent>
     </Sheet>
