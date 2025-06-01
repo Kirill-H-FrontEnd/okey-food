@@ -26,7 +26,7 @@ export const Navbar: FC = ({}) => {
     <header
       className={`${
         openMenu ? "border-b-[1px]" : ""
-      } w-full fixed top-0 left-0 py-3  bg-white z-[100]`}
+      } w-full fixed top-0 left-0 py-3  bg-white z-[100] border-b-[1px]`}
     >
       <Container>
         <section className="flex justify-between items-center">
@@ -80,7 +80,11 @@ export const Navbar: FC = ({}) => {
               <Phone className="text-greenPrimary" size={24} />
             </Link>
             <Basket />
-            <MobileMenu openMenu={openMenu} setOpenMenu={setOpenMenu} />
+            <MobileMenu
+              className="lg:hidden"
+              openMenu={openMenu}
+              setOpenMenu={setOpenMenu}
+            />
           </nav>
         </section>
       </Container>

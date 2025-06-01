@@ -1,6 +1,7 @@
 .link {
 	position: relative;
 	padding-inline: 4px;
+	color: var(--color-greenPrimary);
 	cursor: pointer;
 	transition: color 0.2s ease;
 }
@@ -12,7 +13,7 @@
 	bottom: -26px;
 	width: 100%;
 	height: 3px;
-	background: var(--color-greenPrimary);
+	background: var(--color-yellowSecondary);
 	border-radius: 10px;
 
 	transform: scaleY(0);
@@ -21,12 +22,12 @@
 }
 
 .link:hover {
-	color: var(--color-greenPrimary);
+	color: var(--color-yellowSecondary);
 }
 
 .activeLink::after {
 	transform: scaleY(1);
 }
 .activeLink {
-	color: var(--color-greenPrimary);
+	color: var(--color-yellowSecondary);
 }
