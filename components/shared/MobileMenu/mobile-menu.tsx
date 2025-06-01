@@ -94,13 +94,13 @@ export const MobileMenu: FC<TMobileMenu> = ({
             <div className="grid">
               <Link
                 href="tel:+375447256666"
-                className="hover:opacity-80 font-medium"
+                className="hover:opacity-80 font-medium text-greenPrimary"
               >
                 +375 44 725 66 66
               </Link>
               <Link
                 href="mailto:okeygood@gmail.com"
-                className="hover:opacity-80 font-medium"
+                className="hover:opacity-80 font-medium text-greenPrimary"
               >
                 okeygood@gmail.com
               </Link>

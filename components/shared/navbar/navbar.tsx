@@ -16,16 +16,16 @@ type TNavbar = {};
 export const Navbar: FC = ({}) => {
   const [openMenu, setOpenMenu] = React.useState(false);
   const DATA_LINKS = [
-    { href: "about", label: "Главная", offset: -100 },
-    { href: "footer", label: "Обо мне", offset: -100 },
-    { href: "/portfolio", label: "Портфолио", offset: -100 },
-    { href: "/blog", label: "Блог" },
-    { href: "/contacts", label: "Контакты", offset: -100 },
+    { href: "about", label: "Меню", offset: -100 },
+    { href: "footer", label: "О нас", offset: -100 },
+    { href: "/portfolio", label: "Отзывы", offset: -100 },
+    { href: "/blog", label: "FAQ" },
+    { href: "/contacts", label: "Доставка", offset: -100 },
   ];
   return (
     <header
       className={`${
-        openMenu ? "border-b-[1px]" : ""
+        openMenu ? "shadow-sm transition-shadow" : ""
       } w-full fixed top-0 left-0 py-3  bg-white z-[100] border-b-[1px]`}
     >
       <Container>
@@ -37,7 +37,7 @@ export const Navbar: FC = ({}) => {
                 +375 44 725 66 66
               </Link>
               <div className="flex gap-4 items-center">
-                <Link className="hover:text-greenPrimary" href="">
+                <Link href="">
                   <Image
                     src={"/images/icons/instagram.svg"}
                     width={22}
@@ -45,7 +45,7 @@ export const Navbar: FC = ({}) => {
                     alt="Instagram"
                   />
                 </Link>
-                <Link className="hover:text-greenPrimary" href="">
+                <Link href="">
                   <Image
                     src={"/images/icons/telegram.svg"}
                     width={22}
@@ -56,8 +56,8 @@ export const Navbar: FC = ({}) => {
               </div>
             </div>
           </div>
-          <nav className="flex gap-5 lg:gap-6">
-            <ul className="hidden lg:flex items-center gap-6">
+          <nav className="flex gap-5 lg:gap-14">
+            <ul className="hidden lg:flex items-center gap-4">
               {DATA_LINKS.map((link, i) => (
                 <ScrollLink
                   activeClass={s.activeLink}
