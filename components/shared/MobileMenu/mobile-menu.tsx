@@ -95,14 +95,12 @@ export const MobileMenu: FC<TMobileMenu> = ({
               <Link
                 href="tel:+375447256666"
                 className="hover:opacity-80 font-medium"
-                onClick={() => setOpenMenu(false)}
               >
                 +375 44 725 66 66
               </Link>
               <Link
                 href="mailto:okeygood@gmail.com"
                 className="hover:opacity-80 font-medium"
-                onClick={() => setOpenMenu(false)}
               >
                 okeygood@gmail.com
               </Link>
