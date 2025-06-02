@@ -11,7 +11,7 @@ export const Hero: FC = ({}) => {
   return (
     <section id="hero" className="w-full h-dvh grid place-items-center">
       <Container className="w-full h-full grid place-items-center">
-        <section className=" bg-greenPrimary px-5 rounded-[8px] relative overflow-hidden w-full h-[75%] md:px-10 lg:px-20 grid  items-start md:items-center">
+        <section className=" bg-greenPrimary px-5 rounded-[8px] relative overflow-hidden w-full h-[90%] md:h-[75%] md:px-10 lg:px-20 grid  items-start md:items-center">
           <article className="w-full max-w-[500px] text-center md:text-start mx-auto md:mx-0 mt-6 pt-10 md:pt-0 md:mt-0 grid gap-6 z-[2] relative">
             <div className="grid gap-2">
               <h1 className="text-whitePrimary text-[26px]  min-[425px]:text-[30px] md:text-[46px] font-extrabold leading-10 min-[425px]:leading-12 md:leading-14 tracking-[2px] ">
