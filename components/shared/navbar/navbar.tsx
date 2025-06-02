@@ -39,7 +39,7 @@ export const Navbar: FC = ({}) => {
     <header
       className={`${
         isScrolled || openMenu ? " shadow-sm transition-all " : ""
-      } w-full sticky top-0 left-0 py-3 z-[100] bg-white rounded-b-[15px] md:rounded-b-[20px]`}
+      } w-full fixed top-0 left-0 py-3 z-[100] bg-white rounded-b-[15px] md:rounded-b-[20px]`}
     >
       <Container>
         <section className="w-full flex justify-between items-center">

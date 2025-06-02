@@ -23,7 +23,7 @@ html {
   --color-whitePrimary: #f9f9f9;
   --color-greenPrimary: #1c373c;
   --color-yellowPrimary: #d0ed1c;
-  --color-yellowSecondary: #a8c215;
+  --color-yellow-hover: #a8c215;
 }
 
 @theme inline {

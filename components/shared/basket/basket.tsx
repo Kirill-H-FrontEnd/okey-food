@@ -14,17 +14,25 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { FaCartShopping } from "react-icons/fa6";
-import { ShoppingCart } from "lucide-react";
+import { ArrowBigRightIcon, ChevronRight, ShoppingCart } from "lucide-react";
 type TBasket = {};
 
 export const Basket: FC = ({}) => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button className="cursor-pointer" variant="default">
-          <ShoppingCart size={10} />
+        <Button className="relative  group " variant={"default"}>
+          <span className="text-[12px]">0 BYN</span>
+          <span className="w-[1px] h-[50%] bg-white/30"></span>
+          <div className="grid grid-cols-2-auto gap-2 items-center md:group-hover:opacity-0 transition-opacity">
+            <ShoppingCart size={10} />
+          </div>
 
-          <p className="hidden lg:block">Корзина</p>
+          <ChevronRight
+            size={18}
+            strokeWidth={2}
+            className="absolute right-3 transition duration-300 -translate-x-2 opacity-0 md:group-hover:opacity-100 group-hover:translate-x-0"
+          />
         </Button>
       </SheetTrigger>
       <SheetContent>
