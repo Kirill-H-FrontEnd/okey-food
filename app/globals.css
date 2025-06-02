@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 html {
-  /* scrollbar-gutter: stable; */
+  scrollbar-gutter: stable;
   /* &::-webkit-scrollbar-thumb {
       background-color: #fff;
       border-radius: 0px;
@@ -24,6 +24,7 @@ html {
   --color-greenPrimary: #1c373c;
   --color-yellowPrimary: #d0ed1c;
   --color-yellow-hover: #a8c215;
+  --color-grey-border: #a3b5b9;
 }
 
 @theme inline {

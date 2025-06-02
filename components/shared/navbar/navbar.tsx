@@ -38,7 +38,7 @@ export const Navbar: FC = ({}) => {
   return (
     <header
       className={`${
-        isScrolled || openMenu ? " shadow-sm transition-all " : ""
+        isScrolled || openMenu ? " shadow-sm transition-all " : "shadow-sm "
       } w-full sticky md:fixed top-0 left-0 py-3 z-[100] bg-white rounded-b-[15px] md:rounded-b-[20px]`}
     >
       <Container>
@@ -51,13 +51,13 @@ export const Navbar: FC = ({}) => {
               </Link>
               <div className="flex gap-3 items-center">
                 <Link
-                  className="text-greenPrimary hover:text-yellowSecondary transition-colors"
+                  className="text-greenPrimary hover:text-yellow-hover transition-colors"
                   href=""
                 >
                   <FaInstagram size={26} />
                 </Link>
                 <Link
-                  className="text-greenPrimary hover:text-yellowSecondary transition-colors"
+                  className="text-greenPrimary hover:text-yellow-hover transition-colors"
                   href=""
                 >
                   <RiTelegram2Fill size={26} />
@@ -65,7 +65,7 @@ export const Navbar: FC = ({}) => {
               </div>
             </div>
           </div>
-          <nav className="flex gap-5 lg:gap-14">
+          <nav className="flex gap-5 lg:gap-10">
             <ul className="hidden lg:flex items-center gap-4">
               {DATA_LINKS.map((link, i) => (
                 <ScrollLink
