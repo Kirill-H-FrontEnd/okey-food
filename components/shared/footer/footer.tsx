@@ -1,12 +1,98 @@
+"use client";
 import { FC } from "react";
 import s from "./styles/footer.module.scss";
+import { Container } from "@/components/ui/container";
+import { Logo } from "@/components/ui/logo";
 
+import Link from "next/link";
+import Image from "next/image";
+import { FaInstagram } from "react-icons/fa6";
+import { RiTelegram2Fill } from "react-icons/ri";
+import { Copyright } from "@/components/ui/copyright";
 type TFooter = {};
 
 export const Footer: FC = ({}) => {
+  const DATA_LINKS = [
+    {
+      title: "Навигация",
+      links: [
+        { title: "Меню", url: "/" },
+        { title: "О нас", url: "/about" },
+        { title: "FAQ", url: "/menu" },
+        { title: "Отзывы", url: "/contacts" },
+      ],
+    },
+  ];
   return (
-    <footer className=" bg-slate-100" id="footer">
-      footer
+    <footer className=" bg-greenPrimary " id="footer">
+      <Container className="">
+        <section className="py-10 grid grid-cols-1 jc lg:grid-cols-[auto_1fr]  gap-7 lg:gap-20 ">
+          <div className="flex flex-col justify-center md:justify-start text-center md:text-left">
+            <div className="grid justify-center md:justify-start">
+              <Logo url="/images/OkeyFoodLogoLight.svg" />
+            </div>
+            <p className="text-whitePrimary font-semibold mt-2">
+              Доставка рационов питания
+            </p>
+          </div>
+          <div className="grid text-center md:text-left grid-cols-[1fr] md:grid-flow-col md:auto-cols-max gap-7 md:gap-[100px] lg:gap-[150px] ">
+            <nav>
+              <ul className="flex flex-col gap-4 ">
+                {DATA_LINKS.map((item) => (
+                  <li key={item.title} className="text-whitePrimary">
+                    <h3 className="font-bold mb-2 hidden md:block">
+                      {item.title}
+                    </h3>
+                    <ul className="flex justify-center md:justify-start md:flex-col gap-4 md:gap-2">
+                      {item.links.map((link) => (
+                        <Link
+                          href={link.url}
+                          className="hover:text-yellow-hover transition-all hover:translate-x-1"
+                          key={link.title}
+                        >
+                          {link.title}
+                        </Link>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <div>
+              <h3 className=" mb-2 text-whitePrimary font-bold hidden md:block">
+                Контакты
+              </h3>
+              <p className="text-whitePrimary">+375 44 725 66 66</p>
+              <p className="text-whitePrimary">okeygood@gmail.com</p>
+              <div className="flex justify-center md:justify-start items-center mt-4">
+                <div className="flex gap-3">
+                  <Link
+                    className="text-whitePrimary hover:text-yellow-hover transition-colors"
+                    href=""
+                  >
+                    <FaInstagram size={26} />
+                  </Link>
+                  <Link
+                    className="text-whitePrimary hover:text-yellow-hover transition-colors"
+                    href=""
+                  >
+                    <RiTelegram2Fill size={26} />
+                  </Link>
+                </div>
+              </div>
+            </div>
+            <div className="text-whitePrimary">
+              <h3 className="font-bold mb-2 text-whitePrimary hidden md:block">
+                Адрес
+              </h3>
+              <p>г.Минск</p>
+              <p>проспект Дзержинского 10</p>
+              <span>10:00 - 20:00</span>
+            </div>
+          </div>
+        </section>
+      </Container>
+      <Copyright />
     </footer>
   );
 };

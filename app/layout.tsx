@@ -6,7 +6,7 @@ import { Mulish } from "next/font/google";
 
 const geist = Mulish({
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 export default function RootLayout({

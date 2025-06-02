@@ -3,9 +3,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 html {
-  overflow-y: scroll;
   body {
-    height: 2000px;
   }
   /* scrollbar-gutter: stable; */
   /* &::-webkit-scrollbar-thumb {
@@ -28,6 +26,7 @@ html {
   --color-greenPrimary: #1c373c;
   --color-yellowPrimary: #d0ed1c;
   --color-yellow-hover: #a8c215;
+  --color-greyPrimary: #f1f1f1;
   --color-grey-border: #a3b5b9;
 }
 

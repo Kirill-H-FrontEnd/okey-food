@@ -39,7 +39,9 @@ export const Navbar: FC = ({}) => {
   ];
   return (
     <header
-      className={`${isScrolled || openMenu ? "shadow-sm transition-all" : ""} ${
+      className={`${
+        isScrolled || openMenu ? "shadow-sm transition-all fixed" : ""
+      } ${
         isBasketOpen ? "shadow-sm md:shadow-none transition-all" : ""
       } w-full sticky md:fixed top-0 left-0 py-3 z-[100] bg-white rounded-b-[15px] md:rounded-b-[20px]`}
     >

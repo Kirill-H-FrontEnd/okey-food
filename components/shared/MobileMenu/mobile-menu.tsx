@@ -114,7 +114,7 @@ export const MobileMenu: FC<TMobileMenu> = ({
           </div>
           <StatusIndicator />
         </RemoveScroll>
-        <div className="w-[45px] h-[4px] bg-yellowSecondary absolute bottom-[20px] left-1/2 -translate-x-1/2 rounded-full" />
+        <div className="w-[45px] h-[4px] bg-yellow-hover absolute bottom-[20px] left-1/2 -translate-x-1/2 rounded-full" />
       </SheetContent>
     </Sheet>
   );

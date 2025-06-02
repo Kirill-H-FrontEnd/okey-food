@@ -33,7 +33,7 @@ export default async function HomeLayout({
 }>) {
   return (
     <>
-      <div className="">
+      <div className="grid grid-rows-[auto_1fr_auto] min-h-screen">
         <Navbar />
         <main>{children}</main>
         <Footer />
