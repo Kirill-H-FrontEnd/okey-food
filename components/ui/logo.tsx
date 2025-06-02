@@ -7,17 +7,23 @@ type TLogo = {};
 export const Logo: FC = ({}) => {
   return (
     <ScrollLink
-      className="cursor-pointer"
-      to={"hero"}
+      className="cursor-pointer block w-[50px] h-[50px] overflow-hidden"
+      to="hero"
       smooth={true}
       duration={300}
-      spy={true}
+      // удалили spy и activeClass
     >
-      <Image
+      <img
+        src="/images/OkeyFoodLogo.svg"
+        alt="Logo"
         width={50}
         height={50}
-        src={"/images/OkeyFoodLogo.svg"}
-        alt="Logo"
+        style={{
+          display: "block",
+          objectFit: "contain",
+          width: "50px",
+          height: "50px",
+        }}
       />
     </ScrollLink>
   );

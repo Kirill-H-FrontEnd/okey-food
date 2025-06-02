@@ -3,15 +3,27 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 html {
-  scrollbar-gutter: stable; /* ← всегда оставляй «канавку» */
+  /* scrollbar-gutter: stable; */
+  /* &::-webkit-scrollbar-thumb {
+      background-color: #fff;
+      border-radius: 0px;
+      border: 0px solid #0d1825;
+      cursor: grab;
+      &:hover {
+        background-color: #0d1825;
+      }
+    }
+
+    &::-webkit-scrollbar {
+      background-color: #000219;
+      width: 0px;
+    } */
 }
 @theme {
-  --color-whitePrimary: #ffffff;
-  --color-whiteSecondary: #ffffff;
+  --color-whitePrimary: #f9f9f9;
   --color-greenPrimary: #1c373c;
+  --color-yellowPrimary: #d0ed1c;
   --color-yellowSecondary: #a8c215;
-  --color-blackPrimary: #15141a;
-  --color-blackSecondary: #1a191f;
 }
 
 @theme inline {

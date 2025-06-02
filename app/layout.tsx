@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-
+import "simplebar/dist/simplebar.min.css";
 import "./globals.css";
 
 import { Mulish } from "next/font/google";

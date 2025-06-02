@@ -17,6 +17,17 @@ type TNavbar = {};
 
 export const Navbar: FC = ({}) => {
   const [openMenu, setOpenMenu] = React.useState(false);
+  const [isScrolled, setIsScrolled] = React.useState(false);
+  React.useEffect(() => {
+    const onScroll = () => {
+      setIsScrolled(window.pageYOffset > 0);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
   const DATA_LINKS = [
     { href: "about", label: "Меню", offset: -100 },
     { href: "footer", label: "О нас", offset: -100 },
@@ -27,11 +38,11 @@ export const Navbar: FC = ({}) => {
   return (
     <header
       className={`${
-        openMenu ? "" : ""
-      } w-full fixed top-0 left-0 py-3  bg-white z-[100] border-b-[1px] border-greenPrimary/20`}
+        isScrolled || openMenu ? " shadow transition-all" : ""
+      } w-full sticky top-0 left-0 py-3 z-[100] bg-white rounded-b-[15px] md:rounded-b-[20px]`}
     >
       <Container>
-        <section className="flex justify-between items-center">
+        <section className="w-full flex justify-between items-center">
           <div className="flex gap-6 items-center">
             <Logo />
             <div className="hidden lg:flex  gap-4">

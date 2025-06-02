@@ -20,7 +20,7 @@ export const StatusIndicator: FC = () => {
     ? "bg-linear-to-b from-slate-100 to-blackPrimary/5 "
     : "bg-linear-to-b from-slate-100 to-red-50 ";
   const borderColor = isOpen
-    ? "border border-green-100 "
+    ? "border border-green-50 "
     : "border border-red-100 ";
 
   const label = isOpen ? "Работает" : "Закрыто";
