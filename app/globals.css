@@ -6,7 +6,7 @@ html {
   body {
     height: 2000px;
   }
-  scrollbar-gutter: stable;
+  /* scrollbar-gutter: stable; */
   /* &::-webkit-scrollbar-thumb {
       background-color: #fff;
       border-radius: 0px;

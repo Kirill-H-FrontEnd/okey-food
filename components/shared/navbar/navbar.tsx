@@ -13,13 +13,13 @@ import Image from "next/image";
 import { Phone } from "lucide-react";
 import { FaInstagram } from "react-icons/fa6";
 import { RiTelegram2Fill } from "react-icons/ri";
-import { useUIStore } from "@/store/useStore";
+import { useBasketStore } from "@/store/useStore";
 type TNavbar = {};
 
 export const Navbar: FC = ({}) => {
   const [openMenu, setOpenMenu] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
-  const isBasketOpen = useUIStore((state) => state.isBasketOpen);
+  const isBasketOpen = useBasketStore((state) => state.isBasketOpen);
   React.useEffect(() => {
     const onScroll = () => {
       setIsScrolled(window.pageYOffset > 0);

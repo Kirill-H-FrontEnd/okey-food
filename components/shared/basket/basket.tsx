@@ -24,12 +24,12 @@ import {
 import Link from "next/link";
 import { IoCloseOutline } from "react-icons/io5";
 import React from "react";
-import { useUIStore } from "@/store/useStore";
+import { useBasketStore } from "@/store/useStore";
 type TBasket = {};
 
 export const Basket: FC = ({}) => {
-  const isBasketOpen = useUIStore((state) => state.isBasketOpen);
-  const setIsBasketOpen = useUIStore((state) => state.setIsBasketOpen);
+  const isBasketOpen = useBasketStore((state) => state.isBasketOpen);
+  const setIsBasketOpen = useBasketStore((state) => state.setIsBasketOpen);
   return (
     <Sheet open={isBasketOpen} onOpenChange={setIsBasketOpen}>
       <SheetTrigger asChild>
