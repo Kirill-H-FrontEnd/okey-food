@@ -3,6 +3,9 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 html {
+  body {
+    height: 2000px;
+  }
   scrollbar-gutter: stable;
   /* &::-webkit-scrollbar-thumb {
       background-color: #fff;

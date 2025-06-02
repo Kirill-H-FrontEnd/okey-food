@@ -5,7 +5,7 @@ type TAbout = {};
 
 export const About: FC = ({}) => {
   return (
-    <section id="about" className={"h-lvh w-full bg-slate-200"}>
+    <section id="about" className={" w-full bg-slate-200"}>
       about
     </section>
   );

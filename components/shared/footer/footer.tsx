@@ -5,7 +5,7 @@ type TFooter = {};
 
 export const Footer: FC = ({}) => {
   return (
-    <footer className="h-lvh bg-slate-100" id="footer">
+    <footer className=" bg-slate-100" id="footer">
       footer
     </footer>
   );

@@ -13,11 +13,13 @@ import Image from "next/image";
 import { Phone } from "lucide-react";
 import { FaInstagram } from "react-icons/fa6";
 import { RiTelegram2Fill } from "react-icons/ri";
+import { useUIStore } from "@/store/useStore";
 type TNavbar = {};
 
 export const Navbar: FC = ({}) => {
   const [openMenu, setOpenMenu] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
+  const isBasketOpen = useUIStore((state) => state.isBasketOpen);
   React.useEffect(() => {
     const onScroll = () => {
       setIsScrolled(window.pageYOffset > 0);
@@ -37,8 +39,8 @@ export const Navbar: FC = ({}) => {
   ];
   return (
     <header
-      className={`${
-        isScrolled || openMenu ? " shadow-sm transition-all " : "shadow-sm "
+      className={`${isScrolled || openMenu ? "shadow-sm transition-all" : ""} ${
+        isBasketOpen ? "shadow-sm md:shadow-none transition-all" : ""
       } w-full sticky md:fixed top-0 left-0 py-3 z-[100] bg-white rounded-b-[15px] md:rounded-b-[20px]`}
     >
       <Container>

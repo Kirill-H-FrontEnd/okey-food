@@ -15,22 +15,25 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { FaCartShopping } from "react-icons/fa6";
-import { ArrowBigRightIcon, ChevronRight, ShoppingCart } from "lucide-react";
+import {
+  ArrowBigRightIcon,
+  ChevronRight,
+  ShoppingCart,
+  XIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { IoCloseOutline } from "react-icons/io5";
 import React from "react";
+import { useUIStore } from "@/store/useStore";
 type TBasket = {};
 
 export const Basket: FC = ({}) => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const isBasketOpen = useUIStore((state) => state.isBasketOpen);
+  const setIsBasketOpen = useUIStore((state) => state.setIsBasketOpen);
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+    <Sheet open={isBasketOpen} onOpenChange={setIsBasketOpen}>
       <SheetTrigger asChild>
-        <Button
-          onClick={() => setIsOpen((prev) => !prev)}
-          className="relative group bg-yellowPrimary"
-          variant={"default"}
-        >
+        <Button className="relative group bg-yellowPrimary" variant={"default"}>
           <span className="text-[12px] text-greenPrimary font-bold">0 BYN</span>
           <span className="w-[1px] h-[50%] bg-greenPrimary/50"></span>
           <div className="grid grid-cols-2-auto gap-2 items-center md:group-hover:opacity-0 transition-opacity text-greenPrimary  ">
@@ -45,16 +48,16 @@ export const Basket: FC = ({}) => {
         </Button>
       </SheetTrigger>
 
-      <SheetContent showCloseButton={true} className="">
-        <SheetHeader className="relative w-full">
-          <SheetTitle className="text-[24px] mt-[80px] text-greenPrimary font-bold">
+      <SheetContent showCloseButton={false} className="shadow-none">
+        <SheetHeader className="relative mt-[80px] md:mt-0">
+          <SheetTitle className="text-[24px]  text-greenPrimary font-bold">
             Корзина
           </SheetTitle>
-          <SheetClose className=" absolute top-[95px] right-[20px]">
-            <IoCloseOutline size={24} />
+          <SheetClose className="absolute cursor-pointer border-[1px] border-greenPrimary rounded-[6px] p-1 right-4 top-1/2 -translate-y-1/2 hover:bg-greenPrimary/5 transition-all group active:scale-[.98]">
+            <XIcon className="h-4 w-4 text-greenPrimary group-hover:text-yellow-hover transition-all" />
           </SheetClose>
         </SheetHeader>
-        <SheetFooter className=" bg-white py-6 border-t-[1px] border-grey-border">
+        <SheetFooter className=" bg-white py-6 ">
           <div className="w-full grid gap-4">
             <div className="flex items-center ">
               <div className="mr-2">
