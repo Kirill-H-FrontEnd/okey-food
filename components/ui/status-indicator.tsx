@@ -17,13 +17,13 @@ export const StatusIndicator: FC = () => {
     ? "text-green-600 dark:text-slate-100"
     : "text-red-600 dark:text-red-400";
   const bgContainer = isOpen
-    ? "bg-linear-to-b from-slate-100 to-blackPrimary/5 "
-    : "bg-linear-to-b from-slate-100 to-red-50 ";
+    ? "bg-linear-to-b from-whitePrimary to-slate-300 "
+    : "bg-linear-to-b from-whitePrimary to-slate-300 ";
   const borderColor = isOpen
     ? "border border-green-50 "
-    : "border border-red-100 ";
+    : "border border-red-50 ";
 
-  const label = isOpen ? "Работает" : "Закрыто";
+  const label = isOpen ? "Открыто" : "Закрыто";
 
   return (
     <div
