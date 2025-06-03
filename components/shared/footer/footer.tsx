@@ -26,7 +26,7 @@ export const Footer: FC = ({}) => {
   return (
     <footer className=" bg-greenPrimary " id="footer">
       <Container className="">
-        <section className="py-10 grid grid-cols-1 jc lg:grid-cols-[auto_1fr]  gap-7 lg:gap-20 ">
+        <section className="py-20 grid grid-cols-1 justify-center lg:grid-cols-[auto_1fr]  gap-5 lg:gap-20 ">
           <div className="flex flex-col justify-center md:justify-start text-center md:text-left">
             <div className="grid justify-center md:justify-start">
               <Logo url="/images/OkeyFoodLogoLight.svg" />
@@ -35,7 +35,7 @@ export const Footer: FC = ({}) => {
               Доставка рационов питания
             </p>
           </div>
-          <div className="grid text-center md:text-left grid-cols-[1fr] md:grid-flow-col md:auto-cols-max gap-7 md:gap-[100px] lg:gap-[150px] ">
+          <div className="grid text-center md:text-left  md:grid-flow-col md:auto-cols-max gap-5 md:gap-[100px] lg:gap-[150px] ">
             <nav>
               <ul className="flex flex-col gap-4 ">
                 {DATA_LINKS.map((item) => (
@@ -47,7 +47,7 @@ export const Footer: FC = ({}) => {
                       {item.links.map((link) => (
                         <Link
                           href={link.url}
-                          className="hover:text-yellow-hover transition-all hover:translate-x-1"
+                          className="hover:text-yellow-hover transition-all hover:translate-x-1 font-normal text-[15px]"
                           key={link.title}
                         >
                           {link.title}
@@ -62,8 +62,12 @@ export const Footer: FC = ({}) => {
               <h3 className=" mb-2 text-whitePrimary font-bold hidden md:block">
                 Контакты
               </h3>
-              <p className="text-whitePrimary">+375 44 725 66 66</p>
-              <p className="text-whitePrimary">okeygood@gmail.com</p>
+              <p className="text-whitePrimary font-normal text-[15px]">
+                +375 44 725 66 66
+              </p>
+              <p className="text-whitePrimary font-normal text-[15px]">
+                okeygood@gmail.com
+              </p>
               <div className="flex justify-center md:justify-start items-center mt-4">
                 <div className="flex gap-3">
                   <Link
@@ -82,11 +86,13 @@ export const Footer: FC = ({}) => {
               </div>
             </div>
             <div className="text-whitePrimary">
-              <h3 className="font-bold mb-2 text-whitePrimary hidden md:block">
+              <h3 className="font-bold mb-2 text-whitePrimary  hidden md:block">
                 Адрес
               </h3>
-              <p>г.Минск</p>
-              <p>проспект Дзержинского 10</p>
+              <p className="font-normal text-[15px]">г.Минск</p>
+              <p className="font-normal text-[15px]">
+                проспект Дзержинского 10
+              </p>
               <span>10:00 - 20:00</span>
             </div>
           </div>
@@ -96,3 +102,4 @@ export const Footer: FC = ({}) => {
     </footer>
   );
 };
+// grid text-center md:text-left grid-cols-[1fr] md:grid-flow-col md:auto-cols-max  gap-7 md:gap-[100px] lg:gap-[150px]
