@@ -16,6 +16,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_KEY}`}
+          async
+          defer
+        ></script>
+      </head>
       <body style={geist.style} className={` antialiased`}>
         {children}
       </body>

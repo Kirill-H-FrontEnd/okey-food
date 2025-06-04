@@ -16,9 +16,7 @@ export const StatusIndicator: FC = () => {
   const textColor = isOpen
     ? "text-green-600 dark:text-slate-100"
     : "text-red-600 dark:text-red-400";
-  const bgContainer = isOpen
-    ? "bg-linear-to-b from-whitePrimary to-slate-300 "
-    : "bg-linear-to-b from-whitePrimary to-slate-300 ";
+  const bgContainer = isOpen ? " bg-whitePrimary  " : " bg-whitePrimary ";
   const borderColor = isOpen
     ? "border border-green-50 "
     : "border border-red-50 ";
