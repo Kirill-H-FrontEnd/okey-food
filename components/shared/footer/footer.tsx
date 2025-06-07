@@ -6,7 +6,7 @@ import Link from "next/link";
 import { FaInstagram } from "react-icons/fa6";
 import { RiTelegram2Fill } from "react-icons/ri";
 import { Copyright } from "@/components/ui/copyright";
-import { StatusIndicator } from "@/components/ui/status-indicator";
+
 type TFooter = {};
 
 export const Footer: FC = ({}) => {
@@ -32,9 +32,6 @@ export const Footer: FC = ({}) => {
             <p className="text-whitePrimary font-semibold mt-2">
               Доставка рационов питания
             </p>
-            <div className="grid justify-center md:justify-start">
-              <StatusIndicator />
-            </div>
           </div>
           <div className="grid text-center md:text-left  md:grid-flow-col md:auto-cols-max gap-5 md:gap-[100px] xl:gap-[200px] ">
             <nav>
