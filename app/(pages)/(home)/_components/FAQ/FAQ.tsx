@@ -42,10 +42,10 @@ export const FAQ: FC = ({}) => {
                   value={`item-${index}`}
                   className="border border-whitePrimary rounded-lg"
                 >
-                  <AccordionTrigger className="text-whitePrimary px-8 text-base lg:text-[18px] font-bold bg-[#324B4F] data-[state=open]:bg-whitePrimary data-[state=open]:md:hover:bg-whitePrimary  md:hover:bg-[#324B4F]/50 transition-all data-[state=open]:text-greenPrimary">
+                  <AccordionTrigger className="text-whitePrimary px-4 md:px-8 text-base lg:text-[18px] font-bold bg-[#324B4F] data-[state=open]:bg-whitePrimary data-[state=open]:md:hover:bg-whitePrimary  md:hover:bg-[#324B4F]/50 transition-all data-[state=open]:text-greenPrimary">
                     {item.title}
                   </AccordionTrigger>
-                  <AccordionContent className="text-greenPrimary font-normal px-8">
+                  <AccordionContent className="text-greenPrimary font-normal px-4 md:px-8">
                     <p>
                       Способы оплаты: наличными курьеру, банковской картой через
                       терминал (бесконтактная оплата через телефон также

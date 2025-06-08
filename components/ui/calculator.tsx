@@ -122,6 +122,8 @@ export default function CalorieCalculator() {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-whitePrimary">
           <Input
             type="number"
+            inputMode="numeric"
+            pattern="[0-9]*"
             placeholder="Вес, кг"
             min={30}
             max={200}
@@ -133,6 +135,8 @@ export default function CalorieCalculator() {
           />
           <Input
             type="number"
+            inputMode="numeric"
+            pattern="[0-9]*"
             placeholder="Рост, см"
             min={100}
             max={230}
@@ -144,6 +148,8 @@ export default function CalorieCalculator() {
           />
           <Input
             type="number"
+            inputMode="numeric"
+            pattern="[0-9]*"
             placeholder="Возраст"
             min={10}
             max={100}

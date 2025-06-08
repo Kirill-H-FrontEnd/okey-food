@@ -1,28 +1,18 @@
 "use client";
 import { FC } from "react";
-import s from "./styles/basket.module.scss";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetDescription,
   SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { FaCartShopping } from "react-icons/fa6";
-import {
-  ArrowBigRightIcon,
-  ChevronRight,
-  ShoppingCart,
-  XIcon,
-} from "lucide-react";
+import { ChevronRight, ShoppingCart, XIcon } from "lucide-react";
 import Link from "next/link";
-import { IoCloseOutline } from "react-icons/io5";
 import React from "react";
 import { useBasketStore } from "@/store/useStore";
 type TBasket = {};
@@ -48,7 +38,10 @@ export const Basket: FC = ({}) => {
         </Button>
       </SheetTrigger>
 
-      <SheetContent showCloseButton={false} className="shadow-none">
+      <SheetContent
+        showCloseButton={false}
+        className="shadow-none md:border-l-[2px] border-grey-border"
+      >
         <SheetHeader className="relative mt-[80px] md:mt-0">
           <SheetTitle className="text-[24px]  text-greenPrimary font-bold">
             Корзина
