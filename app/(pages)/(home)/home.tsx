@@ -1,6 +1,4 @@
 "use client";
-
-import { YandexMap } from "@/components/ui/YandexMap";
 import { AboutUs } from "./_components/aboutUs/about";
 import { Calculator } from "./_components/calculator/calculator";
 import { FAQ } from "./_components/FAQ/FAQ";
