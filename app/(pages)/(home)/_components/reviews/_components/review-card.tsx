@@ -1,5 +1,5 @@
 import { FC } from "react";
-import s from "./styles/review-card.module.scss";
+
 import Image from "next/image";
 import { FaStar } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
@@ -10,8 +10,8 @@ type TReviewCard = {
 export const ReviewCard: FC<TReviewCard> = ({ data }) => {
   return (
     <>
-      <article className="p-6 border-[1px] border-slate-200 rounded-[8px] bg-greyPrimary">
-        <div className="grid gap-4">
+      <article className="w-full p-6 border-[1px] border-slate-200 rounded-[8px] bg-greyPrimary">
+        <div className="grid gap-4 w-full">
           <div className="">
             <div className="flex gap-2 items-center">
               <Image

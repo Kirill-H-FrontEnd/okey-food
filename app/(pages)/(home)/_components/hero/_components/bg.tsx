@@ -7,7 +7,7 @@ export const Background: FC = ({}) => {
   return (
     <>
       <div className="absolute hidden md:block top-1/2 -translate-y-1/2 right-[0px] lg:right-[50px]  ">
-        <div className="w-[650px] h-[650px] lg:w-[700px] lg:h-[700px]">
+        <div className=" ">
           <Image
             alt=""
             fill

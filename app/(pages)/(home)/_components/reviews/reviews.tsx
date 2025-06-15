@@ -1,14 +1,21 @@
+// Reviews.tsx
 "use client";
 import { FC } from "react";
-import Autoplay from "embla-carousel-autoplay";
+// import Autoplay from "embla-carousel-autoplay";
 import { Container } from "@/components/ui/container";
+import { Swiper, SwiperSlide, useSwiper } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/scrollbar";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
 
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+  // CarouselNext,
+  // CarouselPrevious,
 } from "@/components/ui/carousel";
 import { ReviewCard } from "./_components/review-card";
 
@@ -44,43 +51,61 @@ export const Reviews: FC = ({}) => {
       content:
         "Полмесяца ем еду OkeyFood. Прям очень довольна! Первое — это вкусно. Второе — ребята согласились менять рыбу на другое. До этого все подобные службы отказывали. Третье — если я уезжаю, без проблем переносят дни. Короче, советую!",
     },
+    {
+      name: "Анастасия",
+      avatar: "/images/home/reviews/review-avatar-1.jpg",
+      date: "28.02.2025",
+      content:
+        "Полмесяца ем еду OkeyFood. Прям очень довольна! Первое — это вкусно. Второе — ребята согласились менять рыбу на другое. До этого все подобные службы отказывали. Третье — если я уезжаю, без проблем переносят дни. Короче, советую!",
+    },
+    {
+      name: "Анастасия",
+      avatar: "/images/home/reviews/review-avatar-1.jpg",
+      date: "28.02.2025",
+      content:
+        "Полмесяца ем еду OkeyFood. Прям очень довольна! Первое — это вкусно. Второе — ребята согласились менять рыбу на другое. До этого все подобные службы отказывали. Третье — если я уезжаю, без проблем переносят дни. Короче, советую!",
+    },
+    {
+      name: "Анастасия",
+      avatar: "/images/home/reviews/review-avatar-1.jpg",
+      date: "28.02.2025",
+      content:
+        "Полмесяца ем еду OkeyFood. Прям очень довольна! Первое — это вкусно. Второе — ребята согласились менять рыбу на другое. До этого все подобные службы отказывали. Третье — если я уезжаю, без проблем переносят дни. Короче, советую!",
+    },
   ];
   return (
     <section className="w-full bg-whitePrimary py-14 lg:py-20">
       <Container>
-        <section>
+        <section className="">
           <h3 className="text-[28px] lg:text-[32px] font-bold text-greenPrimary mb-8">
             Отзывы
           </h3>
-          <Carousel
-            opts={{
-              align: "start",
-              containScroll: "trimSnaps",
-              loop: true,
-              skipSnaps: true,
+
+          <Swiper
+            modules={[Autoplay]}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
             }}
-            plugins={[
-              Autoplay({
-                delay: 2000,
-                stopOnInteraction: false,
-                stopOnMouseEnter: true,
-              }),
-            ]}
-            className="w-full "
+            loop
+            spaceBetween={16}
+            slidesPerView={1}
+            breakpoints={{
+              640: { slidesPerView: 2, spaceBetween: 20 },
+              1024: { slidesPerView: 3, spaceBetween: 24 },
+            }}
+            /* optional — отключить drag мышью на десктопе:
+        simulateTouch={false}
+        */
           >
-            <CarouselContent className="flex flex-nowrap relative">
-              {DATA_REVIEWS_CARD.map((data, i) => (
-                <CarouselItem
-                  key={i}
-                  className=" flex flex-col basis-1/2 lg:basis-1/3 px-2"
-                >
-                  <ReviewCard data={data} key={i} />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            {/* <CarouselPrevious />
-            <CarouselNext /> */}
-          </Carousel>
+            {DATA_REVIEWS_CARD.map((data) => (
+              <SwiperSlide key={data.name + data.date} className="h-auto">
+                {/* Важно: внутри карточки w-full, чтоб занимала выданную ширину */}
+                <ReviewCard data={data} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </section>
       </Container>
     </section>
