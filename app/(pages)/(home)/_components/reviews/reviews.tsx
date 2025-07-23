@@ -1,16 +1,26 @@
 // Reviews.tsx
 
 "use client";
+import { useKeenSlider } from "keen-slider/react";
+import "keen-slider/keen-slider.min.css";
+
 import { FC } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from "swiper/modules";
+// import { Autoplay } from "swiper/modules";
 import { Container } from "@/components/ui/container";
 import { ReviewCard } from "./_components/review-card";
-
+import Autoplay from "embla-carousel-autoplay";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import "swiper/css";
 import "swiper/css/autoplay";
+import { Button } from "@/components/ui/button";
 
-// (Your DATA_REVIEWS_CARD remains the same)
 const DATA_REVIEWS_CARD = [
   {
     name: "Анастасия",
@@ -44,16 +54,55 @@ const DATA_REVIEWS_CARD = [
 ];
 
 export const Reviews: FC = () => {
+  const [sliderRef] = useKeenSlider<HTMLDivElement>({
+    loop: true,
+    breakpoints: {
+      "(max-width: 639px)": {
+        slides: { perView: 1.1, spacing: 16 },
+      },
+      "(min-width: 640px) and (max-width: 767px)": {
+        slides: { perView: 1.5, spacing: 16 },
+      },
+      "(min-width: 768px) and (max-width: 1023px)": {
+        slides: { perView: 2.5, spacing: 16 },
+      },
+      "(min-width: 1024px)": {
+        slides: { perView: 3.5, spacing: 16 },
+      },
+    },
+    slides: { perView: 3.5, spacing: 16 }, // Desktop по умолчанию
+    renderMode: "performance",
+  });
   return (
-    <section className="w-full bg-whitePrimary py-14 lg:py-20">
-      <Container>
-        <section>
-          <h3 className="text-[28px] lg:text-[32px] font-bold text-greenPrimary mb-8">
-            Отзывы
-          </h3>
-
-          <Swiper
-            modules={[Autoplay]}
+    <section className="w-full bg-whitePrimary py-14 lg:py-20 overflow-hidden">
+      <Container className="relative">
+        <div className="relative">
+          {/* Fade overlays */}
+          <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-10 bg-gradient-to-r from-whitePrimary to-transparent" />
+          <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-10 bg-gradient-to-l from-whitePrimary to-transparent" />
+          <div ref={sliderRef} className="keen-slider">
+            {DATA_REVIEWS_CARD.map((product, idx) => (
+              <div
+                key={idx}
+                className="keen-slider__slide flex flex-shrink-0"
+                style={{
+                  minHeight: 300,
+                  height: 300,
+                }}
+              >
+                <ReviewCard data={product} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </Container>
+    </section>
+  );
+};
+{
+  /* <Swiper
+            // modules={[Autoplay]}
+            className="w-full max-w-full"
             autoplay={{
               delay: 3000,
               disableOnInteraction: false,
@@ -61,20 +110,23 @@ export const Reviews: FC = () => {
             }}
             loop
             spaceBetween={16}
-            slidesPerView={1}
+            slidesPerView={3}
             breakpoints={{
-              640: { slidesPerView: 2, spaceBetween: 20 },
-              1024: { slidesPerView: 3, spaceBetween: 24 },
+              320: {
+                slidesPerView: 1,
+              },
+              640: {
+                slidesPerView: 2,
+              },
+              1024: {
+                slidesPerView: 3,
+              },
             }}
           >
             {DATA_REVIEWS_CARD.map((data, index) => (
-              <SwiperSlide key={index} className="h-auto self-stretch">
+              <SwiperSlide key={index}>
                 <ReviewCard data={data} />
               </SwiperSlide>
             ))}
-          </Swiper>
-        </section>
-      </Container>
-    </section>
-  );
-};
+          </Swiper> */
+}

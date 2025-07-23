@@ -4,7 +4,7 @@ import "./globals.css";
 
 import { Mulish } from "next/font/google";
 
-const geist = Mulish({
+const font = Mulish({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
 });
@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head></head>
-      <body style={geist.style} className={` antialiased`}>
+      <body style={font.style} className={` antialiased`}>
         {children}
       </body>
     </html>

@@ -3,7 +3,11 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 html {
-  body {
+  box-sizing: border-box;
+  *,
+  *::before,
+  *::after {
+    box-sizing: inherit;
   }
   /* scrollbar-gutter: stable; */
   /* &::-webkit-scrollbar-thumb {
@@ -28,6 +32,7 @@ html {
   --color-yellow-hover: #a8c215;
   --color-greyPrimary: #f1f1f1;
   --color-grey-border: #a3b5b9;
+  --color-greySecondary: #a3b5b9;
 }
 
 @theme inline {

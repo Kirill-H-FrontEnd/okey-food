@@ -7,7 +7,7 @@ type TCalculator = {};
 
 export const Calculator: FC = ({}) => {
   return (
-    <section className="py-14 lg:py-20 bg-whitePrimary">
+    <section id="calculator" className="py-14 lg:py-20 bg-whitePrimary">
       <Container>
         <section>
           <article className="w-full max-w-[580px] mb-10">

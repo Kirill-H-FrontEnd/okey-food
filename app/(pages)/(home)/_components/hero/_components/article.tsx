@@ -20,7 +20,7 @@ export const Article: FC = ({}) => {
         <Button
           size={"lg"}
           variant={"default"}
-          className="bg-yellowPrimary w-full md:w-[250px] py-6 group"
+          className="bg-yellowPrimary w-full md:w-[250px] py-6 group "
         >
           <p className="text-greenPrimary font-bold">Выбрать рацион</p>
           <BsArrowRight
