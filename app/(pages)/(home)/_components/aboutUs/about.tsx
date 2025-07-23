@@ -25,7 +25,7 @@ export const AboutUs: FC = ({}) => {
     },
   ];
   return (
-    <section id="about" className={" w-full bg-whitePrimary py-14 lg:py-20"}>
+    <section id="aboutUs" className={" w-full bg-whitePrimary py-14 lg:py-20"}>
       <Container>
         <section>
           <article className="mb-8">

@@ -13,7 +13,7 @@ type TYandexMap = {};
 
 export const YandexMap: FC = ({}) => {
   return (
-    <section className="py-14 lg:py-20 bg-whitePrimary">
+    <section id="map" className="py-14 lg:py-20 bg-whitePrimary">
       <Container>
         <section>
           <article className="mb-8">

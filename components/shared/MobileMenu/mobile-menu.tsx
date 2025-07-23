@@ -22,12 +22,12 @@ export const MobileMenu: FC<TMobileMenu> = ({
   className,
 }) => {
   const DATA_LINKS = [
-    { title: "Меню", href: "about", offset: -100 },
-    { title: "Калькулятор калорий", href: "footer", offset: -100 },
-    { title: "О нас", href: "/projects", offset: -100 },
-    { title: "Отзывы", href: "/contact", offset: -100 },
-    { title: "Часто задаваемые вопросы", href: "/contact", offset: -100 },
-    { title: "Доставка", href: "/contact" },
+    { title: "Меню", href: "products", offset: -50 },
+    { title: "Калькулятор калорий", href: "calculator", offset: -50 },
+    { title: "О нас", href: "aboutUs", offset: -50 },
+    { title: "Отзывы", href: "reviews", offset: -50 },
+    { title: "Часто задаваемые вопросы", href: "faq", offset: -50 },
+    { title: "Доставка", href: "map", offset: -50 },
   ];
 
   return (

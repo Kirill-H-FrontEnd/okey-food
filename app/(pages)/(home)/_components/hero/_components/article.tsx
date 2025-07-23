@@ -2,7 +2,7 @@
 import { FC } from "react";
 import { Button } from "@/components/ui/button";
 import { BsArrowRight } from "react-icons/bs";
-
+import { Link as ScrollLink } from "react-scroll";
 type TArticle = {};
 
 export const Article: FC = ({}) => {
@@ -17,17 +17,25 @@ export const Article: FC = ({}) => {
         </h2>
       </div>
       <div>
-        <Button
-          size={"lg"}
-          variant={"default"}
-          className="bg-yellowPrimary w-full md:w-[250px] py-6 group "
+        <ScrollLink
+          to={"products"}
+          smooth={true}
+          duration={300}
+          spy={true}
+          offset={-50}
         >
-          <p className="text-greenPrimary font-bold">Выбрать рацион</p>
-          <BsArrowRight
-            strokeWidth={0.6}
-            className="text-greenPrimary group-hover:translate-x-1 transition-transform hidden md:block"
-          />
-        </Button>
+          <Button
+            size={"lg"}
+            variant={"default"}
+            className="bg-yellowPrimary w-full md:w-[250px] py-6 group "
+          >
+            <p className="text-greenPrimary font-bold">Выбрать рацион</p>
+            <BsArrowRight
+              strokeWidth={0.6}
+              className="text-greenPrimary group-hover:translate-x-1 transition-transform hidden md:block"
+            />
+          </Button>
+        </ScrollLink>
       </div>
     </article>
   );

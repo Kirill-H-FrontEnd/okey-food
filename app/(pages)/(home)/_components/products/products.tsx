@@ -37,7 +37,7 @@ export const Products: FC = ({}) => {
     },
   ];
   return (
-    <section className="py-14 lg:py-20">
+    <section id="products" className="py-14 lg:py-20 bg-whitePrimary">
       <Container>
         <article className="w-full max-w-[450px] lg:max-w-full">
           <h3 className="text-[28px] lg:text-[32px] font-bold text-greenPrimary">
@@ -68,7 +68,7 @@ export const Products: FC = ({}) => {
               <TabsTrigger
                 key={index}
                 value={`calories-${tab.calories}`}
-                className="text-greenPrimary font-medium bg-white py-4 border-[1px] border-grey-border cursor-pointer data-[state=active]:bg-greenPrimary data-[state=active]:border-greenPrimary data-[state=active]:text-whitePrimary  group"
+                className="text-greenPrimary font-medium bg-white py-4 border-[1px] border-grey-border cursor-pointer data-[state=active]:bg-greenPrimary data-[state=active]:border-greenPrimary data-[state=active]:text-whitePrimary  group shadow-none"
               >
                 <div className="">
                   <p className="text-greenPrimary group-data-[state=active]:text-whitePrimary font-bold">

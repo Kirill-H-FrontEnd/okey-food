@@ -31,19 +31,21 @@ export const Navbar: FC = ({}) => {
     };
   }, []);
   const DATA_LINKS = [
-    { href: "about", label: "Меню", offset: -100 },
-    { href: "footer", label: "О нас", offset: -100 },
-    { href: "/portfolio", label: "Отзывы", offset: -100 },
-    { href: "/blog", label: "FAQ" },
-    { href: "/contacts", label: "Доставка", offset: -100 },
+    { href: "products", label: "Меню", offset: -50 },
+    { href: "aboutUs", label: "О нас", offset: -50 },
+    { href: "reviews", label: "Отзывы", offset: -50 },
+    { href: "faq", label: "FAQ", offset: -50 },
+    { href: "map", label: "Доставка", offset: -50 },
   ];
   return (
     <header
       className={`${
-        isScrolled || openMenu ? "shadow-sm transition-all fixed" : ""
+        isScrolled || openMenu
+          ? "shadow-sm transition-all bg-white fixed "
+          : "bg-whitePrimary"
       } ${
         isBasketOpen ? "shadow-sm md:shadow-none transition-all" : ""
-      } w-full sticky  top-0 left-0 py-3 z-[100] bg-whitePrimary rounded-b-[15px] md:rounded-b-[20px]`}
+      } w-full sticky  top-0 left-0 py-3 z-[100]  `}
     >
       <Container>
         <section className="w-full flex justify-between items-center">
