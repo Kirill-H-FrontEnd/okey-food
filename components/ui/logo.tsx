@@ -7,7 +7,7 @@ type TLogo = { url?: string };
 export const Logo: FC<TLogo> = ({ url = "/images/OkeyFoodLogo.svg" }) => {
   return (
     <ScrollLink
-      className="cursor-pointer block w-[50px] h-[50px] overflow-hidden"
+      className="cursor-pointer block w-[40px] h-[40px] md:w-[50px] md:h-[50px] overflow-hidden"
       to="hero"
       smooth={true}
       duration={300}
@@ -20,8 +20,8 @@ export const Logo: FC<TLogo> = ({ url = "/images/OkeyFoodLogo.svg" }) => {
         style={{
           display: "block",
           objectFit: "contain",
-          width: "50px",
-          height: "50px",
+          width: "100%",
+          height: "100%",
         }}
       />
     </ScrollLink>

@@ -21,8 +21,9 @@ export const Footer: FC = ({}) => {
       ],
     },
   ];
+
   return (
-    <footer className=" bg-greenPrimary rounded-t-[20px]" id="footer">
+    <footer className="bg-greenPrimary rounded-t-[20px]" id="footer">
       <Container className="">
         <section className="py-20 grid grid-cols-1 justify-center lg:grid-cols-[auto_1fr]  gap-5 lg:gap-20 ">
           <div className="flex flex-col justify-center md:justify-start text-center md:text-left">
@@ -100,4 +101,3 @@ export const Footer: FC = ({}) => {
     </footer>
   );
 };
-// grid text-center md:text-left grid-cols-[1fr] md:grid-flow-col md:auto-cols-max  gap-7 md:gap-[100px] lg:gap-[150px]

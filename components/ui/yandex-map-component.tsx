@@ -1,27 +1,36 @@
 "use client";
 
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
+import { YMaps, Map, Placemark, Polygon } from "@pbe/react-yandex-maps";
 import {
-  YMaps,
-  Map,
-  Placemark,
-  Polygon,
-  ZoomControl,
-} from "@pbe/react-yandex-maps";
+  Maximize2,
+  Minus,
+  Plus,
+  LocateFixed,
+  Map as MapIcon,
+  SatelliteDish,
+} from "lucide-react";
+
+const BTN =
+  "w-10 h-10 rounded-lg bg-white shadow-lg flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-all text-greenPrimary";
 
 export const YandexMapComponent: FC<{ zoom?: number }> = ({ zoom = 10 }) => {
   const center: [number, number] = [53.9, 27.566667];
   const [districtsCoords, setDistrictsCoords] = useState<
     [number, number][][][]
   >([]);
-  const [mapRef, setMapRef] = useState<any>(null);
+  const mapRef = useRef<any>(null);
+  const [mapType, setMapType] = useState<"yandex#map" | "yandex#satellite">(
+    "yandex#map"
+  );
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     fetch("/minsk-districts.geojson")
       .then((res) => res.json())
       .then((geojson) => {
         setDistrictsCoords(
-          (geojson.features as any).map(
+          geojson.features.map(
             (f: any) => f.geometry.coordinates as [number, number][][]
           )
         );
@@ -29,69 +38,144 @@ export const YandexMapComponent: FC<{ zoom?: number }> = ({ zoom = 10 }) => {
       .catch(console.error);
   }, []);
 
-  useEffect(() => {
-    if (!mapRef || !(window as any).ymaps) return;
-    const ymaps = (window as any).ymaps;
-    ymaps
-      .geocode("Minsk", { kind: "locality", results: 1 })
-      .then((res: any) => {
-        const city = res.geoObjects.get(0);
-        city.options.set({
-          fillColor: "rgba(255,0,0,0.2)",
-          strokeColor: "#FF0000",
-          strokeWidth: 2,
-          zIndex: 500,
-        });
-        mapRef.geoObjects.add(city);
-      });
-  }, [mapRef]);
+  const handleZoom = (dir: "in" | "out") => {
+    if (!mapRef.current) return;
+    const map = mapRef.current;
+    const currentZoom = map.getZoom();
+    map.setZoom(dir === "in" ? currentZoom + 1 : currentZoom - 1);
+  };
+
+  const handleType = () => {
+    if (!mapRef.current) return;
+    const nextType =
+      mapType === "yandex#map" ? "yandex#satellite" : "yandex#map";
+    setMapType(nextType);
+    mapRef.current.setType(nextType);
+  };
+
+  const handleFullscreen = () => {
+    const container = document.getElementById("yandex-map-container");
+    if (!container) return;
+    if (!document.fullscreenElement) {
+      container.requestFullscreen?.();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen?.();
+      setIsFullscreen(false);
+    }
+  };
+
+  const handleGeolocate = () => {
+    if (!navigator.geolocation || !mapRef.current) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const coords = [pos.coords.latitude, pos.coords.longitude];
+        mapRef.current.setCenter(coords, 14, { duration: 400 });
+      },
+      (err) => {
+        alert("Геолокация не доступна: " + err.message);
+      }
+    );
+  };
 
   return (
     <YMaps
       query={{ apikey: process.env.NEXT_PUBLIC_YANDEX_API_KEY!, lang: "ru_RU" }}
     >
-      <div className="w-full pb-[56.25%] relative rounded-lg overflow-hidden">
-        <div className="absolute inset-0">
-          <Map
-            instanceRef={setMapRef}
-            defaultState={{
-              center,
-              zoom,
-              controls: ["fullscreenControl", "typeSelector"],
-              behaviors: ["drag", "dblClickZoom"],
-            }}
-            options={{
-              suppressMapOpenBlock: true,
-              suppressObsoleteBrowserNotifier: true,
-              copyrightUaVisible: false,
-              copyrightLogoVisible: false,
-              copyrightProvidersVisible: false,
-            }}
-            modules={["control.FullscreenControl", "control.TypeSelector"]}
-            width="100%"
-            height="100%"
+      <div
+        id="yandex-map-container"
+        className="
+          w-full
+          h-[350px]
+          sm:h-[400px]
+          md:h-[500px]
+          lg:h-[550px]
+          relative
+          rounded-lg
+          overflow-hidden
+        "
+      >
+        {/* Кнопки вверху справа */}
+        <div className="absolute z-10 top-3 right-3 flex flex-row gap-2">
+          {/* Тип карты */}
+          <button className={BTN} onClick={handleType} aria-label="Map type">
+            {mapType === "yandex#map" ? (
+              <MapIcon size={22} />
+            ) : (
+              <SatelliteDish size={22} />
+            )}
+          </button>
+          {/* Фуллскрин */}
+          <button
+            className={BTN}
+            onClick={handleFullscreen}
+            aria-label="Fullscreen"
           >
-            <ZoomControl
-              options={{ position: { top: "250px", right: "10px" } }}
-            />
-            {districtsCoords.map((coords, idx) => (
-              <Polygon
-                key={idx}
-                geometry={coords}
-                options={{
-                  fillColor: "rgba(0,200,0,0.3)",
-                  strokeColor: "#00C800",
-                  strokeWidth: 3,
-                  zIndex: 1000,
-                }}
-              />
-            ))}
-            <Placemark
-              geometry={center}
-              properties={{ balloonContent: "Центр Минска" }}
-            />
-          </Map>
+            <Maximize2 size={22} />
+          </button>
         </div>
+        {/* Зум и геолокация по центру справа */}
+        <div className="absolute z-10 right-3 top-1/2 -translate-y-1/2 flex flex-col items-end">
+          <div className="flex flex-col shadow-lg bg-white rounded-lg overflow-hidden ">
+            <button
+              className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-all text-greenPrimary rounded-t-lg"
+              onClick={() => handleZoom("in")}
+              aria-label="Zoom in"
+            >
+              <Plus size={22} />
+            </button>
+            <button
+              className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-all text-greenPrimary rounded-b-lg"
+              onClick={() => handleZoom("out")}
+              aria-label="Zoom out"
+            >
+              <Minus size={22} />
+            </button>
+          </div>
+          <button
+            className={BTN + " mt-3"}
+            onClick={handleGeolocate}
+            aria-label="Geolocate"
+          >
+            <LocateFixed size={22} />
+          </button>
+        </div>
+        <Map
+          instanceRef={(ref) => (mapRef.current = ref)}
+          defaultState={{
+            center,
+            zoom,
+            controls: [],
+            type: mapType,
+            behaviors: ["drag", "dblClickZoom"],
+          }}
+          options={{
+            suppressMapOpenBlock: true,
+            suppressObsoleteBrowserNotifier: true,
+            copyrightUaVisible: false,
+            copyrightLogoVisible: false,
+            copyrightProvidersVisible: false,
+          }}
+          width="100%"
+          height="100%"
+        >
+          {districtsCoords.map((coords, idx) => (
+            <Polygon
+              key={idx}
+              geometry={coords}
+              options={{
+                fillColor: "rgba(0,200,0,0.3)",
+                strokeColor: "#00C800",
+                strokeWidth: 3,
+                zIndex: 1000,
+              }}
+            />
+          ))}
+          <Placemark
+            geometry={center}
+            properties={{ balloonContent: "Центр Минска" }}
+          />
+        </Map>
       </div>
     </YMaps>
   );
