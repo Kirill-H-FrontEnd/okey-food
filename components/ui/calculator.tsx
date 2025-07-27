@@ -224,7 +224,7 @@ export default function CalorieCalculator() {
 
   return (
     <section>
-      <section className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10 xl:gap-40 justify-between">
+      <section className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-5 xl:gap-40 justify-between">
         <div>
           <div className="grid gap-[24px]">
             {columns.map((col) => (
@@ -237,7 +237,7 @@ export default function CalorieCalculator() {
             ))}
           </div>
         </div>
-        <section className="grid grid-rows-1 gap-4">
+        <section className="grid grid-rows-1 h-[300px] lg:h-auto gap-4">
           <div className="flex flex-col items-center justify-center rounded-[8px] bg-whitePrimary py-8">
             <h3 className="text-greenPrimary text-[18px] font-bold">
               Рекомендуемый калораж:

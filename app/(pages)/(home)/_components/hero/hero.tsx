@@ -18,7 +18,7 @@ export const Hero: FC = ({}) => {
           <Article />
           <Background />
           {/* Vector background */}
-          <div className="absolute hidden md:block top-0 right-[20px] lg:right-[50px]  w-[550px] h-[550px] overflow-hidden">
+          <div className="absolute hidden md:block top-0 right-[20px] lg:right-[50px] z-1 w-[550px] h-[550px] overflow-hidden">
             <Image
               alt=""
               fill

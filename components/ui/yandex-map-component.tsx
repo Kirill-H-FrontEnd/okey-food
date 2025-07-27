@@ -30,8 +30,10 @@ export const YandexMapComponent: FC<{ zoom?: number }> = ({ zoom = 10 }) => {
       .then((res) => res.json())
       .then((geojson) => {
         setDistrictsCoords(
-          geojson.features.map(
-            (f: any) => f.geometry.coordinates as [number, number][][]
+          geojson.features.map((f: any) =>
+            f.geometry.coordinates.map((polygon: [number, number][]) =>
+              polygon.map(([lat, lon]) => [lon, lat])
+            )
           )
         );
       })
@@ -85,13 +87,14 @@ export const YandexMapComponent: FC<{ zoom?: number }> = ({ zoom = 10 }) => {
       <div
         id="yandex-map-container"
         className="
+        shadow-sm
           w-full
           h-[350px]
           sm:h-[400px]
           md:h-[500px]
           lg:h-[550px]
           relative
-          rounded-lg
+          rounded-[16px]
           overflow-hidden
         "
       >
