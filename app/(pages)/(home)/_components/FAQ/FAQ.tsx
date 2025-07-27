@@ -26,7 +26,7 @@ export const FAQ: FC = ({}) => {
         <section className="grid lg:grid-cols-[380px_1fr] gap-10 lg:gap-20">
           <article className="w-full max-w-[450px] lg:max-w-full">
             <h3 className="text-[28px] lg:text-[32px] font-bold text-whitePrimary">
-              Часто задаваемые вопросы1
+              Часто задаваемые вопросы
             </h3>
             <p className="text-whitePrimary font-normal mt-4">
               В этом разделе вы найдете информацию о доставке, оплате и

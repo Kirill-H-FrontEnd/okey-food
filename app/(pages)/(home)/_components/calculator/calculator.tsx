@@ -20,7 +20,7 @@ export const Calculator: FC = ({}) => {
               целям и предпочтениям
             </p>
           </article>
-          <section className="bg-greenPrimary  rounded-[8px] p-6 md:p-10 lg:p-14">
+          <section className="bg-greenPrimary  rounded-[16px] p-6 md:p-10 lg:p-14">
             <CalorieCalculator />
           </section>
         </section>

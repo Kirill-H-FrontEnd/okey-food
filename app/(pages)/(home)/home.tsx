@@ -19,7 +19,7 @@ export default function HomePage() {
       <AboutUs />
       {/* <Reviews /> */}
       <FAQ />
-      <YandexMap />
+      {/* <YandexMap /> */}
     </>
   );
 }

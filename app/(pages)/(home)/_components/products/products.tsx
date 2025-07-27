@@ -1,8 +1,12 @@
 "use client";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { Container } from "@/components/ui/container";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link as ScrollLink } from "react-scroll";
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
+import { SelectDate } from "@/components/ui/select-date";
+
 type TProducts = {};
 
 export const Products: FC = ({}) => {
@@ -36,6 +40,54 @@ export const Products: FC = ({}) => {
       countProduct: "6",
     },
   ];
+  const { deliveryRanges, defaultRangeValue } = useMemo(() => {
+    const today = new Date();
+    const ranges: { label: string; value: string; disabled: boolean }[] = [];
+
+    today.setHours(0, 0, 0, 0);
+
+    for (let i = 0; i < 4; i++) {
+      const rangeStart = new Date(today);
+      rangeStart.setDate(today.getDate() + i * 6);
+
+      const rangeEnd = new Date(rangeStart);
+      rangeEnd.setDate(rangeEnd.getDate() + 5);
+
+      const isPast = rangeEnd < today;
+
+      ranges.push({
+        value: `${format(rangeStart, "yyyy-MM-dd")}_${format(
+          rangeEnd,
+          "yyyy-MM-dd"
+        )}`,
+        label: `${format(rangeStart, "dd.MM", { locale: ru })}–${format(
+          rangeEnd,
+          "dd.MM",
+          { locale: ru }
+        )}`,
+        disabled: isPast,
+      });
+    }
+
+    const firstAvailable = ranges.find((r) => !r.disabled)?.value || "";
+
+    return { deliveryRanges: ranges, defaultRangeValue: firstAvailable };
+  }, []);
+  // const dates = useMemo(() => {
+  //   const today = new Date();
+  //   return Array.from({ length: 7 }, (_, i) => {
+  //     const date = new Date(today);
+  //     date.setDate(today.getDate() + i);
+  //     return {
+  //       value: date.toISOString().split("T")[0], // 'YYYY-MM-DD'
+  //       label: date.toLocaleDateString("ru-RU", {
+  //         weekday: "long",
+  //         day: "numeric",
+  //         month: "long",
+  //       }), // 'понедельник, 27 июля'
+  //     };
+  //   });
+  // }, []);
   return (
     <section id="products" className="py-14 lg:py-20 bg-whitePrimary">
       <Container>
@@ -49,7 +101,7 @@ export const Products: FC = ({}) => {
           className="grid gap-4 mt-6"
         >
           <section className="flex justify-between items-center">
-            <h4 className="text-[18px] lg:text-[24px] font-semibold text-greenPrimary">
+            <h4 className="text-[18px] lg:text-[22px] font-bold text-greenPrimary">
               Выберите калорийность
             </h4>
             <ScrollLink
@@ -81,18 +133,26 @@ export const Products: FC = ({}) => {
               </TabsTrigger>
             ))}
           </TabsList>
-          {DATA_CALORIES_TABS.map((tab, index) => (
-            <TabsContent
-              key={index}
-              value={`calories-${tab.calories}`}
-              className="text-greenPrimary font-medium"
-            >
-              <p>
-                Здесь будет информация о рационе питания с {tab.calories} ккал,
-                состоящем из {tab.countProduct} блюд.
-              </p>
-            </TabsContent>
-          ))}
+          <section>
+            <h5 className="text-[16px] lg:text-[20px] font-bold text-greenPrimary">
+              Меню на неделю
+            </h5>
+            <div className="mt-2">
+              <SelectDate />
+            </div>
+            {DATA_CALORIES_TABS.map((tab, index) => (
+              <TabsContent
+                key={index}
+                value={`calories-${tab.calories}`}
+                className="text-greenPrimary font-medium"
+              >
+                <p>
+                  Здесь будет информация о рационе питания с {tab.calories}{" "}
+                  ккал, состоящем из {tab.countProduct} блюд.
+                </p>
+              </TabsContent>
+            ))}
+          </section>
         </Tabs>
       </Container>
     </section>
