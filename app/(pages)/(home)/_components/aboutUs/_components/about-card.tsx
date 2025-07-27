@@ -7,7 +7,7 @@ type TAboutCard = {
 
 export const AboutCard: FC<TAboutCard> = ({ data }) => {
   return (
-    <article className="bg-greenPrimary grid gap-4 rounded-[6px] text-center py-10">
+    <article className="bg-greenPrimary grid gap-4 rounded-[16px] text-center py-10">
       <div className="grid justify-center">
         <Image
           src={data.icon}

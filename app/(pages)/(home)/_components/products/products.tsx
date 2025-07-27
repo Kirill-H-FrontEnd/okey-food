@@ -100,12 +100,12 @@ export const Products: FC = ({}) => {
           defaultValue={`calories-${DATA_CALORIES_TABS[0].calories}`}
           className="grid gap-4 mt-6"
         >
-          <section className="flex justify-between items-center">
+          <div className="flex justify-between items-center">
             <h4 className="text-[18px] lg:text-[22px] font-bold text-greenPrimary">
               Выберите калорийность
             </h4>
             <ScrollLink
-              className="text-greenPrimary hover:text-yellow-hover transition-colors cursor-pointer"
+              className="text-greenPrimary hover:text-yellow-hover transition-colors cursor-pointer hidden md:block"
               to={"calculator"}
               smooth={true}
               duration={300}
@@ -114,7 +114,7 @@ export const Products: FC = ({}) => {
             >
               Рассчитать калорийность
             </ScrollLink>
-          </section>
+          </div>
           <TabsList className="">
             {DATA_CALORIES_TABS.map((tab, index) => (
               <TabsTrigger
