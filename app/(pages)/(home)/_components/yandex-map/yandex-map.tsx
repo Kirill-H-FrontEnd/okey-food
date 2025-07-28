@@ -21,7 +21,7 @@ export const YandexMap: FC = ({}) => {
               Зона доставки
             </h3>
           </article>
-          <DynamicYandexMap zoom={11} />
+          <DynamicYandexMap zoom={10} />
           <section className="grid gap-2 md:gap-0 md:grid-cols-3 justify-between mt-10 text-greenPrimary">
             <p>Время доставки 19:00 - 23:00</p>
             <p>

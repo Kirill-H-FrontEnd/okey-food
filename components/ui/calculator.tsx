@@ -194,6 +194,7 @@ export default function CalorieCalculator() {
             {[1, 2, 3].map((val) => (
               <React.Fragment key={val}>
                 <button
+                  aria-label="Калорийность активности"
                   onClick={() => {
                     setActivityValue(val as ActivityValue);
                     setActivity(activityMap[val as ActivityValue]);

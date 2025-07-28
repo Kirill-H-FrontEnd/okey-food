@@ -44,13 +44,15 @@ export const Footer: FC = ({}) => {
                     </h3>
                     <ul className="flex justify-center md:justify-start md:flex-col gap-4 md:gap-2">
                       {item.links.map((link) => (
-                        <Link
-                          href={link.url}
-                          className="hover:text-yellow-hover transition-all hover:translate-x-1 font-normal text-[15px]"
-                          key={link.title}
-                        >
-                          {link.title}
-                        </Link>
+                        <li>
+                          <Link
+                            href={link.url}
+                            className="hover:text-yellow-hover transition-all hover:translate-x-1 font-normal text-[15px]"
+                            key={link.title}
+                          >
+                            {link.title}
+                          </Link>
+                        </li>
                       ))}
                     </ul>
                   </li>
@@ -70,12 +72,14 @@ export const Footer: FC = ({}) => {
               <div className="flex justify-center md:justify-start items-center mt-4">
                 <div className="flex gap-3">
                   <Link
+                    aria-label="Instagram"
                     className="text-whitePrimary hover:text-yellow-hover transition-colors"
                     href=""
                   >
                     <FaInstagram size={26} />
                   </Link>
                   <Link
+                    aria-label="Telegram"
                     className="text-whitePrimary hover:text-yellow-hover transition-colors"
                     href=""
                   >

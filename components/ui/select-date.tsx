@@ -50,7 +50,10 @@ export const SelectDate: FC = ({}) => {
   }, []);
   return (
     <Select defaultValue={defaultRangeValue}>
-      <SelectTrigger className="w-[150px] text-greenPrimary font-semibold border-grey-border cursor-pointer select-none">
+      <SelectTrigger
+        aria-label="Выбрать дату"
+        className="w-[150px] text-greenPrimary font-semibold border-grey-border cursor-pointer select-none"
+      >
         <SelectValue placeholder="Выберите период доставки" />
       </SelectTrigger>
       <SelectContent>

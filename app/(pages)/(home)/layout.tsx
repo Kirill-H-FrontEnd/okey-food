@@ -1,30 +1,30 @@
-// export const metadata: Metadata = {
-//   title: "Kirill H - Web Developer | Next.js, React, TypeScript, Tailwind CSS",
-//   description:
-//     "Portfolio of Kirill, a web developer specializing in Next.js, React, Tailwind CSS and TypeScript for building modern web applications.",
-//   keywords:
-//     "web development, Next.js, React, TypeScript, Tailwind, portfolio, freelance, frontend",
-//   openGraph: {
-//     title:
-//       "Kirill H - Web Developer | Next.js, React, TypeScript, Tailwind CSS",
-//     description:
-//       "Portfolio of Kirill, a web developer specializing in Next.js, React, Tailwind and TypeScript for building modern web applications.",
-//     url: "https://kirillh.website",
-//     images: [
-//       {
-//         url: "",
-//         width: 800,
-//         height: 600,
-//         alt: "Kirill's Portfolio",
-//       },
-//     ],
-//     type: "website",
-//     siteName: "Kirill's Portfolio",
-//   },
-// };
-
 import { Footer } from "@/components/shared/footer/footer";
 import { Navbar } from "@/components/shared/navbar/navbar";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "OkeyFood | Доставка здорового питания в Минске",
+  description:
+    "Досставка здорового питания на дом и по всему Минску. Заказывайте вкусные и полезные блюда с доставкой от OkeyFood.",
+  keywords:
+    "доставка еды, здоровое питание, Минск, OkeyFood, доставка на дом, полезные блюда, еда на заказ, доставка обедов, здоровая еда, ресторанная доставка",
+  openGraph: {
+    title: "OkeyFood | Доставка здорового питания в Минске",
+    description:
+      "Досставка здорового питания на дом и по всему Минску. Заказывайте вкусные и полезные блюда с доставкой от OkeyFood.",
+    url: "",
+    images: [
+      {
+        url: "",
+        width: 800,
+        height: 600,
+        alt: "OkeyFood",
+      },
+    ],
+    type: "website",
+    siteName: "OkeyFood",
+  },
+};
 
 export default async function HomeLayout({
   children,

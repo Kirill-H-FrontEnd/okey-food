@@ -45,7 +45,7 @@ export const Navbar: FC = ({}) => {
           : "bg-whitePrimary"
       } ${
         isBasketOpen ? "shadow-sm md:shadow-none " : ""
-      } w-full sticky  top-0 left-0 py-3 z-[100]  transition-[background-color, box-shadow] duration-300`}
+      } w-full sticky  top-0 left-0 py-[10px] z-[100]  transition-[background-color, box-shadow] duration-300`}
     >
       <Container>
         <section className="w-full flex justify-between items-center">
@@ -57,12 +57,14 @@ export const Navbar: FC = ({}) => {
               </Link>
               <div className="flex gap-3 items-center">
                 <Link
+                  aria-label="Instagram"
                   className="text-greenPrimary hover:text-yellow-hover transition-colors"
                   href=""
                 >
                   <FaInstagram size={26} />
                 </Link>
                 <Link
+                  aria-label="Telegram"
                   className="text-greenPrimary hover:text-yellow-hover transition-colors"
                   href=""
                 >
@@ -74,21 +76,24 @@ export const Navbar: FC = ({}) => {
           <nav className="flex gap-5 lg:gap-10">
             <ul className="hidden lg:flex items-center gap-4">
               {DATA_LINKS.map((link, i) => (
-                <ScrollLink
-                  activeClass={s.activeLink}
-                  className={s.link}
-                  key={i}
-                  to={link.href}
-                  smooth={true}
-                  duration={300}
-                  spy={true}
-                  offset={link.offset}
-                >
-                  {link.label}
-                </ScrollLink>
+                <li>
+                  <ScrollLink
+                    activeClass={s.activeLink}
+                    className={s.link}
+                    key={i}
+                    to={link.href}
+                    smooth={true}
+                    duration={300}
+                    spy={true}
+                    offset={link.offset}
+                  >
+                    {link.label}
+                  </ScrollLink>
+                </li>
               ))}
             </ul>
             <Link
+              aria-label="Телефон"
               className="items-center grid  lg:hidden"
               href={"tel:+375447256666"}
             >

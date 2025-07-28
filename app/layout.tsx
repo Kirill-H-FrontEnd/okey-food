@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import "simplebar/dist/simplebar.min.css";
 import "./globals.css";
 

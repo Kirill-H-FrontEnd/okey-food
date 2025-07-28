@@ -33,6 +33,7 @@ export const MobileMenu: FC<TMobileMenu> = ({
   return (
     <Sheet modal={false} open={openMenu} onOpenChange={setOpenMenu}>
       <SheetTrigger
+        aria-label="Open mobile menu"
         className={className}
         style={{
           outline: "none",
@@ -74,7 +75,11 @@ export const MobileMenu: FC<TMobileMenu> = ({
 
           <div className="grid gap-4 mt-8">
             <div className="flex gap-4 items-center">
-              <Link href="#" className="hover:text-greenPrimary">
+              <Link
+                aria-label="Instagram"
+                href="#"
+                className="hover:text-greenPrimary"
+              >
                 <Image
                   src="/images/icons/instagram.svg"
                   width={22}
