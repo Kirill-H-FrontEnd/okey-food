@@ -1,93 +1,49 @@
 "use client";
-import { FC, useMemo } from "react";
+
+import { FC, useMemo, useState } from "react";
 import { Container } from "@/components/ui/container";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link as ScrollLink } from "react-scroll";
-import { format } from "date-fns";
-import { ru } from "date-fns/locale";
 import { SelectDate } from "@/components/ui/select-date";
+import { addDays, format, parseISO } from "date-fns";
+import { ru } from "date-fns/locale";
+import { SelectDaysButtons } from "./_components/SelectDaysButtons"; // путь по своему проекту
 
 type TProducts = {};
 
-export const Products: FC = ({}) => {
-  const DATA_CALORIES_TABS = [
-    {
-      calories: "1000",
-      countProduct: "3",
-    },
-    {
-      calories: "1200",
-      countProduct: "4",
-    },
-    {
-      calories: "1400",
-      countProduct: "5",
-    },
-    {
-      calories: "1700",
-      countProduct: "5",
-    },
-    {
-      calories: "2000",
-      countProduct: "5",
-    },
-    {
-      calories: "2400",
-      countProduct: "6",
-    },
-    {
-      calories: "3200",
-      countProduct: "6",
-    },
-  ];
-  const { deliveryRanges, defaultRangeValue } = useMemo(() => {
-    const today = new Date();
-    const ranges: { label: string; value: string; disabled: boolean }[] = [];
+const DATA_CALORIES_TABS = [
+  { calories: "1000", countProduct: 3 },
+  { calories: "1200", countProduct: 4 },
+  { calories: "1400", countProduct: 5 },
+  { calories: "1700", countProduct: 5 },
+  { calories: "2000", countProduct: 5 },
+  { calories: "2400", countProduct: 6 },
+  { calories: "3200", countProduct: 6 },
+];
 
-    today.setHours(0, 0, 0, 0);
+const generateProducts = (count: number) =>
+  Array.from({ length: count }, (_, i) => `Блюдо ${i + 1}`);
 
-    for (let i = 0; i < 4; i++) {
-      const rangeStart = new Date(today);
-      rangeStart.setDate(today.getDate() + i * 6);
+export const Products: FC<TProducts> = () => {
+  const [selectedRange, setSelectedRange] = useState<string | null>(null);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
 
-      const rangeEnd = new Date(rangeStart);
-      rangeEnd.setDate(rangeEnd.getDate() + 5);
+  const handleRangeChange = (value: string) => {
+    setSelectedRange(value);
+    const [start] = value.split("_");
+    const monday = parseISO(start);
+    const days = Array.from({ length: 6 }).map((_, i) =>
+      format(addDays(monday, i), "yyyy-MM-dd")
+    );
+    setSelectedDays(days); // по умолчанию все выбраны
+  };
 
-      const isPast = rangeEnd < today;
+  const handleToggleDay = (day: string) => {
+    setSelectedDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+    );
+  };
 
-      ranges.push({
-        value: `${format(rangeStart, "yyyy-MM-dd")}_${format(
-          rangeEnd,
-          "yyyy-MM-dd"
-        )}`,
-        label: `${format(rangeStart, "dd.MM", { locale: ru })}–${format(
-          rangeEnd,
-          "dd.MM",
-          { locale: ru }
-        )}`,
-        disabled: isPast,
-      });
-    }
-
-    const firstAvailable = ranges.find((r) => !r.disabled)?.value || "";
-
-    return { deliveryRanges: ranges, defaultRangeValue: firstAvailable };
-  }, []);
-  // const dates = useMemo(() => {
-  //   const today = new Date();
-  //   return Array.from({ length: 7 }, (_, i) => {
-  //     const date = new Date(today);
-  //     date.setDate(today.getDate() + i);
-  //     return {
-  //       value: date.toISOString().split("T")[0], // 'YYYY-MM-DD'
-  //       label: date.toLocaleDateString("ru-RU", {
-  //         weekday: "long",
-  //         day: "numeric",
-  //         month: "long",
-  //       }), // 'понедельник, 27 июля'
-  //     };
-  //   });
-  // }, []);
   return (
     <section id="products" className="py-14 lg:py-20 bg-whitePrimary">
       <Container>
@@ -96,6 +52,7 @@ export const Products: FC = ({}) => {
             Рационы питания
           </h3>
         </article>
+
         <Tabs
           defaultValue={`calories-${DATA_CALORIES_TABS[0].calories}`}
           className="grid gap-4 mt-6"
@@ -115,14 +72,15 @@ export const Products: FC = ({}) => {
               Рассчитать калорийность
             </ScrollLink>
           </div>
-          <TabsList className="">
-            {DATA_CALORIES_TABS.map((tab, index) => (
+
+          <TabsList>
+            {DATA_CALORIES_TABS.map((tab) => (
               <TabsTrigger
-                key={index}
+                key={tab.calories}
                 value={`calories-${tab.calories}`}
-                className="text-greenPrimary font-medium bg-white py-4 border-[1px] border-grey-border cursor-pointer data-[state=active]:bg-greenPrimary data-[state=active]:border-greenPrimary data-[state=active]:text-whitePrimary  group shadow-none"
+                className="text-greenPrimary font-medium bg-white py-4 border-[1px] border-grey-border cursor-pointer data-[state=active]:bg-greenPrimary data-[state=active]:border-greenPrimary data-[state=active]:text-whitePrimary group shadow-none"
               >
-                <div className="">
+                <div>
                   <p className="text-greenPrimary group-data-[state=active]:text-whitePrimary font-bold">
                     {tab.calories}
                   </p>
@@ -133,23 +91,37 @@ export const Products: FC = ({}) => {
               </TabsTrigger>
             ))}
           </TabsList>
+
           <section>
             <h5 className="text-[16px] lg:text-[20px] font-bold text-greenPrimary">
               Меню на неделю
             </h5>
             <div className="mt-2">
-              <SelectDate />
+              <SelectDate onChange={handleRangeChange} />
             </div>
-            {DATA_CALORIES_TABS.map((tab, index) => (
+
+            {selectedRange && (
+              <SelectDaysButtons
+                range={selectedRange}
+                onToggleDay={handleToggleDay}
+                selectedDays={selectedDays}
+              />
+            )}
+
+            {DATA_CALORIES_TABS.map((tab) => (
               <TabsContent
-                key={index}
+                key={tab.calories}
                 value={`calories-${tab.calories}`}
-                className="text-greenPrimary font-medium"
+                className="text-greenPrimary font-medium mt-6"
               >
-                <p>
-                  Здесь будет информация о рационе питания с {tab.calories}{" "}
-                  ккал, состоящем из {tab.countProduct} блюд.
+                <p className="mb-2">
+                  Рацион на {tab.calories} ккал, {tab.countProduct} блюд:
                 </p>
+                <ul className="list-disc ml-4">
+                  {generateProducts(tab.countProduct).map((product, i) => (
+                    <li key={i}>{product}</li>
+                  ))}
+                </ul>
               </TabsContent>
             ))}
           </section>

@@ -44,11 +44,10 @@ export const Footer: FC = ({}) => {
                     </h3>
                     <ul className="flex justify-center md:justify-start md:flex-col gap-4 md:gap-2">
                       {item.links.map((link) => (
-                        <li>
+                        <li key={link.title}>
                           <Link
                             href={link.url}
                             className="hover:text-yellow-hover transition-all hover:translate-x-1 font-normal text-[15px]"
-                            key={link.title}
                           >
                             {link.title}
                           </Link>

@@ -76,11 +76,10 @@ export const Navbar: FC = ({}) => {
           <nav className="flex gap-5 lg:gap-10">
             <ul className="hidden lg:flex items-center gap-4">
               {DATA_LINKS.map((link, i) => (
-                <li>
+                <li key={i}>
                   <ScrollLink
                     activeClass={s.activeLink}
                     className={s.link}
-                    key={i}
                     to={link.href}
                     smooth={true}
                     duration={300}

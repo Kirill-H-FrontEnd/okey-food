@@ -1,6 +1,15 @@
 "use client";
-import { FC, useMemo } from "react";
-import { format } from "date-fns";
+
+import { FC, useEffect, useState } from "react";
+import {
+  addDays,
+  startOfMonth,
+  isBefore,
+  format,
+  isMonday,
+  isSameMonth,
+  set,
+} from "date-fns";
 import { ru } from "date-fns/locale";
 import {
   Select,
@@ -12,23 +21,49 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-type TSelectDate = {};
+type TSelectDate = {
+  onChange?: (value: string) => void;
+};
 
-export const SelectDate: FC = ({}) => {
-  const { deliveryRanges, defaultRangeValue } = useMemo(() => {
-    const today = new Date();
+export const SelectDate: FC<TSelectDate> = ({ onChange }) => {
+  const [deliveryRanges, setDeliveryRanges] = useState<
+    { label: string; value: string; disabled: boolean }[]
+  >([]);
+  const [selectedValue, setSelectedValue] = useState<string>("");
+
+  useEffect(() => {
+    const today = set(new Date(), {
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      milliseconds: 0,
+    });
+
+    const startMonth = startOfMonth(today);
+    let firstMonday = startMonth;
+    while (!isMonday(firstMonday)) {
+      firstMonday = addDays(firstMonday, 1);
+    }
+
     const ranges: { label: string; value: string; disabled: boolean }[] = [];
-
-    today.setHours(0, 0, 0, 0);
+    let current = firstMonday;
 
     for (let i = 0; i < 4; i++) {
-      const rangeStart = new Date(today);
-      rangeStart.setDate(today.getDate() + i * 7);
+      const days: Date[] = [];
+      let temp = current;
 
-      const rangeEnd = new Date(rangeStart);
-      rangeEnd.setDate(rangeEnd.getDate() + 6);
+      while (days.length < 6 && isSameMonth(temp, startMonth)) {
+        if (temp.getDay() !== 0) {
+          days.push(temp);
+        }
+        temp = addDays(temp, 1);
+      }
 
-      const isPast = rangeEnd < today;
+      if (days.length === 0) break;
+
+      const rangeStart = days[0];
+      const rangeEnd = days[days.length - 1];
+      const isPast = isBefore(rangeEnd, today);
 
       ranges.push({
         value: `${format(rangeStart, "yyyy-MM-dd")}_${format(
@@ -42,14 +77,28 @@ export const SelectDate: FC = ({}) => {
         )}`,
         disabled: isPast,
       });
+
+      current = temp;
     }
 
-    const firstAvailable = ranges.find((r) => !r.disabled)?.value || "";
+    setDeliveryRanges(ranges);
 
-    return { deliveryRanges: ranges, defaultRangeValue: firstAvailable };
+    const firstAvailable = ranges.find((r) => !r.disabled);
+    if (firstAvailable) {
+      setSelectedValue(firstAvailable.value);
+
+      onChange?.(firstAvailable.value);
+    }
   }, []);
+
   return (
-    <Select defaultValue={defaultRangeValue}>
+    <Select
+      value={selectedValue}
+      onValueChange={(value) => {
+        setSelectedValue(value);
+        onChange?.(value);
+      }}
+    >
       <SelectTrigger
         aria-label="Выбрать дату"
         className="w-[150px] text-greenPrimary font-semibold border-grey-border cursor-pointer select-none"
@@ -63,10 +112,10 @@ export const SelectDate: FC = ({}) => {
           </SelectLabel>
           {deliveryRanges.map((range) => (
             <SelectItem
-              className="text-greenPrimary "
               key={range.value}
               value={range.value}
               disabled={range.disabled}
+              className="text-greenPrimary"
             >
               {range.label}
             </SelectItem>

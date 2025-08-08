@@ -22,12 +22,9 @@ export const YandexMap: FC = ({}) => {
             </h3>
           </article>
           <DynamicYandexMap zoom={10} />
-          <section className="grid gap-2 md:gap-0 md:grid-cols-3 justify-between mt-10 text-greenPrimary">
+          <section className="grid gap-2 md:grid-cols-[400px] mt-10 text-greenPrimary">
             <p>Время доставки 19:00 - 23:00</p>
-            <p>
-              Если пропустили доставку, курьер привезет оплаченный рацион на
-              следующий день
-            </p>
+
             <p>
               Если необходимо изменить адрес доставки, сообщите нам по телефону
               +375 44 725 66 66 или в социальных сетях до 19:00
