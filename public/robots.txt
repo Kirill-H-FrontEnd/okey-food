@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://okey-food.vercel.app
+
+# Sitemaps
+Sitemap: https://okey-food.vercel.app/sitemap.xml

@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     locale: "ru_RU",
     images: [
       {
-        url: `${SITE_URL}/okeyfood-logo.svg`, // положи файл в public/og-image.jpg
+        url: `${SITE_URL}/okeyfood-logo.svg`,
         width: 1200,
         height: 630,
         alt: "OkeyFood — доставка здорового питания",
