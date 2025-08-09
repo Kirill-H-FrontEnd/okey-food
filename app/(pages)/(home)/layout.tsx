@@ -2,27 +2,55 @@ import { Footer } from "@/components/shared/footer/footer";
 import { Navbar } from "@/components/shared/navbar/navbar";
 import { Metadata } from "next";
 
+const SITE_URL = "https://okey-food.vercel.app";
+
 export const metadata: Metadata = {
   title: "OkeyFood | Доставка здорового питания в Минске",
   description:
-    "Досставка здорового питания на дом и по всему Минску. Заказывайте вкусные и полезные блюда с доставкой от OkeyFood.",
+    "Доставка здорового питания на дом по всему Минску. Заказывайте вкусные и полезные блюда с доставкой от OkeyFood.",
   keywords:
-    "доставка еды, здоровое питание, Минск, OkeyFood, доставка на дом, полезные блюда, еда на заказ, доставка обедов, здоровая еда, ресторанная доставка",
+    "доставка еды, здоровое питание, Минск, OkeyFood, доставка на дом, полезные блюда, еда на заказ, доставка обедов, здоровая еда",
+  metadataBase: new URL(SITE_URL),
+  alternates: {
+    canonical: "/",
+    languages: { "ru-RU": "/" },
+  },
   openGraph: {
-    title: "OkeyFood | Доставка здорового питания в Минске",
-    description:
-      "Досставка здорового питания на дом и по всему Минску. Заказывайте вкусные и полезные блюда с доставкой от OkeyFood.",
-    url: "",
-    images: [
-      {
-        url: "",
-        width: 800,
-        height: 600,
-        alt: "OkeyFood",
-      },
-    ],
     type: "website",
     siteName: "OkeyFood",
+    title: "OkeyFood | Доставка здорового питания в Минске",
+    description:
+      "Доставка здорового питания на дом по всему Минску. Заказывайте вкусные и полезные блюда с доставкой от OkeyFood.",
+    url: SITE_URL,
+    locale: "ru_RU",
+    images: [
+      {
+        url: `${SITE_URL}/okeyfood-logo.svg`, // положи файл в public/og-image.jpg
+        width: 1200,
+        height: 630,
+        alt: "OkeyFood — доставка здорового питания",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "OkeyFood | Доставка здорового питания в Минске",
+    description:
+      "Доставка здорового питания на дом по всему Минску. Заказывайте вкусные и полезные блюда с доставкой от OkeyFood.",
+    images: [`${SITE_URL}/okeyfood-logo.svg`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  icons: {
+    icon: "/okeyfood-logo.svg",
+    shortcut: "/okeyfood-logo.svg",
+    apple: "/okeyfood-logo.svg",
+  },
+  verification: {
+    google: "",
+    yandex: "",
   },
 };
 
