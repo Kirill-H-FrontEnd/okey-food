@@ -4,6 +4,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 html {
   box-sizing: border-box;
+
   *,
   *::before,
   *::after {

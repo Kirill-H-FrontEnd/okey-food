@@ -1,13 +1,12 @@
 "use client";
-
+import { ProductCard, TProduct } from "@/components/ui/product-card";
 import { FC, useMemo, useState } from "react";
 import { Container } from "@/components/ui/container";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link as ScrollLink } from "react-scroll";
 import { SelectDate } from "@/components/ui/select-date";
-import { addDays, format, parseISO } from "date-fns";
-import { ru } from "date-fns/locale";
 import { SelectDaysButtons } from "./_components/SelectDaysButtons"; // путь по своему проекту
+import { AnimatePresence, motion } from "framer-motion";
 
 type TProducts = {};
 
@@ -21,21 +20,85 @@ const DATA_CALORIES_TABS = [
   { calories: "3200", countProduct: 6 },
 ];
 
-const generateProducts = (count: number) =>
-  Array.from({ length: count }, (_, i) => `Блюдо ${i + 1}`);
+const MEALS = [
+  "Завтрак",
+  "Второй завтрак",
+  "Обед",
+  "Полдник",
+  "Ужин",
+  "Перекус",
+] as const;
+type MealRu = (typeof MEALS)[number];
 
+const ADJ = [
+  "Сочный",
+  "Диетический",
+  "Пряный",
+  "Нежный",
+  "Хрустящий",
+  "Пикантный",
+  "Сливочный",
+  "Домашний",
+];
+const PROTEIN = [
+  "Курица",
+  "Лосось",
+  "Индейка",
+  "Говядина",
+  "Тофу",
+  "Фалафель",
+  "Треска",
+  "Тунец",
+  "Овощи",
+];
+const STYLE = [
+  "гриль",
+  "пар",
+  "рагу",
+  "боул",
+  "паста",
+  "салат",
+  "хумус",
+  "стир-фрай",
+  "томлёное",
+];
+
+const rand = (n: number) => Math.floor(Math.random() * n);
+const getDishName3 = () =>
+  `${ADJ[rand(ADJ.length)]} ${PROTEIN[rand(PROTEIN.length)]} ${
+    STYLE[rand(STYLE.length)]
+  }`;
+
+const genProductsForDiet = (count: number, dietCalories: string): TProduct[] =>
+  Array.from({ length: count }, (_, i) => {
+    const weight = 300;
+    const calories = Math.round(Number(dietCalories) / count) + i * 5;
+    const proteins = 25 + (i % 3) * 3;
+    const fats = 10 + (i % 2) * 2;
+    const carbs = 30 + (i % 4) * 5;
+    const meal: MealRu = MEALS[i % MEALS.length];
+
+    return {
+      id: `${dietCalories}-${i + 1}`,
+      name: getDishName3(),
+      image: `/product.png`,
+      calories,
+      weight,
+      proteins,
+      fats,
+      carbs,
+      description: "",
+      dietCalories,
+      meal,
+    };
+  });
 export const Products: FC<TProducts> = () => {
   const [selectedRange, setSelectedRange] = useState<string | null>(null);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
 
   const handleRangeChange = (value: string) => {
     setSelectedRange(value);
-    const [start] = value.split("_");
-    const monday = parseISO(start);
-    const days = Array.from({ length: 6 }).map((_, i) =>
-      format(addDays(monday, i), "yyyy-MM-dd")
-    );
-    setSelectedDays(days); // по умолчанию все выбраны
+    setSelectedDays([]);
   };
 
   const handleToggleDay = (day: string) => {
@@ -43,6 +106,14 @@ export const Products: FC<TProducts> = () => {
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
     );
   };
+
+  const productsByDiet = useMemo(() => {
+    const map: Record<string, TProduct[]> = {};
+    for (const t of DATA_CALORIES_TABS) {
+      map[t.calories] = genProductsForDiet(t.countProduct, t.calories);
+    }
+    return map;
+  }, []);
 
   return (
     <section id="products" className="py-14 lg:py-20 bg-whitePrimary">
@@ -72,7 +143,6 @@ export const Products: FC<TProducts> = () => {
               Рассчитать калорийность
             </ScrollLink>
           </div>
-
           <TabsList>
             {DATA_CALORIES_TABS.map((tab) => (
               <TabsTrigger
@@ -91,7 +161,6 @@ export const Products: FC<TProducts> = () => {
               </TabsTrigger>
             ))}
           </TabsList>
-
           <section>
             <h5 className="text-[16px] lg:text-[20px] font-bold text-greenPrimary">
               Меню на неделю
@@ -108,22 +177,43 @@ export const Products: FC<TProducts> = () => {
               />
             )}
 
-            {DATA_CALORIES_TABS.map((tab) => (
-              <TabsContent
-                key={tab.calories}
-                value={`calories-${tab.calories}`}
-                className="text-greenPrimary font-medium mt-6"
-              >
-                <p className="mb-2">
-                  Рацион на {tab.calories} ккал, {tab.countProduct} блюд:
-                </p>
-                <ul className="list-disc ml-4">
-                  {generateProducts(tab.countProduct).map((product, i) => (
-                    <li key={i}>{product}</li>
-                  ))}
-                </ul>
-              </TabsContent>
-            ))}
+            {DATA_CALORIES_TABS.map((tab) => {
+              const tabValue = `calories-${tab.calories}`;
+              const products = productsByDiet[tab.calories];
+              return (
+                <TabsContent
+                  key={tab.calories}
+                  value={tabValue}
+                  className="text-greenPrimary font-medium mt-6"
+                >
+                  <div
+                    className="
+    grid grid-cols-1 gap-4 items-stretch justify-start
+    sm:[grid-template-columns:repeat(auto-fill,280px)]
+  "
+                  >
+                    {products.map((data, idx) => (
+                      <motion.div
+                        key={data.id}
+                        initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 160,
+                          damping: 32,
+                          mass: 0.7,
+                          delay: idx * 0.08,
+                        }}
+                        className="w-full h-full"
+                      >
+                        <ProductCard product={data} />
+                      </motion.div>
+                    ))}
+                  </div>
+                </TabsContent>
+              );
+            })}
           </section>
         </Tabs>
       </Container>

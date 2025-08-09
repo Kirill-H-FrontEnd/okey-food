@@ -46,8 +46,8 @@ export const SelectDaysButtons: FC<TSelectDaysButtons> = ({
             className={clsx(
               "w-[120px] capitalize",
               isSelected
-                ? "bg-white text-greenPrimary border-[1px] border-grey-border hover:bg-whitePrimary"
-                : "text-whitePrimary border-greenPrimary",
+                ? "bg-greenPrimary text-whitePrimary border-greenPrimary"
+                : "bg-white text-greenPrimary border-[1px] border-grey-border hover:bg-whitePrimary",
               isDisabled && "opacity-50 cursor-not-allowed hover:bg-white"
             )}
           >
