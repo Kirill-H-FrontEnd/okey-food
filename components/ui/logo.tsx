@@ -1,29 +1,40 @@
+"use client";
 import { FC } from "react";
-import s from "./styles/logo.module.scss";
+import Link from "next/link";
 import Image from "next/image";
-import { Link as ScrollLink } from "react-scroll";
+
 type TLogo = { url?: string };
 
 export const Logo: FC<TLogo> = ({ url = "/images/OkeyFoodLogo.svg" }) => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   return (
-    <ScrollLink
+    <Link
+      href="/"
+      aria-label="На главную"
+      onClick={handleClick}
       className="cursor-pointer block w-[40px] h-[40px] md:w-[50px] md:h-[50px] overflow-hidden"
-      to="hero"
-      smooth={true}
-      duration={300}
     >
-      <img
+      <Image
         src={url}
-        alt="Logo"
+        alt="OkeyFood логотип"
         width={50}
         height={50}
+        priority
+        sizes="(max-width: 768px) 40px, 50px"
         style={{
-          display: "block",
           objectFit: "contain",
           width: "100%",
           height: "100%",
+          display: "block",
         }}
       />
-    </ScrollLink>
+    </Link>
   );
 };
