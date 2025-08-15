@@ -1,5 +1,7 @@
 "use client";
+// > React
 import { FC } from "react";
+// > Components
 import { Button } from "@/components/ui/button";
 import { BsArrowRight } from "react-icons/bs";
 import { Link as ScrollLink } from "react-scroll";

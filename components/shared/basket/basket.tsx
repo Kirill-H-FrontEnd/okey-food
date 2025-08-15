@@ -40,7 +40,7 @@ export const Basket: FC = ({}) => {
 
       <SheetContent
         showCloseButton={false}
-        className="shadow-none md:border-l-[2px] border-grey-border"
+        className="shadow-none border-none md:border-l-[2px] border-grey-border"
       >
         <SheetHeader className="relative mt-[80px] md:mt-0">
           <SheetTitle className="text-[24px]  text-greenPrimary font-bold">

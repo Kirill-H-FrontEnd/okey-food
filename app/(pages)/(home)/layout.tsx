@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     locale: "ru_RU",
     images: [
       {
-        url: `${SITE_URL}/okeyfood-logo.svg`,
+        url: `${SITE_URL}/okeyfood-logo-png.png`,
         width: 1200,
         height: 630,
         alt: "OkeyFood — доставка здорового питания",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     title: "OkeyFood | Доставка здорового питания в Минске",
     description:
       "Доставка здорового питания на дом по всему Минску. Заказывайте вкусные и полезные блюда с доставкой от OkeyFood.",
-    images: [`${SITE_URL}/okeyfood-logo.svg`],
+    images: [`${SITE_URL}/okeyfood-logo-png.png`],
   },
   robots: {
     index: true,

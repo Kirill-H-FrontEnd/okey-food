@@ -5,7 +5,7 @@ import Image from "next/image";
 
 type TLogo = { url?: string };
 
-export const Logo: FC<TLogo> = ({ url = "/images/OkeyFoodLogo.svg" }) => {
+export const Logo: FC<TLogo> = ({ url = "/okeyfood-logo.svg" }) => {
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     window.scrollTo({

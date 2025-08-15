@@ -1,12 +1,18 @@
 "use client";
-import { ProductCard, TProduct } from "@/components/ui/product-card";
-import { FC, useMemo, useState } from "react";
+// > React
+import React, { FC } from "react";
+// > Components
+import { ProductCard } from "@/components/ui/product-card";
 import { Container } from "@/components/ui/container";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link as ScrollLink } from "react-scroll";
 import { SelectDate } from "@/components/ui/select-date";
-import { SelectDaysButtons } from "./_components/SelectDaysButtons"; // путь по своему проекту
-import { AnimatePresence, motion } from "framer-motion";
+import { SelectDaysButtons } from "./_components/SelectDaysButtons";
+import { motion, type Variants, type Transition } from "framer-motion";
+import { OrderSummary } from "./_components/order-summary";
+// > Types
+import { TProduct } from "@/types/product-card-type";
+import { CaloriesTabsList } from "./_components/calories-tabs-list";
 
 type TProducts = {};
 
@@ -19,6 +25,16 @@ const DATA_CALORIES_TABS = [
   { calories: "2400", countProduct: 6 },
   { calories: "3200", countProduct: 6 },
 ];
+
+const PRICE_BY_CAL: Record<string, number> = {
+  "1000": 250,
+  "1200": 300,
+  "1400": 350,
+  "1700": 400,
+  "2000": 450,
+  "2400": 500,
+  "3200": 600,
+};
 
 const MEALS = [
   "Завтрак",
@@ -92,28 +108,124 @@ const genProductsForDiet = (count: number, dietCalories: string): TProduct[] =>
       meal,
     };
   });
-export const Products: FC<TProducts> = () => {
-  const [selectedRange, setSelectedRange] = useState<string | null>(null);
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
 
-  const handleRangeChange = (value: string) => {
+function parseRange(range: string) {
+  const [startStr, endStr] = range.split("_");
+  const start = new Date(startStr);
+  const end = new Date(endStr);
+  start.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
+  return { start, end };
+}
+function formatISODate(d: Date) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+function isSunday(d: Date) {
+  return d.getDay() === 0;
+}
+function isPast(d: Date) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return d < today;
+}
+function listSelectableDays(range: string): string[] {
+  const { start, end } = parseRange(range);
+  const days: string[] = [];
+  for (let t = new Date(start); t <= end; t.setDate(t.getDate() + 1)) {
+    const cur = new Date(t);
+    if (!isSunday(cur) && !isPast(cur)) days.push(formatISODate(cur));
+  }
+  return days;
+}
+
+export const Products: FC<TProducts> = () => {
+  const [selectedRange, setSelectedRange] = React.useState<string | null>(null);
+  const [selectedDays, setSelectedDays] = React.useState<string[]>([]);
+  const [activeCal, setActiveCal] = React.useState<string>(
+    DATA_CALORIES_TABS[0].calories
+  );
+
+  const dishesByCal = React.useMemo(
+    () =>
+      Object.fromEntries(
+        DATA_CALORIES_TABS.map((t) => [t.calories, t.countProduct] as const)
+      ),
+    []
+  );
+
+  const handleRangeChange = React.useCallback((value: string) => {
     setSelectedRange(value);
     setSelectedDays([]);
-  };
+  }, []);
 
-  const handleToggleDay = (day: string) => {
+  const handleToggleDay = React.useCallback((day: string) => {
     setSelectedDays((prev) =>
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
     );
-  };
+  }, []);
 
-  const productsByDiet = useMemo(() => {
+  // Counter
+  const handleIncDays = React.useCallback(() => {
+    if (!selectedRange) return;
+    const selectable = listSelectableDays(selectedRange).sort();
+    if (selectedDays.length >= selectable.length) return;
+    const next = selectable.find((d) => !selectedDays.includes(d));
+    if (next) setSelectedDays((prev) => [...prev, next].sort());
+  }, [selectedRange, selectedDays]);
+
+  const handleDecDays = React.useCallback(() => {
+    if (selectedDays.length === 0) return;
+    const sorted = [...selectedDays].sort();
+    sorted.pop();
+    setSelectedDays(sorted);
+  }, [selectedDays]);
+
+  const productsByDiet = React.useMemo(() => {
     const map: Record<string, TProduct[]> = {};
     for (const t of DATA_CALORIES_TABS) {
       map[t.calories] = genProductsForDiet(t.countProduct, t.calories);
     }
     return map;
   }, []);
+
+  const containerV: Variants = {
+    hidden: {},
+    show: {
+      transition: {
+        staggerChildren: 0.06,
+        delayChildren: 0.05,
+      },
+    },
+  };
+
+  const itemTransition: Transition = {
+    type: "tween",
+    duration: 0.38,
+    ease: [0.22, 1, 0.36, 1],
+  };
+
+  const itemV: Variants = {
+    hidden: { opacity: 0, y: 14 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: itemTransition,
+    },
+  };
+  const pricePerDay = PRICE_BY_CAL[activeCal] ?? 0;
+  const totalPrice = pricePerDay * selectedDays.length;
+  const dishesCount = dishesByCal[activeCal] ?? 0;
+
+  const handleAdd = React.useCallback(() => {}, [
+    activeCal,
+    selectedDays,
+    pricePerDay,
+    totalPrice,
+    dishesCount,
+  ]);
 
   return (
     <section id="products" className="py-14 lg:py-20 bg-whitePrimary">
@@ -125,6 +237,10 @@ export const Products: FC<TProducts> = () => {
         </article>
 
         <Tabs
+          onValueChange={(v) => {
+            const cal = v.replace("calories-", "");
+            setActiveCal(cal);
+          }}
           defaultValue={`calories-${DATA_CALORIES_TABS[0].calories}`}
           className="grid gap-4 mt-6"
         >
@@ -143,24 +259,7 @@ export const Products: FC<TProducts> = () => {
               Рассчитать калорийность
             </ScrollLink>
           </div>
-          <TabsList>
-            {DATA_CALORIES_TABS.map((tab) => (
-              <TabsTrigger
-                key={tab.calories}
-                value={`calories-${tab.calories}`}
-                className="text-greenPrimary font-medium bg-white py-4 border-[1px] border-grey-border cursor-pointer data-[state=active]:bg-greenPrimary data-[state=active]:border-greenPrimary data-[state=active]:text-whitePrimary group shadow-none"
-              >
-                <div>
-                  <p className="text-greenPrimary group-data-[state=active]:text-whitePrimary font-bold">
-                    {tab.calories}
-                  </p>
-                  <p className="text-greySecondary group-data-[state=active]:text-yellowPrimary">
-                    {tab.countProduct} блюд
-                  </p>
-                </div>
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          <CaloriesTabsList tabs={DATA_CALORIES_TABS} />
           <section>
             <h5 className="text-[16px] lg:text-[20px] font-bold text-greenPrimary">
               Меню на неделю
@@ -186,35 +285,38 @@ export const Products: FC<TProducts> = () => {
                   value={tabValue}
                   className="text-greenPrimary font-medium mt-6"
                 >
-                  <div
-                    className="
-    grid grid-cols-1 gap-4 items-stretch justify-start
-    sm:[grid-template-columns:repeat(auto-fill,280px)]
-  "
+                  <motion.div
+                    variants={containerV}
+                    initial="hidden"
+                    animate="show"
+                    className="grid grid-cols-2 gap-3 items-stretch justify-start sm:[grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]"
                   >
-                    {products.map((data, idx) => (
+                    {products.map((data) => (
                       <motion.div
                         key={data.id}
-                        initial={{ opacity: 0, y: 12, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -8, scale: 0.98 }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 160,
-                          damping: 32,
-                          mass: 0.7,
-                          delay: idx * 0.08,
-                        }}
+                        variants={itemV}
+                        style={{ willChange: "transform, opacity" }}
                         className="w-full h-full"
                       >
                         <ProductCard product={data} />
                       </motion.div>
                     ))}
-                  </div>
+                  </motion.div>
                 </TabsContent>
               );
             })}
           </section>
+          <OrderSummary
+            activeCal={activeCal}
+            dishesCount={dishesCount}
+            hasRange={!!selectedRange}
+            daysCount={selectedDays.length}
+            pricePerDay={pricePerDay}
+            totalPrice={totalPrice}
+            onInc={handleIncDays}
+            onDec={handleDecDays}
+            onAdd={handleAdd}
+          />
         </Tabs>
       </Container>
     </section>

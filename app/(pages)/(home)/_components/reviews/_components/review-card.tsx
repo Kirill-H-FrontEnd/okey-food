@@ -1,5 +1,7 @@
+"use client";
 import { FC } from "react";
 import Image from "next/image";
+// > Icons
 import { FaStar } from "react-icons/fa6";
 
 type TReviewCard = {

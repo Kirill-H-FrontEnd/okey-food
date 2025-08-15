@@ -1,5 +1,7 @@
+"use client";
+// > React
 import { FC } from "react";
-
+// > Components
 import { Container } from "@/components/ui/container";
 import CalorieCalculator from "@/components/ui/calculator";
 

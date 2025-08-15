@@ -4,7 +4,6 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 type Gender = "male" | "female";
 type Goal = "loss" | "tone" | "gain";
@@ -39,6 +38,36 @@ const getCalorieLevel = (cal: number) => {
   return "высокая";
 };
 
+const ACTIVITY_FACTORS: Record<Activity, number> = {
+  low: 1.375,
+  medium: 1.55,
+  high: 1.725,
+};
+
+const GOAL_PCTS: Record<Goal, number> = {
+  loss: -0.2,
+  tone: -0.1,
+  gain: 0.15,
+};
+
+function calcBMR(
+  gender: Gender,
+  weightKg: number,
+  heightCm: number,
+  ageY: number
+) {
+  return gender === "male"
+    ? 10 * weightKg + 6.25 * heightCm - 5 * ageY + 5
+    : 10 * weightKg + 6.25 * heightCm - 5 * ageY - 161;
+}
+
+function isValidNum(n: unknown, min: number, max: number) {
+  return typeof n === "number" && Number.isFinite(n) && n >= min && n <= max;
+}
+function clamp(n: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, n));
+}
+
 export default function CalorieCalculator() {
   const [gender, setGender] = useState<Gender | "">("");
   const [goal, setGoal] = useState<Goal | "">("");
@@ -54,9 +83,9 @@ export default function CalorieCalculator() {
         gender &&
           goal &&
           activityValue !== null &&
-          weight !== "" &&
-          height !== "" &&
-          age !== ""
+          isValidNum(weight, 30, 250) &&
+          isValidNum(height, 120, 230) &&
+          isValidNum(age, 14, 100)
       ),
     [gender, goal, activityValue, weight, height, age]
   );
@@ -64,33 +93,23 @@ export default function CalorieCalculator() {
   const recommended = useMemo<Plan | null>(() => {
     if (!validParams) return null;
 
-    const w = Number(weight),
-      h = Number(height),
-      a = Number(age);
+    const w = Number(weight);
+    const h = Number(height);
+    const a = Number(age);
 
-    const bmrBase =
-      gender === "male"
-        ? 88.36 + 13.4 * w + 4.8 * h - 5.7 * a
-        : 447.6 + 9.2 * w + 3.1 * h - 4.3 * a;
-
-    const activityFactorMap: Record<Activity, number> = {
-      low: 1.2,
-      medium: 1.55,
-      high: 1.9,
-    };
-    const goalAdjustMap: Record<Goal, number> = {
-      loss: -500,
-      tone: 0,
-      gain: 500,
-    };
-
-    const af = activityFactorMap[activity as Activity];
-    const ga = goalAdjustMap[goal as Goal];
-    const raw = bmrBase * af + ga;
+    const bmr = calcBMR(gender as Gender, w, h, a);
+    const tdee = bmr * ACTIVITY_FACTORS[activity as Activity];
+    const target = clamp(
+      Math.round(tdee * (1 + GOAL_PCTS[goal as Goal])),
+      1000,
+      4000
+    );
 
     return PLANS.reduce(
       (closest, plan) =>
-        Math.abs(plan.cal - raw) < Math.abs(closest.cal - raw) ? plan : closest,
+        Math.abs(plan.cal - target) < Math.abs(closest.cal - target)
+          ? plan
+          : closest,
       PLANS[0]
     );
   }, [gender, goal, activity, weight, height, age, validParams]);
@@ -121,39 +140,42 @@ export default function CalorieCalculator() {
       render: () => (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-whitePrimary">
           <Input
+            enterKeyHint="next"
             type="number"
             inputMode="numeric"
             pattern="[0-9]*"
             placeholder="Вес, кг"
             min={30}
-            max={200}
-            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary/5 transition-colors"
+            max={250}
+            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary focus:text-greenPrimary transition-colors"
             value={weight}
             onChange={(e) =>
               setWeight(e.target.value === "" ? "" : e.target.valueAsNumber)
             }
           />
           <Input
+            enterKeyHint="next"
             type="number"
             inputMode="numeric"
             pattern="[0-9]*"
             placeholder="Рост, см"
-            min={100}
+            min={120}
             max={230}
-            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary/5 transition-colors"
+            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary focus:text-greenPrimary transition-colors"
             value={height}
             onChange={(e) =>
               setHeight(e.target.value === "" ? "" : e.target.valueAsNumber)
             }
           />
           <Input
+            enterKeyHint="done"
             type="number"
             inputMode="numeric"
             pattern="[0-9]*"
             placeholder="Возраст"
-            min={10}
+            min={14}
             max={100}
-            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary/5 transition-colors"
+            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary focus:text-greenPrimary transition-colors"
             value={age}
             onChange={(e) =>
               setAge(e.target.value === "" ? "" : e.target.valueAsNumber)
@@ -238,14 +260,17 @@ export default function CalorieCalculator() {
             ))}
           </div>
         </div>
+
         <section className="grid grid-rows-1 h-[300px] lg:h-auto gap-4">
           <div className="flex flex-col items-center justify-center rounded-[8px] bg-whitePrimary py-8">
             <h3 className="text-greenPrimary text-[18px] font-bold">
               Рекомендуемый калораж:
             </h3>
+
             {!recommended && (
               <p className="text-gray-500">Заполните все поля</p>
             )}
+
             {recommended && (
               <>
                 <p className="text-[50px] my-3 text-greenPrimary font-bold">
@@ -259,6 +284,7 @@ export default function CalorieCalculator() {
               </>
             )}
           </div>
+
           <Button
             className="bg-yellowPrimary text-greenPrimary font-bold py-6"
             variant="default"

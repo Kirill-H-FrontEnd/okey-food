@@ -1,12 +1,9 @@
-// Reviews.tsx
-
 "use client";
+// > React
+import { FC } from "react";
+// > Components
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
-
-import { FC } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-// import { Autoplay } from "swiper/modules";
 import { Container } from "@/components/ui/container";
 import { ReviewCard } from "./_components/review-card";
 import Autoplay from "embla-carousel-autoplay";

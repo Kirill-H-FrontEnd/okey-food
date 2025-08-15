@@ -1,7 +1,8 @@
-// components/FAQ.tsx
 "use client";
-import { Container } from "@/components/ui/container";
+// > React
 import { FC } from "react";
+// > Components
+import { Container } from "@/components/ui/container";
 import {
   Accordion,
   AccordionContent,

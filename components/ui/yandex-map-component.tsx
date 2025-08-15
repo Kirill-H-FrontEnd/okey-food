@@ -98,9 +98,7 @@ export const YandexMapComponent: FC<{ zoom?: number }> = ({ zoom = 10 }) => {
           overflow-hidden
         "
       >
-        {/* Кнопки вверху справа */}
         <div className="absolute z-10 top-3 right-3 flex flex-row gap-2">
-          {/* Тип карты */}
           <button className={BTN} onClick={handleType} aria-label="Map type">
             {mapType === "yandex#map" ? (
               <MapIcon size={22} />

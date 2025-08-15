@@ -1,5 +1,7 @@
+"use client";
+// > React
 import { FC } from "react";
-import s from "./styles/yandex-map.module.scss";
+// > Components
 import { Container } from "@/components/ui/container";
 import dynamic from "next/dynamic";
 const DynamicYandexMap = dynamic(
