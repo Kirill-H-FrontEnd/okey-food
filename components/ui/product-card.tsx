@@ -1,10 +1,7 @@
 "use client";
-// > React
 import { FC } from "react";
 import Image from "next/image";
-// > Types
 import { TProduct } from "@/types/product-card-type";
-// > Components
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 type TProductCardProps = {
@@ -12,33 +9,45 @@ type TProductCardProps = {
 };
 
 export const ProductCard: FC<TProductCardProps> = ({ product }) => {
+  // SVG-плейсхолдер под 14:9 (карточка)
+  const BLUR_14x9 =
+    "data:image/svg+xml;base64," +
+    btoa(
+      `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 9'>
+         <rect width='14' height='9' fill='#f3f4f6'/>
+       </svg>`
+    );
+
+  // SVG-плейсхолдер под 3:2 (диалог)
   const BLUR_3x2 =
     "data:image/svg+xml;base64," +
     btoa(
       `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 2'>
-       <rect width='3' height='2' fill='#f3f4f6'/>
-     </svg>`
+         <rect width='3' height='2' fill='#f3f4f6'/>
+       </svg>`
     );
+
   return (
     <Dialog>
       <DialogTrigger asChild>
+        {/* карточка как grid: картинка / текст / нижняя строка */}
         <div className="bg-greyPrimary rounded-[8px] shadow-md cursor-pointer hover:shadow-lg transition-shadow duration-200 p-4 w-full h-full grid grid-rows-[auto_1fr_auto] min-h-[300px] sm:min-h-[340px]">
-          {/* row 1: картинка */}
-          <div className="w-full flex justify-center shrink-0">
+          <div className="relative w-full max-w-[300px] aspect-[3/2] shrink-0 rounded-md overflow-hidden">
             <Image
               src={product.image}
               alt={product.name}
-              width={280}
-              height={180}
-              sizes="(max-width: 640px) 100vw, 280px"
-              className="w-full sm:w-[280px] h-auto rounded-md object-cover mix-blend-multiply"
-              quality={85}
-              loading="lazy"
+              fill
+              sizes="(max-width: 639px) 50vw, 280px"
+              className="object-contain "
+              placeholder="empty"
+              blurDataURL={BLUR_14x9}
               priority={false}
+              loading="lazy"
+              decoding="async"
             />
           </div>
 
-          {/* row 2: текстовая часть */}
+          {/* row 2: текст */}
           <div className="mt-4">
             <div className="mb-4 min-h-[64px]">
               <h4 className="text-[18px] text-greenPrimary font-bold">
@@ -50,7 +59,7 @@ export const ProductCard: FC<TProductCardProps> = ({ product }) => {
             </div>
           </div>
 
-          {/* row 3: всегда внизу карточки */}
+          {/* row 3: всегда внизу (ккал / вес) */}
           <div className="text-sm text-greenPrimary">
             <div className="flex gap-2 flex-wrap items-center">
               <span>{product.calories} ккал</span>/
@@ -59,6 +68,8 @@ export const ProductCard: FC<TProductCardProps> = ({ product }) => {
           </div>
         </div>
       </DialogTrigger>
+
+      {/* модалка — как ты уже сделал, оставляю с object-contain */}
       <DialogContent className="w-[calc(100vw-32px)] sm:max-w-[640px] md:max-w-[820px]">
         <div className="flex flex-col md:flex-row gap-10 items-center text-greenPrimary sm:py-6 sm:px-6">
           <div className="relative w-full max-w-[300px] aspect-[3/2] shrink-0 rounded-md bg-white overflow-hidden p-1">
