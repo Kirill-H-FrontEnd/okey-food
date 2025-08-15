@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React from "react";
+import { HyperText } from "@/components/magicui/hyper-text";
 
 type Gender = "male" | "female";
 type Goal = "loss" | "tone" | "gain";
@@ -113,6 +114,16 @@ export default function CalorieCalculator() {
       PLANS[0]
     );
   }, [gender, goal, activity, weight, height, age, validParams]);
+
+  // правильные склонения «блюдо/блюда/блюд»
+  function dishesWord(n: number) {
+    const mod10 = n % 10;
+    const mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return "блюдо";
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14))
+      return "блюда";
+    return "блюд";
+  }
 
   const columns = [
     {
@@ -273,12 +284,24 @@ export default function CalorieCalculator() {
 
             {recommended && (
               <>
-                <p className="text-[50px] my-3 text-greenPrimary font-bold">
-                  {recommended.cal}
-                </p>
+                {/* Анимированное число калорий */}
+                <HyperText
+                  key={recommended.cal}
+                  duration={600}
+                  startOnView={false}
+                  animateOnHover={false}
+                  className="text-[50px] my-3 text-greenPrimary font-bold leading-none tabular-nums"
+                >
+                  {String(recommended.cal)}
+                </HyperText>
+
                 <div className="text-center text-greenPrimary font-semibold grid gap-1">
                   <p>• {getCalorieLevel(recommended.cal)} калорийность</p>
-                  <p>• {recommended.dishes}-ти разовое питание</p>
+                  {/* корректное склонение слова «блюдо» */}
+                  <p>
+                    • {recommended.dishes} {dishesWord(recommended.dishes)} в
+                    день
+                  </p>
                   <p>• от {recommended.price} BYN / день</p>
                 </div>
               </>

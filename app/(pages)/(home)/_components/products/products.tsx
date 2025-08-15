@@ -4,15 +4,15 @@ import React, { FC } from "react";
 // > Components
 import { ProductCard } from "@/components/ui/product-card";
 import { Container } from "@/components/ui/container";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Link as ScrollLink } from "react-scroll";
 import { SelectDate } from "@/components/ui/select-date";
 import { SelectDaysButtons } from "./_components/SelectDaysButtons";
 import { motion, type Variants, type Transition } from "framer-motion";
 import { OrderSummary } from "./_components/order-summary";
+import { CaloriesTabsList } from "./_components/calories-tabs-list";
 // > Types
 import { TProduct } from "@/types/product-card-type";
-import { CaloriesTabsList } from "./_components/calories-tabs-list";
 
 type TProducts = {};
 
@@ -55,7 +55,7 @@ const ADJ = [
   "Пикантный",
   "Сливочный",
   "Домашний",
-];
+] as const;
 const PROTEIN = [
   "Курица",
   "Лосось",
@@ -66,7 +66,7 @@ const PROTEIN = [
   "Треска",
   "Тунец",
   "Овощи",
-];
+] as const;
 const STYLE = [
   "гриль",
   "пар",
@@ -77,13 +77,30 @@ const STYLE = [
   "хумус",
   "стир-фрай",
   "томлёное",
-];
+] as const;
 
-const rand = (n: number) => Math.floor(Math.random() * n);
-const getDishName3 = () =>
-  `${ADJ[rand(ADJ.length)]} ${PROTEIN[rand(PROTEIN.length)]} ${
-    STYLE[rand(STYLE.length)]
-  }`;
+/** ====== ✅ Детерминированный генератор вместо Math.random ====== */
+function hash32(str: string) {
+  // простая FNV-1a
+  let h = 0x811c9dc5 >>> 0;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return h >>> 0;
+}
+function pickFrom<T>(arr: readonly T[], seed: string) {
+  const h = hash32(seed);
+  const idx = h % arr.length;
+  return arr[idx];
+}
+function getDishNameStable(seed: string) {
+  const a = pickFrom(ADJ, seed + "-a");
+  const p = pickFrom(PROTEIN, seed + "-p");
+  const s = pickFrom(STYLE, seed + "-s");
+  return `${a} ${p} ${s}`;
+}
+/** =============================================================== */
 
 const genProductsForDiet = (count: number, dietCalories: string): TProduct[] =>
   Array.from({ length: count }, (_, i) => {
@@ -94,9 +111,12 @@ const genProductsForDiet = (count: number, dietCalories: string): TProduct[] =>
     const carbs = 30 + (i % 4) * 5;
     const meal: MealRu = MEALS[i % MEALS.length];
 
+    const id = `${dietCalories}-${i + 1}`;
+    const name = getDishNameStable(id); // 👈 детерминированное имя
+
     return {
-      id: `${dietCalories}-${i + 1}`,
-      name: getDishName3(),
+      id,
+      name,
       image: `/product.png`,
       calories,
       weight,
@@ -109,6 +129,7 @@ const genProductsForDiet = (count: number, dietCalories: string): TProduct[] =>
     };
   });
 
+// ====== date utils (как было) ======
 function parseRange(range: string) {
   const [startStr, endStr] = range.split("_");
   const start = new Date(startStr);
@@ -141,6 +162,7 @@ function listSelectableDays(range: string): string[] {
   return days;
 }
 
+// ================== MAIN ==================
 export const Products: FC<TProducts> = () => {
   const [selectedRange, setSelectedRange] = React.useState<string | null>(null);
   const [selectedDays, setSelectedDays] = React.useState<string[]>([]);
@@ -219,13 +241,10 @@ export const Products: FC<TProducts> = () => {
   const totalPrice = pricePerDay * selectedDays.length;
   const dishesCount = dishesByCal[activeCal] ?? 0;
 
-  const handleAdd = React.useCallback(() => {}, [
-    activeCal,
-    selectedDays,
-    pricePerDay,
-    totalPrice,
-    dishesCount,
-  ]);
+  const handleAdd = React.useCallback(() => {
+    // add to cart payload example:
+    // { calories: activeCal, days: selectedDays, pricePerDay, totalPrice, dishesCount }
+  }, [activeCal, selectedDays, pricePerDay, totalPrice, dishesCount]);
 
   return (
     <section id="products" className="py-14 lg:py-20 bg-whitePrimary">
@@ -259,7 +278,9 @@ export const Products: FC<TProducts> = () => {
               Рассчитать калорийность
             </ScrollLink>
           </div>
+
           <CaloriesTabsList tabs={DATA_CALORIES_TABS} />
+
           <section>
             <h5 className="text-[16px] lg:text-[20px] font-bold text-greenPrimary">
               Меню на неделю
@@ -306,6 +327,7 @@ export const Products: FC<TProducts> = () => {
               );
             })}
           </section>
+
           <OrderSummary
             activeCal={activeCal}
             dishesCount={dishesCount}

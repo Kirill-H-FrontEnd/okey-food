@@ -30,7 +30,6 @@ export const ProductCard: FC<TProductCardProps> = ({ product }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        {/* карточка как grid: картинка / текст / нижняя строка */}
         <div className="bg-greyPrimary rounded-[8px] shadow-md cursor-pointer hover:shadow-lg transition-shadow duration-200 p-4 w-full h-full grid grid-rows-[auto_1fr_auto] min-h-[300px] sm:min-h-[340px]">
           <div className="relative w-full max-w-[300px] aspect-[3/2] shrink-0 rounded-md overflow-hidden">
             <Image
