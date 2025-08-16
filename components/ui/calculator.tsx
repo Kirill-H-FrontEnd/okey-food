@@ -272,7 +272,7 @@ export default function CalorieCalculator() {
           </div>
         </div>
 
-        <section className="grid grid-rows-1 h-[300px] lg:h-auto gap-4">
+        <section className="grid grid-rows-1 min-h-[260px] lg:min-h-0 gap-4">
           <div className="flex flex-col items-center justify-center rounded-[8px] bg-whitePrimary py-8">
             <h3 className="text-greenPrimary text-[18px] font-bold">
               Рекомендуемый калораж:
@@ -284,10 +284,9 @@ export default function CalorieCalculator() {
 
             {recommended && (
               <>
-                {/* Анимированное число калорий */}
                 <HyperText
                   key={recommended.cal}
-                  duration={600}
+                  duration={400}
                   startOnView={false}
                   animateOnHover={false}
                   className="text-[50px] my-3 text-greenPrimary font-bold leading-none tabular-nums"
@@ -297,7 +296,7 @@ export default function CalorieCalculator() {
 
                 <div className="text-center text-greenPrimary font-semibold grid gap-1">
                   <p>• {getCalorieLevel(recommended.cal)} калорийность</p>
-                  {/* корректное склонение слова «блюдо» */}
+
                   <p>
                     • {recommended.dishes} {dishesWord(recommended.dishes)} в
                     день

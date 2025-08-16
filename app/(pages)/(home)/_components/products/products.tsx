@@ -271,7 +271,7 @@ export const Products: FC<TProducts> = () => {
               className="text-greenPrimary hover:text-yellow-hover transition-colors cursor-pointer hidden md:block"
               to={"calculator"}
               smooth={true}
-              duration={300}
+              duration={500}
               spy={true}
               offset={100}
             >
