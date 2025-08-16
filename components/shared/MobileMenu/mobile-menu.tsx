@@ -61,7 +61,7 @@ export const MobileMenu: FC<TMobileMenu> = ({
                 key={i}
                 to={link.href}
                 smooth
-                duration={300}
+                duration={500}
                 spy
                 offset={link.offset}
                 onClick={() => setOpenMenu(false)}

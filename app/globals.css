@@ -4,7 +4,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 html {
   box-sizing: border-box;
-
+  scrollbar-gutter: stable both-edges;
   *,
   *::before,
   *::after {

@@ -82,7 +82,7 @@ export const Navbar: FC = ({}) => {
                     className={s.link}
                     to={link.href}
                     smooth={true}
-                    duration={300}
+                    duration={500}
                     spy={true}
                     offset={link.offset}
                   >
