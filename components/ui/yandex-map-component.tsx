@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { YMaps, Map, Placemark, Polygon } from "@pbe/react-yandex-maps";
 import {
   Maximize2,
@@ -24,9 +24,15 @@ const BTN =
 const EPS = 1e-6;
 const samePt = (a: LL, b: LL) =>
   Math.abs(a[0] - b[0]) < EPS && Math.abs(a[1] - b[1]) < EPS;
-
+const ensureClosed = (ring: RingLL): RingLL => {
+  if (ring.length === 0) return ring;
+  const first = ring[0];
+  const last = ring[ring.length - 1];
+  if (samePt(first, last)) return ring;
+  return [...ring, first];
+};
 const toYandexRing = (ringLonLat: number[][]): RingLL =>
-  ringLonLat.map(([lon, lat]) => [lat, lon]);
+  ensureClosed(ringLonLat.map(([lon, lat]) => [lat, lon] as LL));
 
 const toLonLatRing = (ringLatLon: RingLL): number[][] =>
   ringLatLon.map(([lat, lon]) => [lon, lat]);
@@ -283,13 +289,13 @@ export const YandexMapComponent: FC<{ zoom?: number }> = ({ zoom = 10 }) => {
         setCityClipped(resultYandex);
 
         // Подгоняем карту под итоговую геометрию
-        if (mapRef.current) {
-          const { sw, ne } = boundsFromMulti(resultYandex);
-          mapRef.current.setBounds([sw, ne], {
-            checkZoomRange: true,
-            duration: 400,
-          });
-        }
+        // if (mapRef.current) {
+        //   const { sw, ne } = boundsFromMulti(resultYandex);
+        //   mapRef.current.setBounds([sw, ne], {
+        //     checkZoomRange: true,
+        //     duration: 400,
+        //   });
+        // }
       } catch (e) {
         console.error("Ошибка построения Минск∩МКАД:", e);
         setCityClipped([]);
@@ -300,7 +306,19 @@ export const YandexMapComponent: FC<{ zoom?: number }> = ({ zoom = 10 }) => {
 
     loadData();
   }, []);
+  const fitMapToCity = useCallback(() => {
+    if (!mapRef.current || cityClipped.length === 0) return;
 
+    const { sw, ne } = boundsFromMulti(cityClipped);
+    mapRef.current.setBounds([sw, ne], {
+      checkZoomRange: true,
+      duration: 400,
+    });
+  }, [cityClipped]);
+
+  useEffect(() => {
+    fitMapToCity();
+  }, [fitMapToCity]);
   /** UI-кнопки */
   const handleZoom = (dir: "in" | "out") => {
     if (!mapRef.current) return;
@@ -390,7 +408,11 @@ export const YandexMapComponent: FC<{ zoom?: number }> = ({ zoom = 10 }) => {
         </div>
 
         <Map
-          instanceRef={(ref) => (mapRef.current = ref)}
+          instanceRef={(ref) => {
+            if (!ref) return;
+            mapRef.current = ref;
+            fitMapToCity();
+          }}
           defaultState={{
             center,
             zoom,
@@ -415,8 +437,8 @@ export const YandexMapComponent: FC<{ zoom?: number }> = ({ zoom = 10 }) => {
                 geometry={poly}
                 options={{
                   fill: true, // ← принудительно включаем заливку
-                  fillColor: "#22c55e", // ← зелёный (hex)
-                  fillOpacity: 0.45, // ← прозрачность заливки
+                  fillColor: "#7322C55E", // ← шестнадцатеричный цвет с альфой (примерно 45% непрозрачности)
+                  fillOpacity: 0.45,
                   strokeColor: "#16a34a", // ← контур чуть темнее
                   strokeOpacity: 1,
                   strokeWidth: 2,

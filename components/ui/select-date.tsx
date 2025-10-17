@@ -23,15 +23,18 @@ import {
 
 type TSelectDate = {
   onChange?: (value: string) => void;
+  defaultValue?: string; // CHANGED
 };
 
-export const SelectDate: FC<TSelectDate> = ({ onChange }) => {
+export const SelectDate: FC<TSelectDate> = ({ onChange, defaultValue }) => {
+  // CHANGED
   const [deliveryRanges, setDeliveryRanges] = useState<
     { label: string; value: string; disabled: boolean }[]
   >([]);
   const [selectedValue, setSelectedValue] = useState<string>("");
 
   useEffect(() => {
+    // генерим диапазоны
     const today = set(new Date(), {
       hours: 0,
       minutes: 0,
@@ -82,14 +85,36 @@ export const SelectDate: FC<TSelectDate> = ({ onChange }) => {
     }
 
     setDeliveryRanges(ranges);
+  }, []); // CHANGED: убрали автоселект отсюда
 
-    const firstAvailable = ranges.find((r) => !r.disabled);
-    if (firstAvailable) {
-      setSelectedValue(firstAvailable.value);
+  useEffect(() => {
+    // NEW: определяем выбранное значение,
+    // предпочитая валидный defaultValue, иначе — первый доступный
+    if (deliveryRanges.length === 0) return;
 
-      onChange?.(firstAvailable.value);
+    let nextValue = "";
+
+    if (defaultValue) {
+      const match = deliveryRanges.find(
+        (range) => range.value === defaultValue && !range.disabled
+      );
+      if (match) {
+        nextValue = match.value;
+      }
     }
-  }, []);
+
+    if (!nextValue) {
+      const firstAvailable = deliveryRanges.find((r) => !r.disabled);
+      if (firstAvailable) {
+        nextValue = firstAvailable.value;
+      }
+    }
+
+    if (nextValue && nextValue !== selectedValue) {
+      setSelectedValue(nextValue);
+      onChange?.(nextValue);
+    }
+  }, [defaultValue, deliveryRanges, onChange, selectedValue]); // NEW
 
   return (
     <Select

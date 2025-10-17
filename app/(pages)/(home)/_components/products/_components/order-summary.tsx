@@ -111,7 +111,7 @@ const OrderSummaryComponent: React.FC<OrderSummaryProps> = ({
           disabled={!hasRange || daysCount === 0}
         >
           <ShoppingCart size={10} />
-          Добавить в корзину
+          Корзина
         </Button>
       </div>
     </div>

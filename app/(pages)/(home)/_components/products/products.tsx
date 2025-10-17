@@ -13,8 +13,10 @@ import { OrderSummary } from "./_components/order-summary";
 import { CaloriesTabsList } from "./_components/calories-tabs-list";
 // > Types
 import { TProduct } from "@/types/product-card-type";
-
+import { useBasketStore } from "@/store/useStore";
 type TProducts = {};
+
+const RANGE_STORAGE_KEY = "okey-food:products-range";
 
 const DATA_CALORIES_TABS = [
   { calories: "1000", countProduct: 3 },
@@ -164,11 +166,33 @@ function listSelectableDays(range: string): string[] {
 
 // ================== MAIN ==================
 export const Products: FC<TProducts> = () => {
-  const [selectedRange, setSelectedRange] = React.useState<string | null>(null);
-  const [selectedDays, setSelectedDays] = React.useState<string[]>([]);
+  const [selectedRange, setSelectedRange] = React.useState<string | null>(
+    () => {
+      if (typeof window === "undefined") return null;
+
+      try {
+        const stored = window.localStorage.getItem(RANGE_STORAGE_KEY);
+        if (!stored) return null;
+
+        const parsed = JSON.parse(stored) as { range?: string | null };
+        if (parsed && typeof parsed.range === "string") {
+          return parsed.range;
+        }
+      } catch (error) {
+        return null;
+      }
+
+      return null;
+    }
+  );
   const [activeCal, setActiveCal] = React.useState<string>(
     DATA_CALORIES_TABS[0].calories
   );
+
+  const items = useBasketStore((state) => state.items);
+  const addItem = useBasketStore((state) => state.addItem);
+  const removeItem = useBasketStore((state) => state.removeItem);
+  const setIsBasketOpen = useBasketStore((state) => state.setIsBasketOpen);
 
   const dishesByCal = React.useMemo(
     () =>
@@ -178,32 +202,102 @@ export const Products: FC<TProducts> = () => {
     []
   );
 
-  const handleRangeChange = React.useCallback((value: string) => {
-    setSelectedRange(value);
-    setSelectedDays([]);
-  }, []);
+  const itemsForActiveCal = React.useMemo(
+    () => items.filter((item) => item.calories === activeCal),
+    [items, activeCal]
+  );
+  const selectedDays = React.useMemo(
+    () => itemsForActiveCal.map((item) => item.day).sort(),
+    [itemsForActiveCal]
+  );
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
 
-  const handleToggleDay = React.useCallback((day: string) => {
-    setSelectedDays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
-    );
-  }, []);
+    if (selectedRange) {
+      window.localStorage.setItem(
+        RANGE_STORAGE_KEY,
+        JSON.stringify({ range: selectedRange })
+      );
+    } else {
+      window.localStorage.removeItem(RANGE_STORAGE_KEY);
+    }
+  }, [selectedRange]);
 
+  const dishesCount = dishesByCal[activeCal] ?? 0;
+  const pricePerDay = PRICE_BY_CAL[activeCal] ?? 0;
+  const totalPrice = pricePerDay * selectedDays.length;
+
+  const createCartItem = React.useCallback(
+    (day: string) => ({
+      id: `${activeCal}-${day}`,
+      calories: activeCal,
+      day,
+      pricePerDay,
+      dishesCount,
+    }),
+    [activeCal, pricePerDay, dishesCount]
+  );
+
+  const handleRangeChange = React.useCallback(
+    (value: string) => {
+      setSelectedRange(value);
+      const selectable = new Set(listSelectableDays(value));
+      itemsForActiveCal.forEach((item) => {
+        if (!selectable.has(item.day)) {
+          removeItem(item.id);
+        }
+      });
+    },
+    [itemsForActiveCal, removeItem, setSelectedRange]
+  );
+
+  const handleToggleDay = React.useCallback(
+    (day: string) => {
+      const isSelected = selectedDays.includes(day);
+      const cartItem = createCartItem(day);
+
+      if (isSelected) {
+        removeItem(cartItem.id);
+      } else {
+        addItem(cartItem);
+      }
+    },
+    [selectedDays, createCartItem, addItem, removeItem]
+  );
   // Counter
   const handleIncDays = React.useCallback(() => {
     if (!selectedRange) return;
     const selectable = listSelectableDays(selectedRange).sort();
     if (selectedDays.length >= selectable.length) return;
     const next = selectable.find((d) => !selectedDays.includes(d));
-    if (next) setSelectedDays((prev) => [...prev, next].sort());
+    if (next) {
+      addItem(createCartItem(next));
+    }
   }, [selectedRange, selectedDays]);
 
   const handleDecDays = React.useCallback(() => {
     if (selectedDays.length === 0) return;
     const sorted = [...selectedDays].sort();
-    sorted.pop();
-    setSelectedDays(sorted);
-  }, [selectedDays]);
+    const last = sorted[sorted.length - 1];
+    removeItem(createCartItem(last).id);
+  }, [selectedDays, createCartItem, removeItem]);
+
+  const handleAdd = React.useCallback(() => {
+    if (!selectedRange) return;
+
+    const daysToAdd =
+      selectedDays.length > 0
+        ? selectedDays
+        : listSelectableDays(selectedRange);
+
+    if (daysToAdd.length === 0) return;
+
+    daysToAdd.forEach((day) => {
+      addItem(createCartItem(day));
+    });
+
+    setIsBasketOpen(true);
+  }, [selectedRange, selectedDays, addItem, createCartItem, setIsBasketOpen]);
 
   const productsByDiet = React.useMemo(() => {
     const map: Record<string, TProduct[]> = {};
@@ -237,14 +331,6 @@ export const Products: FC<TProducts> = () => {
       transition: itemTransition,
     },
   };
-  const pricePerDay = PRICE_BY_CAL[activeCal] ?? 0;
-  const totalPrice = pricePerDay * selectedDays.length;
-  const dishesCount = dishesByCal[activeCal] ?? 0;
-
-  const handleAdd = React.useCallback(() => {
-    // add to cart payload example:
-    // { calories: activeCal, days: selectedDays, pricePerDay, totalPrice, dishesCount }
-  }, [activeCal, selectedDays, pricePerDay, totalPrice, dishesCount]);
 
   return (
     <section id="products" className="py-14 lg:py-20 bg-whitePrimary">
@@ -286,7 +372,10 @@ export const Products: FC<TProducts> = () => {
               Меню на неделю
             </h5>
             <div className="mt-2">
-              <SelectDate onChange={handleRangeChange} />
+              <SelectDate
+                onChange={handleRangeChange}
+                defaultValue={selectedRange ?? undefined}
+              />
             </div>
 
             {selectedRange && (
