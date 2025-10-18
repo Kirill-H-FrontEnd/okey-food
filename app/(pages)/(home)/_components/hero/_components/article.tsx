@@ -9,7 +9,7 @@ type TArticle = {};
 
 export const Article: FC = ({}) => {
   return (
-    <article className="w-full max-w-[500px] text-center md:text-start mx-auto md:mx-0 mt-6 pt-10 md:pt-0 md:mt-0 grid gap-6 z-[2] relative">
+    <article className="w-full max-w-[500px] text-center md:text-start mx-auto md:mx-0 mt-6 pt-10 md:pt-0 md:mt-0 grid gap-6 z-[3] relative">
       <div className="grid gap-2">
         <h1 className="text-whitePrimary text-[26px]  min-[425px]:text-[30px] md:text-[46px] font-extrabold leading-10 min-[425px]:leading-12 md:leading-14 tracking-[2px] ">
           Здоровое питание с доставкой на дом
