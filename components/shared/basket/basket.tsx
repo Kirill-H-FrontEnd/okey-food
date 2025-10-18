@@ -9,44 +9,77 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ChevronLeft, ChevronRight, ShoppingCart, XIcon } from "lucide-react";
+// REMOVED: ChevronLeft
+import {
+  ChevronRight,
+  ShoppingBasket,
+  ShoppingCart,
+  XIcon,
+} from "lucide-react";
 import Link from "next/link";
-import { format, parseISO } from "date-fns";
-import { ru } from "date-fns/locale";
+// REMOVED: format/parseISO/ru
 import { useBasketStore } from "@/store/useStore";
 import { AnimatedAmount } from "@/components/magicui/animated-amount";
 import { BasketItem } from "./_components/basket-item";
 import { BasketEmpty } from "./_components/basket-empty";
+// ADDED:
+import { listSelectableDays } from "@/lib/delivery-days";
 
 export const Basket: FC = () => {
   const isBasketOpen = useBasketStore((s) => s.isBasketOpen);
   const setIsBasketOpen = useBasketStore((s) => s.setIsBasketOpen);
   const items = useBasketStore((s) => s.items);
+  const updateItem = useBasketStore((s) => s.updateItem); // ADDED
   const removeItem = useBasketStore((s) => s.removeItem);
 
   const sortedItems = useMemo(
     () =>
-      [...items].sort((a, b) => {
-        if (a.calories === b.calories) return a.day.localeCompare(b.day);
-        return Number(a.calories) - Number(b.calories);
-      }),
+      // CHANGED: сортируем только по калориям
+      [...items].sort((a, b) => Number(a.calories) - Number(b.calories)),
     [items]
   );
 
   const totalPrice = useMemo(
-    () => items.reduce((sum, item) => sum + item.pricePerDay, 0),
+    () =>
+      // CHANGED: цена = цена_дня * кол-во выбранных дней
+      items.reduce(
+        (sum, item) => sum + item.pricePerDay * item.selectedDays.length,
+        0
+      ),
     [items]
   );
   const totalLabel = totalPrice ? `${totalPrice} BYN` : "0 BYN";
   const itemCount = items.length;
 
-  const formatDay = (day: string) => {
-    try {
-      const formatted = format(parseISO(day), "d MMMM, EEEE", { locale: ru });
-      return formatted.charAt(0).toUpperCase() + formatted.slice(1);
-    } catch {
-      return day;
+  // REMOVED: formatDay — больше не нужен
+
+  // ADDED: инкремент/декремент числа выбранных дней
+  const handleIncrementDays = (id: string) => {
+    const item = items.find((entry) => entry.id === id);
+    if (!item || !item.range) return;
+    const selectable = listSelectableDays(item.range).sort();
+    if (item.selectedDays.length >= selectable.length) return;
+    const next = selectable.find((day) => !item.selectedDays.includes(day));
+    if (!next) return;
+    updateItem(id, (prev) => ({
+      ...prev,
+      selectedDays: [...prev.selectedDays, next],
+    }));
+  };
+
+  const handleDecrementDays = (id: string) => {
+    const item = items.find((entry) => entry.id === id);
+    if (!item) return;
+    if (item.selectedDays.length <= 1) {
+      removeItem(id);
+      return;
     }
+    const sortedDays = [...item.selectedDays].sort();
+    const nextDays = sortedDays.slice(0, -1);
+    updateItem(id, (prev) => ({
+      ...prev,
+      selectedDays: nextDays,
+    }));
   };
 
   return (
@@ -58,7 +91,7 @@ export const Basket: FC = () => {
           </span>
           <span className="w-[1px] h-[50%] bg-greenPrimary/50" aria-hidden />
           <div className="grid grid-cols-2-auto gap-2 items-center md:group-hover:opacity-0 transition-opacity text-greenPrimary">
-            <ShoppingCart size={10} />
+            <ShoppingBasket size={10} />
           </div>
           <ChevronRight
             size={18}
@@ -74,13 +107,13 @@ export const Basket: FC = () => {
       >
         <div className="flex h-full flex-col">
           <SheetHeader className="relative px-6 py-4">
-            <SheetTitle className="text-[24px] text-greenPrimary font-bold">
-              Корзина
+            <SheetTitle className="text-[24px] flex items-center gap-2 text-greenPrimary font-bold">
+              <ShoppingBasket />
+              <p>Корзина</p>
             </SheetTitle>
             <SheetClose className="absolute cursor-pointer bg-greyPrimary rounded-[6px] p-1 right-4 top-1/2 translate-y-[40px] md:-translate-y-1/2  transition-all group active:scale-[.98]">
               <XIcon className="h-4 w-4 hidden md:block text-greenPrimary group-hover:text-yellow-hover transition-all bg-greyPrimary" />
               <div className="md:hidden px-4 flex items-center">
-                {" "}
                 <p className="text-[15px] text-greenPrimary font-bold">
                   Закрыть
                 </p>
@@ -98,7 +131,8 @@ export const Basket: FC = () => {
                     key={item.id}
                     item={item}
                     onRemove={removeItem}
-                    formatDay={formatDay}
+                    onIncrement={handleIncrementDays}
+                    onDecrement={handleDecrementDays}
                   />
                 ))}
               </ul>

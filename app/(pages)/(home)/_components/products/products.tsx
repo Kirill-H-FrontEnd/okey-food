@@ -11,6 +11,7 @@ import { SelectDaysButtons } from "./_components/SelectDaysButtons";
 import { motion, type Variants, type Transition } from "framer-motion";
 import { OrderSummary } from "./_components/order-summary";
 import { CaloriesTabsList } from "./_components/calories-tabs-list";
+import { listSelectableDays } from "@/lib/delivery-days"; // CHANGED: берем из lib
 // > Types
 import { TProduct } from "@/types/product-card-type";
 import { useBasketStore } from "@/store/useStore";
@@ -131,39 +132,6 @@ const genProductsForDiet = (count: number, dietCalories: string): TProduct[] =>
     };
   });
 
-// ====== date utils (как было) ======
-function parseRange(range: string) {
-  const [startStr, endStr] = range.split("_");
-  const start = new Date(startStr);
-  const end = new Date(endStr);
-  start.setHours(0, 0, 0, 0);
-  end.setHours(0, 0, 0, 0);
-  return { start, end };
-}
-function formatISODate(d: Date) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-function isSunday(d: Date) {
-  return d.getDay() === 0;
-}
-function isPast(d: Date) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return d < today;
-}
-function listSelectableDays(range: string): string[] {
-  const { start, end } = parseRange(range);
-  const days: string[] = [];
-  for (let t = new Date(start); t <= end; t.setDate(t.getDate() + 1)) {
-    const cur = new Date(t);
-    if (!isSunday(cur) && !isPast(cur)) days.push(formatISODate(cur));
-  }
-  return days;
-}
-
 // ================== MAIN ==================
 export const Products: FC<TProducts> = () => {
   const [selectedRange, setSelectedRange] = React.useState<string | null>(
@@ -178,7 +146,7 @@ export const Products: FC<TProducts> = () => {
         if (parsed && typeof parsed.range === "string") {
           return parsed.range;
         }
-      } catch (error) {
+      } catch {
         return null;
       }
 
@@ -191,6 +159,7 @@ export const Products: FC<TProducts> = () => {
 
   const items = useBasketStore((state) => state.items);
   const addItem = useBasketStore((state) => state.addItem);
+  const updateItem = useBasketStore((state) => state.updateItem); // CHANGED
   const removeItem = useBasketStore((state) => state.removeItem);
   const setIsBasketOpen = useBasketStore((state) => state.setIsBasketOpen);
 
@@ -202,14 +171,16 @@ export const Products: FC<TProducts> = () => {
     []
   );
 
-  const itemsForActiveCal = React.useMemo(
-    () => items.filter((item) => item.calories === activeCal),
+  // CHANGED: один item на калорийность
+  const itemForActiveCal = React.useMemo(
+    () => items.find((item) => item.calories === activeCal) ?? null,
     [items, activeCal]
   );
   const selectedDays = React.useMemo(
-    () => itemsForActiveCal.map((item) => item.day).sort(),
-    [itemsForActiveCal]
+    () => itemForActiveCal?.selectedDays ?? [],
+    [itemForActiveCal]
   );
+
   React.useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -227,61 +198,125 @@ export const Products: FC<TProducts> = () => {
   const pricePerDay = PRICE_BY_CAL[activeCal] ?? 0;
   const totalPrice = pricePerDay * selectedDays.length;
 
+  // CHANGED: создаём один item c массивом дней и опциональным range
   const createCartItem = React.useCallback(
-    (day: string) => ({
-      id: `${activeCal}-${day}`,
+    (days: string[], range: string | null) => ({
+      id: activeCal,
       calories: activeCal,
-      day,
+      selectedDays: days,
+      range,
       pricePerDay,
       dishesCount,
     }),
     [activeCal, pricePerDay, dishesCount]
   );
 
+  // CHANGED: при смене диапазона фильтруем выбранные дни и обновляем item
   const handleRangeChange = React.useCallback(
     (value: string) => {
       setSelectedRange(value);
       const selectable = new Set(listSelectableDays(value));
-      itemsForActiveCal.forEach((item) => {
-        if (!selectable.has(item.day)) {
-          removeItem(item.id);
-        }
-      });
+      if (!itemForActiveCal) return;
+      const filteredDays = itemForActiveCal.selectedDays.filter((day) =>
+        selectable.has(day)
+      );
+      if (filteredDays.length === 0) {
+        removeItem(itemForActiveCal.id);
+        return;
+      }
+      updateItem(itemForActiveCal.id, (prev) => ({
+        ...prev,
+        selectedDays: filteredDays,
+        range: value,
+      }));
     },
-    [itemsForActiveCal, removeItem, setSelectedRange]
+    [itemForActiveCal, removeItem, setSelectedRange, updateItem]
   );
 
+  // CHANGED: переключатель дня — теперь обновляет массив selectedDays
   const handleToggleDay = React.useCallback(
     (day: string) => {
       const isSelected = selectedDays.includes(day);
-      const cartItem = createCartItem(day);
 
       if (isSelected) {
-        removeItem(cartItem.id);
+        const nextDays = selectedDays.filter((d) => d !== day);
+        if (nextDays.length === 0) {
+          removeItem(activeCal);
+        } else {
+          updateItem(activeCal, (prev) => ({
+            ...prev,
+            selectedDays: nextDays,
+          }));
+        }
+        return;
+      }
+
+      const nextDays = [...selectedDays, day];
+      if (itemForActiveCal) {
+        updateItem(activeCal, (prev) => ({
+          ...prev,
+          selectedDays: nextDays,
+          range: selectedRange ?? prev.range,
+        }));
       } else {
-        addItem(cartItem);
+        addItem(createCartItem(nextDays, selectedRange ?? null));
       }
     },
-    [selectedDays, createCartItem, addItem, removeItem]
+    [
+      selectedDays,
+      itemForActiveCal,
+      updateItem,
+      removeItem,
+      addItem,
+      createCartItem,
+      selectedRange,
+      activeCal,
+    ]
   );
-  // Counter
+
+  // Counter: +
   const handleIncDays = React.useCallback(() => {
     if (!selectedRange) return;
     const selectable = listSelectableDays(selectedRange).sort();
     if (selectedDays.length >= selectable.length) return;
     const next = selectable.find((d) => !selectedDays.includes(d));
     if (next) {
-      addItem(createCartItem(next));
+      if (itemForActiveCal) {
+        updateItem(activeCal, (prev) => ({
+          ...prev,
+          selectedDays: [...prev.selectedDays, next],
+          range: selectedRange,
+        }));
+      } else {
+        addItem(createCartItem([next], selectedRange));
+      }
     }
-  }, [selectedRange, selectedDays]);
+  }, [
+    selectedRange,
+    selectedDays,
+    itemForActiveCal,
+    updateItem,
+    activeCal,
+    addItem,
+    createCartItem,
+  ]);
 
+  // Counter: -
   const handleDecDays = React.useCallback(() => {
     if (selectedDays.length === 0) return;
     const sorted = [...selectedDays].sort();
-    const last = sorted[sorted.length - 1];
-    removeItem(createCartItem(last).id);
-  }, [selectedDays, createCartItem, removeItem]);
+    const nextDays = sorted.slice(0, -1);
+    if (nextDays.length === 0) {
+      removeItem(activeCal);
+      return;
+    }
+    updateItem(activeCal, (prev) => ({
+      ...prev,
+      selectedDays: nextDays,
+    }));
+  }, [selectedDays, updateItem, removeItem, activeCal]);
 
+  // Добавить выбранные дни (или все допустимые из range)
   const handleAdd = React.useCallback(() => {
     if (!selectedRange) return;
 
@@ -292,12 +327,27 @@ export const Products: FC<TProducts> = () => {
 
     if (daysToAdd.length === 0) return;
 
-    daysToAdd.forEach((day) => {
-      addItem(createCartItem(day));
-    });
+    if (itemForActiveCal) {
+      updateItem(activeCal, (prev) => ({
+        ...prev,
+        selectedDays: Array.from(new Set([...daysToAdd])),
+        range: selectedRange,
+      }));
+    } else {
+      addItem(createCartItem(daysToAdd, selectedRange));
+    }
 
     setIsBasketOpen(true);
-  }, [selectedRange, selectedDays, addItem, createCartItem, setIsBasketOpen]);
+  }, [
+    selectedRange,
+    selectedDays,
+    itemForActiveCal,
+    updateItem,
+    activeCal,
+    addItem,
+    createCartItem,
+    setIsBasketOpen,
+  ]);
 
   const productsByDiet = React.useMemo(() => {
     const map: Record<string, TProduct[]> = {};
@@ -422,7 +472,7 @@ export const Products: FC<TProducts> = () => {
             dishesCount={dishesCount}
             hasRange={!!selectedRange}
             daysCount={selectedDays.length}
-            pricePerDay={pricePerDay}
+            pricePerDay={PRICE_BY_CAL[activeCal] ?? 0}
             totalPrice={totalPrice}
             onInc={handleIncDays}
             onDec={handleDecDays}
