@@ -170,12 +170,18 @@ export const Basket: FC = () => {
         className="shadow-none border-none md:border-l-[2px] border-grey-border p-0 overflow-hidden"
       >
         <div className="flex h-full flex-col">
-          <SheetHeader className="relative px-6 py-4 md:border-b-[1px]">
+          <SheetHeader className="relative px-6 py-4 ">
             <SheetTitle className="text-[24px] flex items-center gap-2 text-greenPrimary font-bold">
-              <ShoppingBasket />
-              <p>{isCheckout ? "Оформление" : "Корзина"}</p>
+              <ShoppingBasket className="text-yellowPrimary" />
+              <p>{isCheckout ? "Оформление заказа" : "Корзина"}</p>
             </SheetTitle>
-            <SheetClose className="absolute cursor-pointer bg-greyPrimary rounded-[6px] p-1 right-4 top-1/2 translate-y-[40px] md:-translate-y-1/2  transition-all group active:scale-[.98]">
+            <SheetClose
+              style={{
+                outline: "none",
+                WebkitTapHighlightColor: "transparent",
+              }}
+              className="absolute cursor-pointer bg-greyPrimary rounded-[6px] p-1 right-4 top-1/2 translate-y-[40px] md:-translate-y-1/2  transition-all group active:scale-[.98]"
+            >
               <XIcon className="h-4 w-4 hidden md:block text-greenPrimary group-hover:text-yellow-hover transition-all bg-greyPrimary" />
               <div className="md:hidden px-4 flex items-center">
                 <p className="text-[15px] text-greenPrimary font-bold">
@@ -222,15 +228,6 @@ export const Basket: FC = () => {
               >
                 <div className="py-4">
                   <div className="max-w-xl space-y-6 text-greenPrimary">
-                    <div className="space-y-2">
-                      <h2 className="text-[22px] font-bold md:text-[26px]">
-                        Оформление заказа
-                      </h2>
-                      <p className="text-sm text-greySecondary">
-                        Заполните все поля для оформления заказа
-                      </p>
-                    </div>
-
                     <div className="">
                       <div className="space-y-3">
                         <div className="grid grid-cols-2 gap-4">
@@ -262,7 +259,7 @@ export const Basket: FC = () => {
                           <div className="grid gap-2 ">
                             <div className="flex items-center gap-2">
                               <Label htmlFor="checkout-social">
-                                Социальные сети
+                                Telegram / Instagram
                               </Label>
 
                               <TooltipProvider delayDuration={150}>
@@ -290,7 +287,7 @@ export const Basket: FC = () => {
 
                             <Input
                               id="checkout-social"
-                              placeholder="@username"
+                              placeholder="Введите ник @"
                               autoComplete="off"
                             />
                           </div>
@@ -298,7 +295,7 @@ export const Basket: FC = () => {
                       </div>
 
                       <div className="space-y-4 mt-6">
-                        <div className="grid grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           <div className="grid gap-2">
                             <Label htmlFor="checkout-city">Город</Label>
                             <Select defaultValue={CITIES[0]?.value}>
@@ -354,8 +351,7 @@ export const Basket: FC = () => {
                       </div>
 
                       <div className="space-y-4 mt-6">
-                        <h3 className="text-lg font-semibold">Ваш заказ</h3>
-                        <div className="rounded-[8px] border border-grey-border bg-greyPrimary p-4">
+                        <div className="rounded-[8px]  bg-greyPrimary p-4">
                           <div className="flex items-center justify-between text-greenPrimary">
                             <p className="font-semibold">Итого</p>
                             <p className="text-[22px] font-bold text-yellow-hover">
@@ -407,14 +403,7 @@ export const Basket: FC = () => {
 
           <AnimatePresence mode="wait" initial={false}>
             {!isCheckout ? (
-              <motion.footer
-                key="basket-footer"
-                initial={{ opacity: 0, x: 40 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -40 }}
-                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="px-6 py-4 bg-white"
-              >
+              <div className="px-6 py-4 bg-white">
                 <div className="w-full grid gap-4">
                   <div className="flex items-center justify-start gap-2 text-greenPrimary">
                     <p className="text-[20px] font-bold">Итого:</p>
@@ -432,16 +421,9 @@ export const Basket: FC = () => {
                     Перейти к оформлению
                   </Button>
                 </div>
-              </motion.footer>
+              </div>
             ) : (
-              <motion.footer
-                key="checkout-footer"
-                initial={{ opacity: 0, x: 80 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 80 }}
-                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="px-6 py-4 bg-white"
-              >
+              <div key="checkout-footer" className="px-6 py-4 bg-white">
                 <div className="grid gap-4">
                   <label
                     htmlFor="consent-switch"
@@ -452,7 +434,7 @@ export const Basket: FC = () => {
                       checked={isConsentGiven}
                       onCheckedChange={setIsConsentGiven}
                     />
-                    <span className="text-sm select-none">
+                    <span className="text-sm font-semibold select-none text-greenPrimary">
                       Я согласен на обработку персональных данных
                     </span>
                   </label>
@@ -471,7 +453,7 @@ export const Basket: FC = () => {
                     Оформить заказ
                   </Button>
                 </div>
-              </motion.footer>
+              </div>
             )}
           </AnimatePresence>
         </div>
