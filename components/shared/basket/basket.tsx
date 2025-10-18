@@ -9,7 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ChevronRight, ShoppingCart, XIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShoppingCart, XIcon } from "lucide-react";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import { ru } from "date-fns/locale";
@@ -77,8 +77,14 @@ export const Basket: FC = () => {
             <SheetTitle className="text-[24px] text-greenPrimary font-bold">
               Корзина
             </SheetTitle>
-            <SheetClose className="absolute cursor-pointer bg-greyPrimary rounded-[6px] p-1 right-6 top-1/2 -translate-y-1/2 transition-all group active:scale-[.98]">
-              <XIcon className="h-4 w-4 text-greenPrimary group-hover:text-yellow-hover transition-all" />
+            <SheetClose className="absolute cursor-pointer bg-greyPrimary rounded-[6px] p-1 right-4 top-1/2 translate-y-[40px] md:-translate-y-1/2  transition-all group active:scale-[.98]">
+              <XIcon className="h-4 w-4 hidden md:block text-greenPrimary group-hover:text-yellow-hover transition-all bg-greyPrimary" />
+              <div className="md:hidden px-4 flex items-center">
+                {" "}
+                <p className="text-[15px] text-greenPrimary font-bold">
+                  Закрыть
+                </p>
+              </div>
             </SheetClose>
           </SheetHeader>
 
@@ -86,7 +92,7 @@ export const Basket: FC = () => {
             {sortedItems.length === 0 ? (
               <BasketEmpty />
             ) : (
-              <ul className="grid gap-4 pb-6">
+              <ul className="grid gap-4 mt-16 md:mt-0 pb-6">
                 {sortedItems.map((item) => (
                   <BasketItem
                     key={item.id}
