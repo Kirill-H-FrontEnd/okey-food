@@ -41,7 +41,7 @@ export const Navbar: FC = ({}) => {
     <header
       className={`${
         isScrolled || openMenu
-          ? "shadow-sm  bg-white fixed "
+          ? "shadow-sm  bg-white/80 backdrop-blur-lg fixed "
           : "bg-whitePrimary"
       } ${
         isBasketOpen ? "shadow-sm md:shadow-none " : ""
