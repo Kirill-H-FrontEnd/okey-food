@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React from "react";
 import { HyperText } from "@/components/magicui/hyper-text";
+import { useBasketStore } from "@/store/useStore";
 
 type Gender = "male" | "female";
 type Goal = "loss" | "tone" | "gain";
@@ -45,11 +46,15 @@ const ACTIVITY_FACTORS: Record<Activity, number> = {
   high: 1.725,
 };
 
-const GOAL_PCTS: Record<Goal, number> = {
-  loss: -0.2,
-  tone: -0.1,
-  gain: 0.15,
+// Фиксированные корректировки под цель (в ккал)
+const GOAL_ADJUSTMENTS: Record<Goal, number> = {
+  loss: -450,
+  tone: -200,
+  gain: 300,
 };
+
+const MIN_TARGET_CAL = 1200;
+const MAX_TARGET_CAL = 4000;
 
 function calcBMR(
   gender: Gender,
@@ -69,6 +74,21 @@ function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
 }
 
+interface Recommendation {
+  targetCalories: number;
+  maintenanceCalories: number;
+  plan: Plan;
+}
+
+function formatTodayISO() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const y = today.getFullYear();
+  const m = String(today.getMonth() + 1).padStart(2, "0");
+  const d = String(today.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
 export default function CalorieCalculator() {
   const [gender, setGender] = useState<Gender | "">("");
   const [goal, setGoal] = useState<Goal | "">("");
@@ -77,6 +97,9 @@ export default function CalorieCalculator() {
   const [height, setHeight] = useState<number | "">("");
   const [age, setAge] = useState<number | "">("");
   const [activityValue, setActivityValue] = useState<ActivityValue>(1);
+
+  const addItem = useBasketStore((state) => state.addItem);
+  const setIsBasketOpen = useBasketStore((state) => state.setIsBasketOpen);
 
   const validParams = useMemo(
     () =>
@@ -91,7 +114,7 @@ export default function CalorieCalculator() {
     [gender, goal, activityValue, weight, height, age]
   );
 
-  const recommended = useMemo<Plan | null>(() => {
+  const recommendation = useMemo<Recommendation | null>(() => {
     if (!validParams) return null;
 
     const w = Number(weight);
@@ -99,21 +122,40 @@ export default function CalorieCalculator() {
     const a = Number(age);
 
     const bmr = calcBMR(gender as Gender, w, h, a);
-    const tdee = bmr * ACTIVITY_FACTORS[activity as Activity];
-    const target = clamp(
-      Math.round(tdee * (1 + GOAL_PCTS[goal as Goal])),
-      1000,
-      4000
-    );
+    const maintenance = bmr * ACTIVITY_FACTORS[activity as Activity];
+    const adjusted = maintenance + GOAL_ADJUSTMENTS[goal as Goal];
+    const target = clamp(Math.round(adjusted), MIN_TARGET_CAL, MAX_TARGET_CAL);
 
-    return PLANS.reduce(
-      (closest, plan) =>
-        Math.abs(plan.cal - target) < Math.abs(closest.cal - target)
-          ? plan
+    const plan = PLANS.reduce(
+      (closest, candidate) =>
+        Math.abs(candidate.cal - target) < Math.abs(closest.cal - target)
+          ? candidate
           : closest,
       PLANS[0]
     );
+
+    return {
+      plan,
+      targetCalories: target,
+      maintenanceCalories: Math.round(maintenance),
+    };
   }, [gender, goal, activity, weight, height, age, validParams]);
+
+  const handleAddToCart = useCallback(() => {
+    if (!recommendation) return;
+    const { plan } = recommendation;
+    const today = formatTodayISO();
+
+    addItem({
+      id: `calculator-${plan.cal}`,
+      calories: String(plan.cal),
+      selectedDays: [today],
+      range: null,
+      pricePerDay: plan.price,
+      dishesCount: plan.dishes,
+    });
+    setIsBasketOpen(true);
+  }, [recommendation, addItem, setIsBasketOpen]);
 
   // правильные склонения «блюдо/блюда/блюд»
   function dishesWord(n: number) {
@@ -272,36 +314,41 @@ export default function CalorieCalculator() {
           </div>
         </div>
 
-        <section className="grid grid-rows-1 min-h-[260px] lg:min-h-0 gap-4">
+        <section className="grid grid-rows-1 min-h-[260px] lg:minh-0 gap-4">
           <div className="flex flex-col items-center justify-center rounded-[8px] bg-whitePrimary py-8">
             <h3 className="text-greenPrimary text-[18px] font-bold">
               Рекомендуемый калораж:
             </h3>
 
-            {!recommended && (
+            {!recommendation && (
               <p className="text-gray-500">Заполните все поля</p>
             )}
 
-            {recommended && (
+            {recommendation && (
               <>
                 <HyperText
-                  key={recommended.cal}
+                  key={recommendation.targetCalories}
                   duration={400}
                   startOnView={false}
                   animateOnHover={false}
                   className="text-[50px] my-3 text-greenPrimary font-bold leading-none tabular-nums"
                 >
-                  {String(recommended.cal)}
+                  {String(recommendation.targetCalories)}
                 </HyperText>
 
                 <div className="text-center text-greenPrimary font-semibold grid gap-1">
-                  <p>• {getCalorieLevel(recommended.cal)} калорийность</p>
-
                   <p>
-                    • {recommended.dishes} {dishesWord(recommended.dishes)} в
-                    день
+                    • {getCalorieLevel(recommendation.targetCalories)}{" "}
+                    калорийность
                   </p>
-                  <p>• от {recommended.price} BYN / день</p>
+                  <p className="text-xs text-greySecondary">
+                    (Поддержание: {recommendation.maintenanceCalories} ккал)
+                  </p>
+                  <p>
+                    • {recommendation.plan.dishes}{" "}
+                    {dishesWord(recommendation.plan.dishes)} в день
+                  </p>
+                  <p>• от {recommendation.plan.price} BYN / день</p>
                 </div>
               </>
             )}
@@ -310,6 +357,8 @@ export default function CalorieCalculator() {
           <Button
             className="bg-yellowPrimary text-greenPrimary font-bold py-6"
             variant="default"
+            disabled={!recommendation}
+            onClick={handleAddToCart}
           >
             Добавить в корзину
           </Button>
