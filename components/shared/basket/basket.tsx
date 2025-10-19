@@ -1,6 +1,12 @@
 "use client";
 import { FC, useEffect, useMemo, useState } from "react";
-import { ChevronDownIcon, HelpCircle } from "lucide-react";
+import {
+  Calendar1,
+  Calendar1Icon,
+  CalendarDays,
+  ChevronDownIcon,
+  HelpCircle,
+} from "lucide-react";
 import {
   Tooltip,
   TooltipTrigger,
@@ -382,7 +388,7 @@ export const Basket: FC = () => {
                                   {date
                                     ? date.toLocaleDateString()
                                     : "Выбрать дату"}
-                                  <ChevronDownIcon />
+                                  <CalendarDays />
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent
