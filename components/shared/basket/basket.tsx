@@ -11,13 +11,12 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Check, ChevronRight, ShoppingBasket, XIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShoppingBasket, XIcon } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useBasketStore } from "@/store/useStore";
 import { AnimatedAmount } from "@/components/magicui/animated-amount";
@@ -81,6 +80,7 @@ export const Basket: FC = () => {
 
   const [isCheckout, setIsCheckout] = useState(false);
   const [isConsentGiven, setIsConsentGiven] = useState(false);
+  const [comment, setComment] = useState("");
 
   const sortedItems = useMemo(
     () => [...items].sort((a, b) => Number(a.calories) - Number(b.calories)),
@@ -102,6 +102,7 @@ export const Basket: FC = () => {
     if (!isBasketOpen) {
       setIsCheckout(false);
       setIsConsentGiven(false);
+      setComment("");
     }
   }, [isBasketOpen]);
 
@@ -109,6 +110,7 @@ export const Basket: FC = () => {
     if (sortedItems.length === 0) {
       setIsCheckout(false);
       setIsConsentGiven(false);
+      setComment("");
     }
   }, [sortedItems.length]);
 
@@ -169,42 +171,54 @@ export const Basket: FC = () => {
         showCloseButton={false}
         className="shadow-none border-none md:border-l-[2px] border-grey-border p-0 overflow-hidden"
       >
-        <div className="flex h-full flex-col">
-          <SheetHeader className="relative px-6 py-4 ">
-            <SheetTitle className="text-[24px] flex items-center gap-2 text-greenPrimary font-bold">
-              <ShoppingBasket className="text-yellowPrimary" />
-              <p>{isCheckout ? "Оформление заказа" : "Корзина"}</p>
-            </SheetTitle>
-            <SheetClose
-              style={{
-                outline: "none",
-                WebkitTapHighlightColor: "transparent",
-              }}
-              className="absolute cursor-pointer bg-greyPrimary rounded-[6px] p-1 right-4 top-1/2 translate-y-[40px] md:-translate-y-1/2  transition-all group active:scale-[.98]"
-            >
-              <XIcon className="h-4 w-4 hidden md:block text-greenPrimary group-hover:text-yellow-hover transition-all bg-greyPrimary" />
-              <div className="md:hidden px-4 flex items-center">
-                <p className="text-[15px] text-greenPrimary font-bold">
-                  Закрыть
-                </p>
-              </div>
-            </SheetClose>
+        <div className="flex h-full flex-col pt-[55px] md:pt-0">
+          <SheetHeader className="relative px-4 md:px-5 pb-4 md:pt-4 p ">
+            <div className="relative flex items-center justify-between">
+              <SheetTitle className="flex w-full items-center  gap-2 text-center text-[20px] md:text-[24px] font-bold text-greenPrimary md:w-auto md:justify-start md:text-left">
+                <ShoppingBasket className="text-yellowPrimary w-5 h-7 md:w-7 md:h-7" />
+                <p>{isCheckout ? "Оформление заказа" : "Корзина"}</p>
+              </SheetTitle>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (isCheckout) {
+                    setIsCheckout(false);
+                    setIsConsentGiven(false);
+                    return;
+                  }
+                  setIsBasketOpen(false);
+                }}
+                className=" bg-greyPrimary grid p-2 rounded-full group cursor-pointer"
+                aria-label={
+                  isCheckout ? "Вернуться к корзине" : "Закрыть корзину"
+                }
+              >
+                <span className="inline-flex">
+                  {isCheckout ? (
+                    <ChevronLeft className="h-4 w-4 block text-greenPrimary transition-colors group-hover:text-yellow-hover" />
+                  ) : (
+                    <XIcon className="h-4 w-4 block text-greenPrimary transition-colors group-hover:text-yellow-hover" />
+                  )}
+                </span>
+              </button>
+            </div>
           </SheetHeader>
 
           <AnimatePresence mode="wait" initial={false}>
             {!isCheckout ? (
               <motion.section
                 key="basket-view"
-                initial={{ opacity: 0, x: 40 }}
+                initial={{ opacity: 0, x: -40 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -40 }}
+                exit={{ opacity: 0, x: 40 }}
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                 className="flex-1 overflow-y-auto px-6"
               >
                 {sortedItems.length === 0 ? (
                   <BasketEmpty />
                 ) : (
-                  <ul className="grid gap-4 mt-16 md:mt-4 pb-6">
+                  <ul className="grid gap-4 mt-0 md:mt-4 pb-6">
                     {sortedItems.map((item) => (
                       <BasketItem
                         key={item.id}
@@ -220,13 +234,13 @@ export const Basket: FC = () => {
             ) : (
               <motion.section
                 key="checkout-view"
-                initial={{ opacity: 0, x: 80 }}
+                initial={{ opacity: 0, x: -80 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 80 }}
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                className="flex-1 overflow-y-auto px-6 pt-10 md:pt-0"
+                className="flex-1 overflow-y-auto px-6 pt-1 md:pt-0"
               >
-                <div className="py-4">
+                <div className="">
                   <div className="max-w-xl space-y-6 text-greenPrimary">
                     <div className="">
                       <div className="space-y-3">
@@ -274,8 +288,8 @@ export const Basket: FC = () => {
                                     </button>
                                   </TooltipTrigger>
                                   <TooltipContent
-                                    className="max-w-[280px] text-greenPrimary"
-                                    side="right"
+                                    className="max-w-[280px] bg-whitePrimary text-greenPrimary text-[13px] shadow-sm"
+                                    side="top"
                                     sideOffset={6}
                                   >
                                     Укажите ник в Telegram или Instagram — так
@@ -301,7 +315,7 @@ export const Basket: FC = () => {
                             <Select defaultValue={CITIES[0]?.value}>
                               <SelectTrigger
                                 id="checkout-city"
-                                className="w-full border-grey-border text-greenPrimary"
+                                className="w-full text-greenPrimary"
                               >
                                 <SelectValue placeholder="Выберите город" />
                               </SelectTrigger>
@@ -329,24 +343,37 @@ export const Basket: FC = () => {
                             <Label htmlFor="checkout-house">Дом</Label>
                             <Input
                               id="checkout-house"
+                              placeholder="№"
                               autoComplete="address-line2"
                             />
                           </div>
                           <div className="grid gap-2">
                             <Label htmlFor="checkout-apartment">Квартира</Label>
-                            <Input id="checkout-apartment" autoComplete="off" />
+                            <Input
+                              placeholder="Кв."
+                              id="checkout-apartment"
+                              autoComplete="off"
+                            />
                           </div>
                         </div>
                         <div className="grid gap-2">
                           <Label htmlFor="checkout-comment">
                             Комментарий к заказу
                           </Label>
-                          <Textarea
-                            className=""
-                            placeholder="Напишите ваш комментарий"
-                            id="message"
-                            maxLength={200}
-                          />
+                          <div className="space-y-2">
+                            <Textarea
+                              placeholder="Напишите ваш комментарий"
+                              id="checkout-comment"
+                              maxLength={200}
+                              value={comment}
+                              onChange={(event) =>
+                                setComment(event.target.value)
+                              }
+                            />
+                            <div className="flex justify-end text-xs font-medium text-greySecondary">
+                              <span>{comment.length} / 200</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
 

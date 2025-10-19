@@ -41,11 +41,9 @@ export const Navbar: FC = ({}) => {
     <header
       className={`${
         isScrolled || openMenu
-          ? "shadow-sm  bg-white/80 backdrop-blur-lg fixed "
+          ? " bg-white/80 backdrop-blur-lg  "
           : "bg-whitePrimary"
-      } ${
-        isBasketOpen ? "shadow-sm md:shadow-none " : ""
-      } w-full sticky  top-0 left-0 py-[10px] z-[100]  transition-[background-color, box-shadow] duration-300`}
+      } $ w-full sticky  top-0 left-0 py-[10px] z-[100]  transition-[background-color, box-shadow] duration-300`}
     >
       <Container>
         <section className="w-full flex justify-between items-center">
