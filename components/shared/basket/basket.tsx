@@ -1,13 +1,13 @@
 "use client";
 import { FC, useEffect, useMemo, useState } from "react";
-import { HelpCircle } from "lucide-react";
+import { ChevronDownIcon, HelpCircle } from "lucide-react";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
 } from "@/components/ui/tooltip";
-
+import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -30,11 +30,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import React from "react";
 
 const CITIES = [
   { value: "minsk", label: "Минск" },
@@ -77,6 +84,9 @@ export const Basket: FC = () => {
   const items = useBasketStore((s) => s.items);
   const updateItem = useBasketStore((s) => s.updateItem);
   const removeItem = useBasketStore((s) => s.removeItem);
+
+  const [open, setOpen] = React.useState(false);
+  const [date, setDate] = React.useState<Date | undefined>(undefined);
 
   const [isCheckout, setIsCheckout] = useState(false);
   const [isConsentGiven, setIsConsentGiven] = useState(false);
@@ -244,7 +254,7 @@ export const Basket: FC = () => {
                   <div className="max-w-xl space-y-6 text-greenPrimary">
                     <div className="">
                       <div className="space-y-3">
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid md:grid-cols-2 gap-4">
                           <div className="grid gap-2">
                             <Label htmlFor="checkout-first-name">Имя</Label>
                             <Input
@@ -309,6 +319,9 @@ export const Basket: FC = () => {
                       </div>
 
                       <div className="space-y-4 mt-6">
+                        <h3 className="text-greenPrimary font-bold text-[18px]">
+                          Адрес доставки
+                        </h3>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           <div className="grid gap-2">
                             <Label htmlFor="checkout-city">Город</Label>
@@ -354,6 +367,39 @@ export const Basket: FC = () => {
                               id="checkout-apartment"
                               autoComplete="off"
                             />
+                          </div>
+                          <div className="flex flex-col gap-3">
+                            <Label htmlFor="date" className="px-1">
+                              Дата доставки
+                            </Label>
+                            <Popover open={open} onOpenChange={setOpen}>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  id="date"
+                                  className="w-48 justify-between font-normal"
+                                >
+                                  {date
+                                    ? date.toLocaleDateString()
+                                    : "Выбрать дату"}
+                                  <ChevronDownIcon />
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent
+                                className="w-auto overflow-hidden p-0 z-[2000]"
+                                align="center"
+                              >
+                                <Calendar
+                                  mode="single"
+                                  selected={date}
+                                  captionLayout="label"
+                                  onSelect={(date) => {
+                                    setDate(date);
+                                    setOpen(false);
+                                  }}
+                                />
+                              </PopoverContent>
+                            </Popover>
                           </div>
                         </div>
                         <div className="grid gap-2">
