@@ -209,9 +209,9 @@ export const Basket: FC = () => {
             {!isCheckout ? (
               <motion.section
                 key="basket-view"
-                initial={{ opacity: 0, x: -40 }}
+                initial={{ opacity: 0, x: 40 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 40 }}
+                exit={{ opacity: 0, x: -40 }}
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                 className="flex-1 overflow-y-auto px-6"
               >
@@ -234,9 +234,9 @@ export const Basket: FC = () => {
             ) : (
               <motion.section
                 key="checkout-view"
-                initial={{ opacity: 0, x: -80 }}
+                initial={{ opacity: 0, x: 80 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 80 }}
+                exit={{ opacity: 0, x: -80 }}
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                 className="flex-1 overflow-y-auto px-6 pt-1 md:pt-0"
               >
@@ -379,9 +379,9 @@ export const Basket: FC = () => {
 
                       <div className="space-y-4 mt-6">
                         <div className="rounded-[8px]  bg-greyPrimary p-4">
-                          <div className="flex items-center justify-between text-greenPrimary">
-                            <p className="font-semibold">Итого</p>
-                            <p className="text-[22px] font-bold text-yellow-hover">
+                          <div className="flex items-center justify-start gap-2 text-greenPrimary">
+                            <p className="text-[20px] font-bold">Итого:</p>
+                            <p className="text-[20px] font-bold text-yellow-hover">
                               <AnimatedAmount
                                 value={totalLabel}
                                 durationMs={200}
@@ -389,19 +389,19 @@ export const Basket: FC = () => {
                             </p>
                           </div>
                           {sortedItems.length > 0 && (
-                            <ul className="mt-4 grid gap-3">
+                            <ul className="mt-4 grid gap-4 ">
                               {sortedItems.map((item) => {
                                 const rangeLabel = formatDateRange(item.range);
                                 return (
                                   <li
                                     key={`summary-${item.id}`}
-                                    className="rounded-[6px] border border-grey-border/60 bg-white px-3 py-3 text-sm text-greenPrimary"
+                                    className="rounded-[6px text-sm text-greenPrimary border-b pb-2 border-input"
                                   >
-                                    <div className="flex items-center justify-between gap-4">
+                                    <div className="flex items-center justify-between gap-4 text-greenPrimary">
                                       <span className="font-semibold">
-                                        Тариф {item.calories}
+                                        Тариф {item.calories} ккал
                                       </span>
-                                      <span className="font-medium">
+                                      <span className="font-semibold ">
                                         {item.selectedDays.length}{" "}
                                         {daysWord(item.selectedDays.length)}
                                       </span>
@@ -409,14 +409,14 @@ export const Basket: FC = () => {
                                     <p className="mt-1 text-xs text-greySecondary">
                                       {item.dishesCount} блюд в день
                                     </p>
-                                    {rangeLabel && (
-                                      <p className="mt-1 text-xs text-greySecondary">
-                                        Период доставки: {rangeLabel}
-                                      </p>
-                                    )}
                                   </li>
                                 );
                               })}
+                              <p className="text-[12px] text-yellow-hover">
+                                <span className="text-red-400">*</span> оплата
+                                производится наличными или картой при получении,
+                                или через систему ЕРИП
+                              </p>
                             </ul>
                           )}
                         </div>
@@ -434,7 +434,7 @@ export const Basket: FC = () => {
                 <div className="w-full grid gap-4">
                   <div className="flex items-center justify-start gap-2 text-greenPrimary">
                     <p className="text-[20px] font-bold">Итого:</p>
-                    <p className="text-yellow-hover font-bold text-[24px]">
+                    <p className="text-yellow-hover font-bold text-[20px]">
                       <AnimatedAmount value={totalLabel} durationMs={200} />
                     </p>
                   </div>

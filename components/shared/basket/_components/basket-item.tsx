@@ -39,7 +39,7 @@ export const BasketItem: FC<BasketItemProps> = ({
 
   return (
     <li
-      className="flex items-start gap-4 border-b border-grey-border pb-4"
+      className="flex items-start gap-4 border-b border-input pb-4"
       aria-label={`Тариф ${item.calories}`}
     >
       <div className="hidden w-20 h-20 shrink-0 md:grid place-items-center bg-greyPrimary rounded-md text-greenPrimary font-bold">
