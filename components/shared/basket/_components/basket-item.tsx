@@ -46,7 +46,7 @@ export const BasketItem: FC<BasketItemProps> = ({
         <p>{item.calories}</p>
       </div>
 
-      <div className="flex-1 min-w-0 flex justify-between gap-6">
+      <div className=" w-full  grid grid-cols-[auto_1fr_auto] justify-center ">
         <div className="grid gap-1 min-w-0">
           <p className="font-bold truncate text-greenPrimary">
             Тариф {item.calories}
@@ -67,42 +67,44 @@ export const BasketItem: FC<BasketItemProps> = ({
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 shrink-0">
-          <p className="text-greenPrimary text-sm font-semibold">
-            Количество дней
-          </p>
-          <div className="flex items-center gap-1 md:gap-2">
-            <Button
-              onClick={handleDec}
-              disabled={!canDecrement}
-              title={!canDecrement ? "Минимум 1 день" : undefined}
-              className="px-3 py-2 border-[1px] border-grey-border bg-white text-greenPrimary rounded-[6px] hover:bg-whitePrimary/70 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Уменьшить дни"
-              aria-disabled={!canDecrement}
-            >
-              −
-            </Button>
+        <div className="flex flex-col items-center justify-center gap-3 shrink-0">
+          <div>
+            <p className="text-greenPrimary text-sm font-semibold">
+              Количество дней
+            </p>
+            <div className="flex items-center gap-1 md:gap-2">
+              <Button
+                onClick={handleDec}
+                disabled={!canDecrement}
+                title={!canDecrement ? "Минимум 1 день" : undefined}
+                className="px-3 py-2 border-[1px] border-grey-border bg-white text-greenPrimary rounded-[6px] hover:bg-whitePrimary/70 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Уменьшить дни"
+                aria-disabled={!canDecrement}
+              >
+                −
+              </Button>
 
-            <Input
-              readOnly
-              value={daysCount}
-              inputMode="numeric"
-              aria-readonly="true"
-              className="w-[50px] sm:w-[80px] text-center font-bold border-[1px] border-grey-border bg-white text-greenPrimary rounded-[6px]"
-            />
+              <Input
+                readOnly
+                value={daysCount}
+                inputMode="numeric"
+                aria-readonly="true"
+                className="w-[50px] sm:w-[80px] text-center font-bold border-[1px] border-grey-border bg-white text-greenPrimary rounded-[6px]"
+              />
 
-            <Button
-              onClick={() => onIncrement(item.id)}
-              className="px-3 py-2 border-[1px] border-grey-border bg-white text-greenPrimary rounded-[6px] hover:bg-whitePrimary/70 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Увеличить дни"
-              disabled={!canIncrement}
-            >
-              +
-            </Button>
+              <Button
+                onClick={() => onIncrement(item.id)}
+                className="px-3 py-2 border-[1px] border-grey-border bg-white text-greenPrimary rounded-[6px] hover:bg-whitePrimary/70 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Увеличить дни"
+                disabled={!canIncrement}
+              >
+                +
+              </Button>
+            </div>
           </div>
         </div>
 
-        <div className="text-right grid content-center shrink-0">
+        <div className="text-right   content-center shrink-0">
           <span className="font-bold text-sm text-yellow-hover whitespace-nowrap">
             {totalPrice} BYN
           </span>

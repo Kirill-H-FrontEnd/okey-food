@@ -14,7 +14,7 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <Products />
+      {/* <Products /> */}
       <Calculator />
       <AboutUs />
       {/* <Reviews /> */}

@@ -354,110 +354,119 @@ export const YandexMapComponent: FC<{ zoom?: number }> = ({ zoom = 10 }) => {
   const centerPin = useMemo(() => ({ balloonContent: "Центр Минска" }), []);
 
   return (
-    <YMaps
-      query={{ apikey: process.env.NEXT_PUBLIC_YANDEX_API_KEY!, lang: "ru_RU" }}
-    >
-      <div
-        id="yandex-map-container"
-        className="relative w-full overflow-hidden rounded-[16px] shadow-sm
-                   h-[350px] sm:h-[400px] md:h-[500px] lg:h-[550px]"
-      >
-        {/* Верхние кнопки */}
-        <div className="absolute z-10 top-3 right-3 flex flex-row gap-2">
-          <button className={BTN} onClick={handleType} aria-label="Map type">
-            {mapType === "yandex#map" ? (
-              <MapIcon size={22} />
-            ) : (
-              <SatelliteDish size={22} />
-            )}
-          </button>
-          <button
-            className={BTN}
-            onClick={handleFullscreen}
-            aria-label="Fullscreen"
-          >
-            <Maximize2 size={22} />
-          </button>
-        </div>
+    // <YMaps
+    //   query={{ apikey: process.env.NEXT_PUBLIC_YANDEX_API_KEY!, lang: "ru_RU" }}
+    // >
+    //   <div
+    //     id="yandex-map-container"
+    //     className="relative w-full overflow-hidden rounded-[16px] shadow-sm
+    //                h-[350px] sm:h-[400px] md:h-[500px] lg:h-[550px]"
+    //   >
+    //     {/* Верхние кнопки */}
+    //     <div className="absolute z-10 top-3 right-3 flex flex-row gap-2">
+    //       <button className={BTN} onClick={handleType} aria-label="Map type">
+    //         {mapType === "yandex#map" ? (
+    //           <MapIcon size={22} />
+    //         ) : (
+    //           <SatelliteDish size={22} />
+    //         )}
+    //       </button>
+    //       <button
+    //         className={BTN}
+    //         onClick={handleFullscreen}
+    //         aria-label="Fullscreen"
+    //       >
+    //         <Maximize2 size={22} />
+    //       </button>
+    //     </div>
 
-        {/* Зум + геолокация */}
-        <div className="absolute z-10 right-3 top-1/2 -translate-y-1/2 flex flex-col items-end">
-          <div className="flex flex-col rounded-lg bg-white shadow-lg overflow-hidden">
-            <button
-              className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-all text-greenPrimary rounded-t-lg"
-              onClick={() => handleZoom("in")}
-              aria-label="Zoom in"
-            >
-              <Plus size={22} />
-            </button>
-            <button
-              className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-all text-greenPrimary rounded-b-lg"
-              onClick={() => handleZoom("out")}
-              aria-label="Zoom out"
-            >
-              <Minus size={22} />
-            </button>
-          </div>
-          <button
-            className={BTN + " mt-3"}
-            onClick={handleGeolocate}
-            aria-label="Geolocate"
-          >
-            <LocateFixed size={22} />
-          </button>
-        </div>
+    //     {/* Зум + геолокация */}
+    //     <div className="absolute z-10 right-3 top-1/2 -translate-y-1/2 flex flex-col items-end">
+    //       <div className="flex flex-col rounded-lg bg-white shadow-lg overflow-hidden">
+    //         <button
+    //           className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-all text-greenPrimary rounded-t-lg"
+    //           onClick={() => handleZoom("in")}
+    //           aria-label="Zoom in"
+    //         >
+    //           <Plus size={22} />
+    //         </button>
+    //         <button
+    //           className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-all text-greenPrimary rounded-b-lg"
+    //           onClick={() => handleZoom("out")}
+    //           aria-label="Zoom out"
+    //         >
+    //           <Minus size={22} />
+    //         </button>
+    //       </div>
+    //       <button
+    //         className={BTN + " mt-3"}
+    //         onClick={handleGeolocate}
+    //         aria-label="Geolocate"
+    //       >
+    //         <LocateFixed size={22} />
+    //       </button>
+    //     </div>
 
-        <Map
-          instanceRef={(ref) => {
-            if (!ref) return;
-            mapRef.current = ref;
-            fitMapToCity();
-          }}
-          defaultState={{
-            center,
-            zoom,
-            controls: [],
-            type: mapType,
-            behaviors: ["drag", "dblClickZoom"],
-          }}
-          options={{
-            suppressMapOpenBlock: true,
-            suppressObsoleteBrowserNotifier: true,
-            copyrightUaVisible: false,
-            copyrightLogoVisible: false,
-            copyrightProvidersVisible: false,
-          }}
-          width="100%"
-          height="100%"
-        >
-          {cityClipped.length > 0 &&
-            cityClipped.map((poly, i) => (
-              <Polygon
-                key={i}
-                geometry={poly}
-                options={{
-                  fill: true, // ← принудительно включаем заливку
-                  fillColor: "#7322C55E", // ← шестнадцатеричный цвет с альфой (примерно 45% непрозрачности)
-                  fillOpacity: 0.45,
-                  strokeColor: "#16a34a", // ← контур чуть темнее
-                  strokeOpacity: 1,
-                  strokeWidth: 2,
-                  zIndex: 1000,
-                }}
-              />
-            ))}
+    //     <Map
+    //       instanceRef={(ref) => {
+    //         if (!ref) return;
+    //         mapRef.current = ref;
+    //         fitMapToCity();
+    //       }}
+    //       defaultState={{
+    //         center,
+    //         zoom,
+    //         controls: [],
+    //         type: mapType,
+    //         behaviors: ["drag", "dblClickZoom"],
+    //       }}
+    //       options={{
+    //         suppressMapOpenBlock: true,
+    //         suppressObsoleteBrowserNotifier: true,
+    //         copyrightUaVisible: false,
+    //         copyrightLogoVisible: false,
+    //         copyrightProvidersVisible: false,
+    //       }}
+    //       width="100%"
+    //       height="100%"
+    //     >
+    //       {cityClipped.length > 0 &&
+    //         cityClipped.map((poly, i) => (
+    //           <Polygon
+    //             key={i}
+    //             geometry={poly}
+    //             options={{
+    //               fill: true, // ← принудительно включаем заливку
+    //               fillColor: "#7322C55E", // ← шестнадцатеричный цвет с альфой (примерно 45% непрозрачности)
+    //               fillOpacity: 0.45,
+    //               strokeColor: "#16a34a", // ← контур чуть темнее
+    //               strokeOpacity: 1,
+    //               strokeWidth: 2,
+    //               zIndex: 1000,
+    //             }}
+    //           />
+    //         ))}
 
-          <Placemark geometry={center} properties={centerPin} />
-        </Map>
+    //       <Placemark geometry={center} properties={centerPin} />
+    //     </Map>
 
-        {loading && (
-          <div className="pointer-events-none absolute inset-0 grid place-items-center bg-white/40 backdrop-blur-sm">
-            <div className="animate-pulse rounded-md bg-white p-3 text-sm text-gray-600 shadow">
-              Формирую Минск в пределах МКАД…
-            </div>
-          </div>
-        )}
-      </div>
-    </YMaps>
+    //     {loading && (
+    //       <div className="pointer-events-none absolute inset-0 grid place-items-center bg-white/40 backdrop-blur-sm">
+    //         <div className="animate-pulse rounded-md bg-white p-3 text-sm text-gray-600 shadow">
+    //           Формирую Минск в пределах МКАД…
+    //         </div>
+    //       </div>
+    //     )}
+    //   </div>
+    // </YMaps>
+    <iframe
+      src="https://yandex.ru/map-widget/v1/?um=constructor%3A9d67134e3c795dd5d919e41aa4dee173c5d5f7cd5b3465d543bc87089555bcbc&amp;source=constructor"
+      frameBorder={0}
+      allowFullScreen={true}
+      width="100%"
+      loading="lazy"
+      className="rounded-2xl h-[350px] md:h-[600px]"
+      style={{ display: "block" }}
+    ></iframe>
   );
 };
