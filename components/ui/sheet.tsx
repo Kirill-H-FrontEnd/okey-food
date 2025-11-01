@@ -6,6 +6,12 @@ import { XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+const SheetContentContext = React.createContext<HTMLElement | null>(null);
+
+function useSheetContent() {
+  return React.useContext(SheetContentContext);
+}
+
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
 }
@@ -57,38 +63,49 @@ function SheetContent({
   showCloseButton = false,
   ...props
 }: SheetContentProps) {
+  const [contentNode, setContentNode] = React.useState<HTMLElement | null>(
+    null
+  );
+  const setContentRef = React.useCallback((node: HTMLElement | null) => {
+    setContentNode((previous) => (previous === node ? previous : node));
+  }, []);
+
   return (
     <SheetPortal>
       <SheetOverlay />
       <SheetPrimitive.Content
         data-slot="sheet-content"
+        ref={setContentRef}
         className={cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-[300] flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed  flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
           side === "right" &&
-            "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-full md:w-[600px] border-l  z-[90] md:z-[300]",
+            "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-full md:w-[600px] border-l z-[95] md:z-[300]",
           side === "left" &&
-            "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm",
+            "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm z-[300]",
           side === "top" &&
-            "data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 h-auto border-b",
+            "data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 h-auto border-b z-[95] md:z-[300]",
           side === "bottom" &&
-            "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 h-auto border-t",
+            "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 h-auto border-t z-[300]",
+          !side && "z-[300]",
           className
         )}
         {...props}
       >
-        {showCloseButton && (
-          <SheetPrimitive.Close
-            style={{
-              outline: "none",
-              WebkitTapHighlightColor: "transparent",
-            }}
-            data-slot="sheet-close-button"
-            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100  disabled:pointer-events-none cursor-pointer z-[10]"
-          >
-            <XIcon className="h-4 w-4" />
-          </SheetPrimitive.Close>
-        )}
-        {children}
+        <SheetContentContext.Provider value={contentNode}>
+          {showCloseButton && (
+            <SheetPrimitive.Close
+              style={{
+                outline: "none",
+                WebkitTapHighlightColor: "transparent",
+              }}
+              data-slot="sheet-close-button"
+              className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 disabled:pointer-events-none cursor-pointer z-[10]"
+            >
+              <XIcon className="h-4 w-4" />
+            </SheetPrimitive.Close>
+          )}
+          {children}
+        </SheetContentContext.Provider>
       </SheetPrimitive.Content>
     </SheetPortal>
   );
@@ -149,4 +166,6 @@ export {
   SheetFooter,
   SheetTitle,
   SheetDescription,
+  SheetContentContext,
+  useSheetContent,
 };

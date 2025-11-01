@@ -393,14 +393,14 @@ export const Basket: FC = () => {
                                   className="w-48 shadow-none justify-between font-normal"
                                 >
                                   {date
-                                    ? date.toLocaleDateString()
+                                    ? date.toLocaleDateString("ru-RU")
                                     : "Выбрать дату"}
                                   <CalendarDays />
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent
                                 className="w-auto overflow-hidden p-0 z-[2000]"
-                                align="center"
+                                align="start"
                               >
                                 <Calendar
                                   mode="single"
