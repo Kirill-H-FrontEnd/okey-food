@@ -352,7 +352,7 @@ export const Basket: FC = () => {
           <ChevronRight
             size={18}
             strokeWidth={2}
-            className="absolute right-3 transition duration-300 -translate-x-2 opacity-0 md:group-hover:opacity-100 group-hover:translate-x-0 text-greenPrimary"
+            className="absolute right-3 transition duration-300 -translate-x-1 opacity-0 md:group-hover:opacity-100 group-hover:translate-x-0 text-greenPrimary"
           />
         </Button>
       </SheetTrigger>

@@ -12,7 +12,7 @@ export const Hero: FC = ({}) => {
   return (
     <section
       id="hero"
-      className={`w-full  grid place-items-center bg-whitePrimary`}
+      className={`w-full pt-[60px] md:pt-[80px] grid place-items-center bg-whitePrimary`}
     >
       <Container className="w-full h-full grid md:place-items-center">
         <section className=" bg-greenPrimary px-5 rounded-[16px] relative overflow-hidden w-full mt-4 h-[550px] md:px-10 lg:px-20 grid  items-start md:items-center ">
