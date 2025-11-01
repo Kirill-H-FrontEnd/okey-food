@@ -407,7 +407,7 @@ export const Basket: FC = () => {
               </div>
             </SheetHeader>
 
-            <AnimatePresence mode="sync" initial={false}>
+            <AnimatePresence mode="wait" initial={false}>
               {!isCheckout ? (
                 <m.section
                   key="basket-view"
@@ -459,8 +459,8 @@ export const Basket: FC = () => {
                   <div className="mb-5">
                     <div className="max-w-xl space-y-6 text-greenPrimary">
                       <div className="space-y-3">
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div className="grid gap-2">
+                        <div className="grid md:grid-cols-2 gap-x-3 gap-y-5">
+                          <div className="grid gap-2 relative">
                             <Label htmlFor="checkout-first-name">Имя</Label>
                             <Input
                               enterKeyHint="next"
@@ -484,15 +484,15 @@ export const Basket: FC = () => {
                             />
                             {firstNameError && (
                               <p
-                                id="checkout-first-name-error"
-                                className="text-xs text-red-500"
+                                id="checkout-first-name-error "
+                                className="absolute -bottom-[17px] left-0 text-xs text-red-500"
                               >
                                 {firstNameError}
                               </p>
                             )}
                           </div>
 
-                          <div className="grid gap-2">
+                          <div className="grid gap-2 relative">
                             <Label htmlFor="checkout-last-name">Фамилия</Label>
                             <Input
                               enterKeyHint="next"
@@ -517,14 +517,14 @@ export const Basket: FC = () => {
                             {lastNameError && (
                               <p
                                 id="checkout-last-name-error"
-                                className="text-xs text-red-500"
+                                className="absolute -bottom-[17px] left-0 text-xs text-red-500"
                               >
                                 {lastNameError}
                               </p>
                             )}
                           </div>
 
-                          <div className="grid gap-2">
+                          <div className="grid gap-2 relative">
                             <Label htmlFor="checkout-phone">Телефон</Label>
                             <Input
                               enterKeyHint="next"
@@ -548,7 +548,7 @@ export const Basket: FC = () => {
                             {phoneError && (
                               <p
                                 id="checkout-phone-error"
-                                className="text-xs text-red-500"
+                                className="absolute -bottom-[17px] left-0 text-xs text-red-500"
                               >
                                 {phoneError}
                               </p>
@@ -556,7 +556,7 @@ export const Basket: FC = () => {
                           </div>
 
                           <div className="grid gap-2">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 relative">
                               <Label htmlFor="checkout-social">
                                 Telegram / Instagram
                               </Label>
@@ -609,7 +609,7 @@ export const Basket: FC = () => {
                             {socialError && (
                               <p
                                 id="checkout-social-error"
-                                className="text-xs text-red-500"
+                                className="absolute -bottom-[17px] left-0 text-xs text-red-500"
                               >
                                 {socialError}
                               </p>
@@ -627,7 +627,7 @@ export const Basket: FC = () => {
                           Адрес доставки
                         </h3>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          <div className="grid gap-2">
+                          <div className="grid gap-2 relative">
                             <Label htmlFor="checkout-city">Город</Label>
                             <Select
                               value={formData.city}
@@ -663,14 +663,14 @@ export const Basket: FC = () => {
                             {cityError && (
                               <p
                                 id="checkout-city-error"
-                                className="text-xs text-red-500"
+                                className="absolute -bottom-[17px] left-0 text-xs text-red-500"
                               >
                                 {cityError}
                               </p>
                             )}
                           </div>
 
-                          <div className="grid gap-2">
+                          <div className="grid gap-2 relative">
                             <Label htmlFor="checkout-street">Улица</Label>
                             <Input
                               enterKeyHint="next"
@@ -695,14 +695,14 @@ export const Basket: FC = () => {
                             {streetError && (
                               <p
                                 id="checkout-street-error"
-                                className="text-xs text-red-500"
+                                className="absolute -bottom-[17px] left-0 text-xs text-red-500"
                               >
                                 {streetError}
                               </p>
                             )}
                           </div>
 
-                          <div className="grid gap-2">
+                          <div className="grid gap-2 relative">
                             <Label htmlFor="checkout-house">Дом</Label>
                             <Input
                               enterKeyHint="next"
@@ -725,14 +725,14 @@ export const Basket: FC = () => {
                             {houseError && (
                               <p
                                 id="checkout-house-error"
-                                className="text-xs text-red-500"
+                                className="absolute -bottom-[17px] left-0 text-xs text-red-500"
                               >
                                 {houseError}
                               </p>
                             )}
                           </div>
 
-                          <div className="grid gap-2">
+                          <div className="grid gap-2 relative">
                             <Label htmlFor="checkout-apartment">Квартира</Label>
                             <Input
                               enterKeyHint="done"
@@ -757,7 +757,7 @@ export const Basket: FC = () => {
                             {apartmentError && (
                               <p
                                 id="checkout-apartment-error"
-                                className="text-xs text-red-500"
+                                className="absolute -bottom-[17px] left-0 text-xs text-red-500"
                               >
                                 {apartmentError}
                               </p>

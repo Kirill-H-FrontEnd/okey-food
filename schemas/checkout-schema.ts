@@ -34,7 +34,7 @@ export const checkoutSchema = z.object({
   street: z
     .string()
     .trim()
-    .min(2, "Укажите улицу доставки")
+    .min(2, "Укажите улицу")
     .max(80, "Название улицы слишком длинное"),
   house: z
     .string()
@@ -44,14 +44,14 @@ export const checkoutSchema = z.object({
   apartment: z
     .string()
     .trim()
-    .min(1, "Укажите номер квартиры")
+    .min(1, "Укажите квартиру")
     .max(10, "Слишком длинный номер квартиры"),
   date: z.preprocess((value) => {
     if (value instanceof Date && !Number.isNaN(value.getTime())) {
       return value;
     }
     return undefined;
-  }, z.date({ required_error: "Выберите дату доставки" })),
+  }, z.date({ invalid_type_error: "Укажите дату доставки" })),
   comment: z
     .string()
     .trim()
