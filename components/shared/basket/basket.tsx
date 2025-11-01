@@ -264,26 +264,29 @@ export const Basket: FC = () => {
                           <div className="grid gap-2">
                             <Label htmlFor="checkout-first-name">Имя</Label>
                             <Input
+                              enterKeyHint="next"
+                              inputMode="text"
                               id="checkout-first-name"
                               placeholder="Введите имя"
-                              autoComplete="given-name"
                             />
                           </div>
                           <div className="grid gap-2">
                             <Label htmlFor="checkout-last-name">Фамилия</Label>
                             <Input
+                              enterKeyHint="next"
+                              inputMode="text"
                               id="checkout-last-name"
                               placeholder="Введите фамилию"
-                              autoComplete="family-name"
                             />
                           </div>
                           <div className="grid gap-2">
                             <Label htmlFor="checkout-phone">Телефон</Label>
                             <Input
+                              enterKeyHint="next"
+                              inputMode="tel"
                               id="checkout-phone"
                               type="tel"
                               placeholder="+375 (__ ) ___-__-__"
-                              autoComplete="tel"
                             />
                           </div>
                           <div className="grid gap-2 ">
@@ -316,9 +319,10 @@ export const Basket: FC = () => {
                             </div>
 
                             <Input
+                              enterKeyHint="done"
+                              inputMode="text"
                               id="checkout-social"
                               placeholder="Введите ник @"
-                              autoComplete="off"
                             />
                           </div>
                         </div>
@@ -353,25 +357,28 @@ export const Basket: FC = () => {
                           <div className="grid gap-2">
                             <Label htmlFor="checkout-street">Улица</Label>
                             <Input
+                              enterKeyHint="next"
+                              inputMode="text"
                               id="checkout-street"
                               placeholder="Ул."
-                              autoComplete="address-line1"
                             />
                           </div>
                           <div className="grid gap-2">
                             <Label htmlFor="checkout-house">Дом</Label>
                             <Input
+                              enterKeyHint="next"
+                              inputMode="text"
                               id="checkout-house"
                               placeholder="№"
-                              autoComplete="address-line2"
                             />
                           </div>
                           <div className="grid gap-2">
                             <Label htmlFor="checkout-apartment">Квартира</Label>
                             <Input
+                              enterKeyHint="done"
+                              inputMode="numeric"
                               placeholder="Кв."
                               id="checkout-apartment"
-                              autoComplete="off"
                             />
                           </div>
                           <div className="flex flex-col gap-3">
@@ -383,7 +390,7 @@ export const Basket: FC = () => {
                                 <Button
                                   variant="outline"
                                   id="date"
-                                  className="w-48 justify-between font-normal"
+                                  className="w-48 shadow-none justify-between font-normal"
                                 >
                                   {date
                                     ? date.toLocaleDateString()

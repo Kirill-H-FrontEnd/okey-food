@@ -85,11 +85,9 @@ export const SelectDate: FC<TSelectDate> = ({ onChange, defaultValue }) => {
     }
 
     setDeliveryRanges(ranges);
-  }, []); // CHANGED: убрали автоселект отсюда
+  }, []);
 
   useEffect(() => {
-    // NEW: определяем выбранное значение,
-    // предпочитая валидный defaultValue, иначе — первый доступный
     if (deliveryRanges.length === 0) return;
 
     let nextValue = "";
