@@ -205,16 +205,27 @@ export const Basket: FC = () => {
                   }
                   setIsBasketOpen(false);
                 }}
-                className=" bg-greyPrimary grid p-2 rounded-full group cursor-pointer"
+                className=" bg-greyPrimary grid md:p-2 rounded-sm group cursor-pointer"
                 aria-label={
                   isCheckout ? "Вернуться к корзине" : "Закрыть корзину"
                 }
               >
                 <span className="inline-flex">
                   {isCheckout ? (
-                    <ChevronLeft className="h-4 w-4 block text-greenPrimary transition-colors group-hover:text-yellow-hover" />
+                    <>
+                      <ChevronLeft className="h-4 w-4 hidden md:block text-greenPrimary transition-colors group-hover:text-yellow-hover" />
+                      <p className="text-[13px] md:hidden pl-2 pr-3 py-1 text-greenPrimary font-bold flex  items-center">
+                        <ChevronLeft size={14} />
+                        Назад
+                      </p>
+                    </>
                   ) : (
-                    <XIcon className="h-4 w-4 block text-greenPrimary transition-colors group-hover:text-yellow-hover" />
+                    <>
+                      <XIcon className="h-4 w-4 hidden md:block text-greenPrimary transition-colors group-hover:text-yellow-hover" />
+                      <p className="text-[13px]  font-bold md:hidden px-3 py-1 text-greenPrimary">
+                        Закрыть
+                      </p>
+                    </>
                   )}
                 </span>
               </button>
@@ -254,9 +265,9 @@ export const Basket: FC = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -80 }}
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                className="flex-1 overflow-y-auto px-6 pt-1 md:pt-0"
+                className="flex-1 overflow-y-auto px-6 pt-1 md:pt-4"
               >
-                <div className="">
+                <div className="mb-5">
                   <div className="max-w-xl space-y-6 text-greenPrimary">
                     <div className="">
                       <div className="space-y-3">
@@ -294,14 +305,16 @@ export const Basket: FC = () => {
                               <Label htmlFor="checkout-social">
                                 Telegram / Instagram
                               </Label>
-
                               <TooltipProvider delayDuration={150}>
                                 <Tooltip>
-                                  <TooltipTrigger asChild>
+                                  <TooltipTrigger
+                                    className="hidden md:block"
+                                    asChild
+                                  >
                                     <button
                                       type="button"
                                       aria-label="Подсказка по полю «Социальные сети»"
-                                      className="inline-flex items-center text-greySecondary hover:text-greenPrimary"
+                                      className=" items-center text-greySecondary hover:text-greenPrimary"
                                     >
                                       <HelpCircle className="h-3 w-3" />
                                     </button>
@@ -324,6 +337,10 @@ export const Basket: FC = () => {
                               id="checkout-social"
                               placeholder="Введите ник @"
                             />
+                            <p className="text-[12px] md:hidden text-greySecondary">
+                              Укажите ник в Telegram или Instagram — так нам
+                              будет проще связаться.
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -450,7 +467,6 @@ export const Basket: FC = () => {
                           {sortedItems.length > 0 && (
                             <ul className="mt-4 grid gap-4 ">
                               {sortedItems.map((item) => {
-                                const rangeLabel = formatDateRange(item.range);
                                 return (
                                   <li
                                     key={`summary-${item.id}`}
@@ -487,9 +503,9 @@ export const Basket: FC = () => {
             )}
           </AnimatePresence>
 
-          <AnimatePresence mode="wait" initial={false}>
+          <AnimatePresence mode="sync" initial={false}>
             {!isCheckout ? (
-              <div className="px-6 py-4 bg-white">
+              <div className="px-6 py-4 bg-white shadow-sm shadow-greySecondary/70">
                 <div className="w-full grid gap-4">
                   <div className="flex items-center justify-start gap-2 text-greenPrimary">
                     <p className="text-[20px] font-bold">Итого:</p>
@@ -509,21 +525,23 @@ export const Basket: FC = () => {
                 </div>
               </div>
             ) : (
-              <div key="checkout-footer" className="px-6 py-4 bg-white">
+              <div
+                key="checkout-footer"
+                className="px-6 py-4 bg-white shadow-sm shadow-greySecondary/70"
+              >
                 <div className="grid gap-4">
-                  <label
-                    htmlFor="consent-switch"
-                    className="flex items-center gap-3 text-greenPrimary cursor-pointer"
-                  >
+                  <div className="flex gap-4">
                     <Switch
                       id="consent-switch"
                       checked={isConsentGiven}
                       onCheckedChange={setIsConsentGiven}
                     />
-                    <span className="text-sm font-semibold select-none text-greenPrimary">
-                      Я согласен на обработку персональных данных
-                    </span>
-                  </label>
+                    <label className="flex items-center gap-3 text-greenPrimary ">
+                      <span className="text-sm font-semibold select-none text-greenPrimary">
+                        Я согласен на обработку персональных данных
+                      </span>
+                    </label>
+                  </div>
 
                   <Button
                     type="button"

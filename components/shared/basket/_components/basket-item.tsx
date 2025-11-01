@@ -47,7 +47,7 @@ export const BasketItem: FC<BasketItemProps> = ({
       </div>
 
       <div className=" w-full  grid grid-cols-[auto_1fr_auto] justify-center ">
-        <div className="grid gap-1 min-w-0">
+        <div className="md:grid gap-1 min-w-0">
           <p className="font-bold truncate text-greenPrimary">
             Тариф {item.calories}
           </p>
@@ -55,9 +55,9 @@ export const BasketItem: FC<BasketItemProps> = ({
             {item.dishesCount} блюд в день
           </p>
 
-          <div className="mt-2 ">
+          <div className="mt-2 hidden md:block">
             <button
-              className="h-auto text-greenPrimary cursor-pointer inline-flex items-center gap-1 hover:text-yellow-hover transition-colors"
+              className="h-auto text-greenPrimary cursor-pointer inline-flex items-center gap-1 hover:text-red-400 transition-colors"
               onClick={() => onRemove(item.id)}
               aria-label={`Удалить тариф ${item.calories} из корзины`}
             >
@@ -67,7 +67,7 @@ export const BasketItem: FC<BasketItemProps> = ({
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-center gap-3 shrink-0">
+        <div className="flex flex-col items-center  gap-3 shrink-0">
           <div>
             <p className="text-greenPrimary text-sm font-semibold">
               Количество дней
@@ -104,13 +104,23 @@ export const BasketItem: FC<BasketItemProps> = ({
           </div>
         </div>
 
-        <div className="text-right   content-center shrink-0">
+        <div className="text-right shrink-0">
           <span className="font-bold text-sm text-yellow-hover whitespace-nowrap">
             {totalPrice} BYN
           </span>
-          <p className="text-xs text-greySecondary whitespace-nowrap">
+          <p className="text-xs hidden md:block text-greySecondary whitespace-nowrap">
             {item.pricePerDay} BYN / день
           </p>
+          <div className="mt-1 md:hidden">
+            <button
+              className="h-auto text-greenPrimary cursor-pointer inline-flex items-center gap-1 hover:text-red-400 transition-colors"
+              onClick={() => onRemove(item.id)}
+              aria-label={`Удалить тариф ${item.calories} из корзины`}
+            >
+              <Trash size={18} />
+              <span className="text-xs font-medium">Удалить</span>
+            </button>
+          </div>
         </div>
       </div>
     </li>
