@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { CartItem } from "@/store/useStore";
 import { listSelectableDays } from "@/lib/delivery-days";
 import { Trash } from "lucide-react";
-
+import { m } from "framer-motion";
 type BasketItemProps = {
   item: CartItem;
   onRemove: (id: string) => void;
@@ -38,7 +38,12 @@ export const BasketItem: FC<BasketItemProps> = ({
   }, [canDecrement, onDecrement, item.id]);
 
   return (
-    <li
+    <m.li
+      layout
+      initial={{ opacity: 0, y: 16, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -16, scale: 0.95 }}
+      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
       className="flex items-start gap-4 border-b border-input pb-4"
       aria-label={`Тариф ${item.calories}`}
     >
@@ -123,6 +128,6 @@ export const BasketItem: FC<BasketItemProps> = ({
           </div>
         </div>
       </div>
-    </li>
+    </m.li>
   );
 };
