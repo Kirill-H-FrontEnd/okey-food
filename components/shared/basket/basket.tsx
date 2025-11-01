@@ -764,7 +764,7 @@ export const Basket: FC = () => {
                             )}
                           </div>
 
-                          <div className="flex flex-col gap-3">
+                          <div className="flex flex-col gap-3 relative">
                             <Label htmlFor="date" className="px-1">
                               Дата доставки
                             </Label>
@@ -809,7 +809,7 @@ export const Basket: FC = () => {
                             {dateError && (
                               <p
                                 id="checkout-date-error"
-                                className="text-xs text-red-500"
+                                className="absolute -bottom-[17px] left-0 text-xs text-red-500 "
                               >
                                 {dateError}
                               </p>
@@ -817,7 +817,7 @@ export const Basket: FC = () => {
                           </div>
                         </div>
 
-                        <div className="grid gap-2">
+                        <div className="grid gap-2 mt-5">
                           <Label htmlFor="checkout-comment">
                             Комментарий к заказу
                           </Label>

@@ -51,7 +51,7 @@ export const checkoutSchema = z.object({
       return value;
     }
     return undefined;
-  }, z.date({ invalid_type_error: "Укажите дату доставки" })),
+  }, z.date({ error: "Укажите дату" })),
   comment: z
     .string()
     .trim()
