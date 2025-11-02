@@ -22,14 +22,7 @@ export const checkoutSchema = z.object({
       /^\+375\s?\(?\d{2}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}$/,
       "Введите телефон в формате +375 (__) ___-__-__"
     ),
-  social: z
-    .string()
-    .trim()
-    .max(64, "Ник слишком длинный")
-    .refine(
-      (value) => value === "" || /^@[\w.]{3,30}$/i.test(value),
-      "Укажите ник в формате @username или оставьте поле пустым"
-    ),
+  social: z.string().trim(),
   city: z.string().trim().min(1, "Выберите город доставки"),
   street: z
     .string()

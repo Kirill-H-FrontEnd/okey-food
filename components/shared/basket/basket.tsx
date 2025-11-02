@@ -1,28 +1,10 @@
 "use client";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import {
-  Calendar1,
-  Calendar1Icon,
-  CalendarDays,
-  ChevronDownIcon,
-  HelpCircle,
+  ChevronRight,
+  MessageCircleWarning,
+  ShoppingBasket,
 } from "lucide-react";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
-import { Calendar } from "@/components/ui/calendar";
-import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { ChevronLeft, ChevronRight, ShoppingBasket, XIcon } from "lucide-react";
 import {
   AnimatePresence,
   LazyMotion,
@@ -30,82 +12,56 @@ import {
   m,
   useReducedMotion,
 } from "framer-motion";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { AnimatedAmount } from "@/components/magicui/animated-amount";
 import { checkoutSchema } from "@/schemas/checkout-schema";
 import { useBasketStore } from "@/store/useStore";
-import { AnimatedAmount } from "@/components/magicui/animated-amount";
 import { BasketItem } from "./_components/basket-item";
 import { BasketEmpty } from "./_components/basket-empty";
+import { BasketFooter } from "./_components/basket-footer";
+import { BasketHeader } from "./_components/basket-header";
+import { CheckoutFooter } from "./_components/checkout-footer";
+import { CheckoutForm } from "./_components/checkout-form";
+import { CheckoutSummary } from "./_components/checkout-summary";
 import { listSelectableDays } from "@/lib/delivery-days";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Popover,
-  PopoverAnchor,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 
-type FormState = {
-  firstName: string;
-  lastName: string;
-  phone: string;
-  social: string;
-  city: string;
-  street: string;
-  house: string;
-  apartment: string;
-  date: Date | null;
-  comment: string;
+import type { CheckoutFormField, CheckoutFormState, CityOption } from "./types";
+
+type ActiveError = {
+  field: CheckoutFormField;
+  message: string;
 };
 
-type FormErrors = Record<keyof FormState, string | null>;
-
-const CITIES = [
+const CITIES: CityOption[] = [
   { value: "minsk", label: "Минск" },
   { value: "brest", label: "Брест" },
   { value: "gomel", label: "Гомель" },
   { value: "vitebsk", label: "Витебск" },
 ];
 
-function formatDateRange(range: string | null) {
-  if (!range) return null;
-  const [startStr, endStr] = range.split("_");
-  if (!startStr || !endStr) return null;
+const FIELD_ID_MAP: Record<CheckoutFormField, string> = {
+  firstName: "checkout-first-name",
+  lastName: "checkout-last-name",
+  phone: "checkout-phone",
+  social: "checkout-social",
+  city: "checkout-city",
+  street: "checkout-street",
+  house: "checkout-house",
+  apartment: "checkout-apartment",
+  date: "checkout-date",
+  comment: "checkout-comment",
+};
 
-  const formatPart = (iso: string) => {
-    const date = new Date(iso);
-    if (Number.isNaN(date.getTime())) return null;
-    return date.toLocaleDateString("ru-RU", {
-      day: "2-digit",
-      month: "short",
-    });
-  };
-
-  const start = formatPart(startStr);
-  const end = formatPart(endStr);
-  if (!start || !end) return null;
-  return `${start} – ${end}`;
-}
-
-function daysWord(n: number) {
-  const mod10 = n % 10;
-  const mod100 = n % 100;
-  if (mod10 === 1 && mod100 !== 11) return "день";
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return "дня";
-  return "дней";
-}
-
-const createInitialFormState = (): FormState => ({
+const createInitialFormState = (): CheckoutFormState => ({
   firstName: "",
   lastName: "",
   phone: "",
@@ -118,22 +74,6 @@ const createInitialFormState = (): FormState => ({
   comment: "",
 });
 
-const createEmptyErrors = (): FormErrors => ({
-  firstName: null,
-  lastName: null,
-  phone: null,
-  social: null,
-  city: null,
-  street: null,
-  house: null,
-  apartment: null,
-  date: null,
-  comment: null,
-});
-
-const errorsAreEqual = (a: FormErrors, b: FormErrors) =>
-  (Object.keys(a) as Array<keyof FormErrors>).every((key) => a[key] === b[key]);
-
 export const Basket: FC = () => {
   const isBasketOpen = useBasketStore((s) => s.isBasketOpen);
   const setIsBasketOpen = useBasketStore((s) => s.setIsBasketOpen);
@@ -143,19 +83,22 @@ export const Basket: FC = () => {
 
   const prefersReducedMotion = useReducedMotion();
 
-  const [open, setOpen] = useState(false);
   const [isCheckout, setIsCheckout] = useState(false);
   const [isConsentGiven, setIsConsentGiven] = useState(false);
-  const [formData, setFormData] = useState<FormState>(() =>
+  const [formData, setFormData] = useState<CheckoutFormState>(() =>
     createInitialFormState()
   );
-  const [fieldErrors, setFieldErrors] = useState<FormErrors>(() =>
-    createEmptyErrors()
-  );
-  const [activeErrorField, setActiveErrorField] = useState<
-    keyof FormState | null
-  >(null);
-  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
+  const [activeError, setActiveError] = useState<ActiveError | null>(null);
+
+  const handleCloseBasket = useCallback(() => {
+    setIsBasketOpen(false);
+  }, [setIsBasketOpen]);
+
+  const handleReturnToBasket = useCallback(() => {
+    setIsCheckout(false);
+    setIsConsentGiven(false);
+    setActiveError(null);
+  }, [setIsCheckout, setIsConsentGiven]);
 
   const sortedItems = useMemo(
     () => [...items].sort((a, b) => Number(a.calories) - Number(b.calories)),
@@ -175,15 +118,13 @@ export const Basket: FC = () => {
 
   const resetFormState = useCallback(() => {
     setFormData(createInitialFormState());
-    setFieldErrors(createEmptyErrors());
-    setActiveErrorField(null);
-    setHasAttemptedSubmit(false);
+    setActiveError(null);
+    setIsConsentGiven(false);
   }, []);
 
   useEffect(() => {
     if (!isBasketOpen) {
       setIsCheckout(false);
-      setIsConsentGiven(false);
       resetFormState();
     }
   }, [isBasketOpen, resetFormState]);
@@ -191,50 +132,32 @@ export const Basket: FC = () => {
   useEffect(() => {
     if (sortedItems.length === 0) {
       setIsCheckout(false);
-      setIsConsentGiven(false);
       resetFormState();
     }
   }, [sortedItems.length, resetFormState]);
 
-  const validateForm = useCallback((state: FormState) => {
+  const validateForm = useCallback((state: CheckoutFormState) => {
     const parsed = checkoutSchema.safeParse(state);
     if (parsed.success) {
-      setFieldErrors((prev) => {
-        const empty = createEmptyErrors();
-        if (errorsAreEqual(prev, empty)) return prev;
-        return empty;
-      });
-      setActiveErrorField(null);
       return { valid: true as const, data: parsed.data };
     }
 
-    const nextErrors = createEmptyErrors();
-    let firstErrorField: keyof FormState | null = null;
-    for (const issue of parsed.error.issues) {
-      const pathKey = issue.path[0];
-      if (typeof pathKey !== "string") continue;
-      const fieldKey = pathKey as keyof FormState;
-      if (!nextErrors[fieldKey]) {
-        nextErrors[fieldKey] = issue.message;
-        if (!firstErrorField) firstErrorField = fieldKey;
-      }
+    const firstIssue = parsed.error.issues.find(
+      (issue) => typeof issue.path[0] === "string"
+    );
+
+    if (!firstIssue) {
+      return { valid: false as const, error: null };
     }
 
-    setFieldErrors((prev) => {
-      if (errorsAreEqual(prev, nextErrors)) return prev;
-      return nextErrors;
-    });
-    setActiveErrorField((current) => {
-      if (current && nextErrors[current]) return current;
-      return firstErrorField;
-    });
-    return { valid: false as const, data: null };
+    return {
+      valid: false as const,
+      error: {
+        field: firstIssue.path[0] as CheckoutFormField,
+        message: firstIssue.message,
+      },
+    };
   }, []);
-
-  useEffect(() => {
-    if (!hasAttemptedSubmit) return;
-    validateForm(formData);
-  }, [formData, hasAttemptedSubmit, validateForm]);
 
   const handleIncrementDays = (id: string) => {
     const item = items.find((entry) => entry.id === id);
@@ -268,24 +191,76 @@ export const Basket: FC = () => {
     if (itemCount === 0) return;
     setIsCheckout(true);
     setIsConsentGiven(false);
-    setActiveErrorField(null);
-    setHasAttemptedSubmit(false);
+    setActiveError(null);
   };
 
-  const handleFieldChange = <K extends keyof FormState>(
+  const handleFieldChange = <K extends CheckoutFormField>(
     field: K,
-    value: FormState[K]
+    value: CheckoutFormState[K]
   ) => {
-    setFormData((prev) => ({
-      ...prev,
+    const nextState = {
+      ...formData,
       [field]: value,
-    }));
+    } as CheckoutFormState;
+
+    setFormData(nextState);
+    setActiveError((current) => {
+      if (!current || current.field !== field) return current;
+
+      const validation = checkoutSchema.safeParse(nextState);
+      if (validation.success) {
+        return null;
+      }
+
+      const issueForField = validation.error.issues.find(
+        (issue) => issue.path[0] === field
+      );
+
+      if (!issueForField) {
+        return null;
+      }
+
+      if (issueForField.message === current.message) {
+        return current;
+      }
+
+      return { field, message: issueForField.message };
+    });
   };
 
   const handleSubmit = () => {
-    setHasAttemptedSubmit(true);
     const validation = validateForm(formData);
-    if (!validation.valid) return;
+
+    if (!validation.valid) {
+      if (validation.error) {
+        setActiveError(validation.error);
+        // toast.error(`${validation.error.message}`);
+        toast("", {
+          description: validation.error.message,
+          duration: 3000,
+          icon: <MessageCircleWarning className="size-4 text-red-500" />,
+          position: `top-center`,
+          classNames: {
+            content: " text-[18px] ml-0",
+            description: " text-[14px] text-red-400",
+            toast: "bg-white backdrop-blur-md ",
+          },
+        });
+
+        const fieldId = FIELD_ID_MAP[validation.error.field];
+        if (fieldId) {
+          requestAnimationFrame(() => {
+            const element = document.getElementById(fieldId);
+            if (element instanceof HTMLElement) {
+              element.focus();
+            }
+          });
+        }
+      }
+      return;
+    }
+
+    setActiveError(null);
 
     // TODO: отправка на сервер
     console.log("Checkout data", {
@@ -324,19 +299,7 @@ export const Basket: FC = () => {
     [prefersMotionReduction]
   );
 
-  const getFieldError = (field: keyof FormState) =>
-    activeErrorField === field ? fieldErrors[field] : null;
-
-  const firstNameError = getFieldError("firstName");
-  const lastNameError = getFieldError("lastName");
-  const phoneError = getFieldError("phone");
-  const socialError = getFieldError("social");
-  const cityError = getFieldError("city");
-  const streetError = getFieldError("street");
-  const houseError = getFieldError("house");
-  const apartmentError = getFieldError("apartment");
-  const dateError = getFieldError("date");
-  const commentError = getFieldError("comment");
+  const highlightedField = activeError?.field ?? null;
 
   return (
     <Sheet open={isBasketOpen} onOpenChange={setIsBasketOpen}>
@@ -363,48 +326,12 @@ export const Basket: FC = () => {
       >
         <LazyMotion features={domAnimation}>
           <div className="flex h-full flex-col pt-[55px] md:pt-0">
-            <SheetHeader className="relative px-4 md:px-5 pb-4 md:pt-4 p ">
-              <div className="relative flex items-center justify-between">
-                <SheetTitle className="flex w-full items-center  gap-2 text-center text-[20px] md:text-[24px] font-bold text-greenPrimary md:w-auto md:justify-start md:text-left">
-                  <ShoppingBasket className="text-yellowPrimary w-5 h-7 md:w-7 md:h-7" />
-                  <p>{isCheckout ? "Оформление заказа" : "Корзина"}</p>
-                </SheetTitle>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (isCheckout) {
-                      setIsCheckout(false);
-                      setIsConsentGiven(false);
-                      return;
-                    }
-                    setIsBasketOpen(false);
-                  }}
-                  className=" bg-greyPrimary grid md:p-2 rounded-sm group cursor-pointer"
-                  aria-label={
-                    isCheckout ? "Вернуться к корзине" : "Закрыть корзину"
-                  }
-                >
-                  <span className="inline-flex">
-                    {isCheckout ? (
-                      <>
-                        <ChevronLeft className="h-4 w-4 hidden md:block text-greenPrimary transition-colors group-hover:text-yellow-hover" />
-                        <p className="text-[13px] md:hidden pl-2 pr-3 py-1 text-greenPrimary font-bold flex  items-center">
-                          <ChevronLeft size={14} />
-                          Назад
-                        </p>
-                      </>
-                    ) : (
-                      <>
-                        <XIcon className="h-4 w-4 hidden md:block text-greenPrimary transition-colors group-hover:text-yellow-hover" />
-                        <p className="text-[13px]  font-bold md:hidden px-3 py-1 text-greenPrimary">
-                          Закрыть
-                        </p>
-                      </>
-                    )}
-                  </span>
-                </button>
-              </div>
+            <SheetHeader className="relative ">
+              <BasketHeader
+                isCheckout={isCheckout}
+                onClose={handleCloseBasket}
+                onReturn={handleReturnToBasket}
+              />
             </SheetHeader>
 
             <AnimatePresence mode="wait" initial={false}>
@@ -416,7 +343,7 @@ export const Basket: FC = () => {
                   animate="animate"
                   exit="exit"
                   transition={sectionTransition}
-                  className="flex-1 overflow-y-auto px-6"
+                  className="flex-1 overflow-y-auto px-5"
                   style={{
                     willChange: prefersMotionReduction
                       ? undefined
@@ -449,7 +376,7 @@ export const Basket: FC = () => {
                   animate="animate"
                   exit="exit"
                   transition={sectionTransition}
-                  className="flex-1 overflow-y-auto px-6 pt-1 md:pt-4"
+                  className="flex-1 overflow-y-auto px-5 pt-1 md:pt-4"
                   style={{
                     willChange: prefersMotionReduction
                       ? undefined
@@ -458,447 +385,16 @@ export const Basket: FC = () => {
                 >
                   <div className="mb-5">
                     <div className="max-w-xl space-y-6 text-greenPrimary">
-                      <div className="space-y-3">
-                        <div className="grid md:grid-cols-2 gap-x-3 gap-y-5">
-                          <div className="grid gap-2 relative">
-                            <Label htmlFor="checkout-first-name">Имя</Label>
-                            <Input
-                              enterKeyHint="next"
-                              inputMode="text"
-                              id="checkout-first-name"
-                              placeholder="Введите имя"
-                              value={formData.firstName}
-                              onChange={(e) =>
-                                handleFieldChange("firstName", e.target.value)
-                              }
-                              aria-invalid={Boolean(firstNameError)}
-                              aria-describedby={
-                                firstNameError
-                                  ? "checkout-first-name-error"
-                                  : undefined
-                              }
-                              className={cn(
-                                firstNameError &&
-                                  "border-red-400 focus-visible:border-red-400 focus-visible:ring-red-400"
-                              )}
-                            />
-                            {firstNameError && (
-                              <p
-                                id="checkout-first-name-error "
-                                className="absolute -bottom-[17px] left-0 text-xs text-red-500"
-                              >
-                                {firstNameError}
-                              </p>
-                            )}
-                          </div>
-
-                          <div className="grid gap-2 relative">
-                            <Label htmlFor="checkout-last-name">Фамилия</Label>
-                            <Input
-                              enterKeyHint="next"
-                              inputMode="text"
-                              id="checkout-last-name"
-                              placeholder="Введите фамилию"
-                              value={formData.lastName}
-                              onChange={(e) =>
-                                handleFieldChange("lastName", e.target.value)
-                              }
-                              aria-invalid={Boolean(lastNameError)}
-                              aria-describedby={
-                                lastNameError
-                                  ? "checkout-last-name-error"
-                                  : undefined
-                              }
-                              className={cn(
-                                lastNameError &&
-                                  "border-red-400 focus-visible:border-red-400 focus-visible:ring-red-400"
-                              )}
-                            />
-                            {lastNameError && (
-                              <p
-                                id="checkout-last-name-error"
-                                className="absolute -bottom-[17px] left-0 text-xs text-red-500"
-                              >
-                                {lastNameError}
-                              </p>
-                            )}
-                          </div>
-
-                          <div className="grid gap-2 relative">
-                            <Label htmlFor="checkout-phone">Телефон</Label>
-                            <Input
-                              enterKeyHint="next"
-                              inputMode="tel"
-                              id="checkout-phone"
-                              type="tel"
-                              placeholder="+375 (__ ) ___-__-__"
-                              value={formData.phone}
-                              onChange={(e) =>
-                                handleFieldChange("phone", e.target.value)
-                              }
-                              aria-invalid={Boolean(phoneError)}
-                              aria-describedby={
-                                phoneError ? "checkout-phone-error" : undefined
-                              }
-                              className={cn(
-                                phoneError &&
-                                  "border-red-400 focus-visible:border-red-400 focus-visible:ring-red-400"
-                              )}
-                            />
-                            {phoneError && (
-                              <p
-                                id="checkout-phone-error"
-                                className="absolute -bottom-[17px] left-0 text-xs text-red-500"
-                              >
-                                {phoneError}
-                              </p>
-                            )}
-                          </div>
-
-                          <div className="grid gap-2">
-                            <div className="flex items-center gap-2 relative">
-                              <Label htmlFor="checkout-social">
-                                Telegram / Instagram
-                              </Label>
-                              <TooltipProvider delayDuration={150}>
-                                <Tooltip>
-                                  <TooltipTrigger
-                                    className="hidden md:block"
-                                    asChild
-                                  >
-                                    <button
-                                      type="button"
-                                      aria-label="Подсказка по полю «Социальные сети»"
-                                      className=" items-center text-greySecondary hover:text-greenPrimary"
-                                    >
-                                      <HelpCircle className="h-3 w-3" />
-                                    </button>
-                                  </TooltipTrigger>
-                                  <TooltipContent
-                                    className="max-w-[280px] bg-whitePrimary text-greenPrimary text-[13px] shadow-sm"
-                                    side="top"
-                                    sideOffset={6}
-                                  >
-                                    Укажите ник в Telegram или Instagram — так
-                                    нам будет проще связаться.
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            </div>
-
-                            <Input
-                              enterKeyHint="done"
-                              inputMode="text"
-                              id="checkout-social"
-                              placeholder="Введите ник @"
-                              value={formData.social}
-                              onChange={(e) =>
-                                handleFieldChange("social", e.target.value)
-                              }
-                              aria-invalid={Boolean(socialError)}
-                              aria-describedby={
-                                socialError
-                                  ? "checkout-social-error"
-                                  : undefined
-                              }
-                              className={cn(
-                                socialError &&
-                                  "border-red-400 focus-visible:border-red-400 focus-visible:ring-red-400"
-                              )}
-                            />
-                            {socialError && (
-                              <p
-                                id="checkout-social-error"
-                                className="absolute -bottom-[17px] left-0 text-xs text-red-500"
-                              >
-                                {socialError}
-                              </p>
-                            )}
-                            <p className="text-[12px] md:hidden text-greySecondary">
-                              Укажите ник в Telegram или Instagram — так нам
-                              будет проще связаться.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-4 mt-6">
-                        <h3 className="text-greenPrimary font-bold text-[18px]">
-                          Адрес доставки
-                        </h3>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          <div className="grid gap-2 relative">
-                            <Label htmlFor="checkout-city">Город</Label>
-                            <Select
-                              value={formData.city}
-                              onValueChange={(value) =>
-                                handleFieldChange("city", value)
-                              }
-                            >
-                              <SelectTrigger
-                                id="checkout-city"
-                                className={cn(
-                                  "w-full text-greenPrimary",
-                                  cityError &&
-                                    "border-red-400 focus-visible:border-red-400 focus-visible:ring-red-400"
-                                )}
-                                aria-invalid={Boolean(cityError)}
-                                aria-describedby={
-                                  cityError ? "checkout-city-error" : undefined
-                                }
-                              >
-                                <SelectValue placeholder="Выберите город" />
-                              </SelectTrigger>
-                              <SelectContent className="text-greenPrimary">
-                                {CITIES.map((city) => (
-                                  <SelectItem
-                                    key={city.value}
-                                    value={city.value}
-                                  >
-                                    {city.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            {cityError && (
-                              <p
-                                id="checkout-city-error"
-                                className="absolute -bottom-[17px] left-0 text-xs text-red-500"
-                              >
-                                {cityError}
-                              </p>
-                            )}
-                          </div>
-
-                          <div className="grid gap-2 relative">
-                            <Label htmlFor="checkout-street">Улица</Label>
-                            <Input
-                              enterKeyHint="next"
-                              inputMode="text"
-                              id="checkout-street"
-                              placeholder="Ул."
-                              value={formData.street}
-                              onChange={(e) =>
-                                handleFieldChange("street", e.target.value)
-                              }
-                              aria-invalid={Boolean(streetError)}
-                              aria-describedby={
-                                streetError
-                                  ? "checkout-street-error"
-                                  : undefined
-                              }
-                              className={cn(
-                                streetError &&
-                                  "border-red-400 focus-visible:border-red-400 focus-visible:ring-red-400"
-                              )}
-                            />
-                            {streetError && (
-                              <p
-                                id="checkout-street-error"
-                                className="absolute -bottom-[17px] left-0 text-xs text-red-500"
-                              >
-                                {streetError}
-                              </p>
-                            )}
-                          </div>
-
-                          <div className="grid gap-2 relative">
-                            <Label htmlFor="checkout-house">Дом</Label>
-                            <Input
-                              enterKeyHint="next"
-                              inputMode="text"
-                              id="checkout-house"
-                              placeholder="№"
-                              value={formData.house}
-                              onChange={(e) =>
-                                handleFieldChange("house", e.target.value)
-                              }
-                              aria-invalid={Boolean(houseError)}
-                              aria-describedby={
-                                houseError ? "checkout-house-error" : undefined
-                              }
-                              className={cn(
-                                houseError &&
-                                  "border-red-400 focus-visible:border-red-400 focus-visible:ring-red-400"
-                              )}
-                            />
-                            {houseError && (
-                              <p
-                                id="checkout-house-error"
-                                className="absolute -bottom-[17px] left-0 text-xs text-red-500"
-                              >
-                                {houseError}
-                              </p>
-                            )}
-                          </div>
-
-                          <div className="grid gap-2 relative">
-                            <Label htmlFor="checkout-apartment">Квартира</Label>
-                            <Input
-                              enterKeyHint="done"
-                              inputMode="numeric"
-                              placeholder="Кв."
-                              id="checkout-apartment"
-                              value={formData.apartment}
-                              onChange={(e) =>
-                                handleFieldChange("apartment", e.target.value)
-                              }
-                              aria-invalid={Boolean(apartmentError)}
-                              aria-describedby={
-                                apartmentError
-                                  ? "checkout-apartment-error"
-                                  : undefined
-                              }
-                              className={cn(
-                                apartmentError &&
-                                  "border-red-400 focus-visible:border-red-400 focus-visible:ring-red-400"
-                              )}
-                            />
-                            {apartmentError && (
-                              <p
-                                id="checkout-apartment-error"
-                                className="absolute -bottom-[17px] left-0 text-xs text-red-500"
-                              >
-                                {apartmentError}
-                              </p>
-                            )}
-                          </div>
-
-                          <div className="flex flex-col gap-3 relative">
-                            <Label htmlFor="date" className="px-1">
-                              Дата доставки
-                            </Label>
-                            <Popover open={open} onOpenChange={setOpen}>
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  id="date"
-                                  className={cn(
-                                    "w-48 shadow-none justify-between font-normal",
-                                    dateError &&
-                                      "border-red-400 text-red-500 hover:bg-red-50/40 focus-visible:border-red-400 focus-visible:ring-red-400"
-                                  )}
-                                  aria-invalid={Boolean(dateError)}
-                                  aria-describedby={
-                                    dateError
-                                      ? "checkout-date-error"
-                                      : undefined
-                                  }
-                                >
-                                  {formData.date
-                                    ? formData.date.toLocaleDateString("ru-RU")
-                                    : "Выбрать дату"}
-                                  <CalendarDays />
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent
-                                className="w-auto overflow-hidden p-0 z-[2000]"
-                                align="start"
-                              >
-                                <Calendar
-                                  mode="single"
-                                  selected={formData.date ?? undefined}
-                                  captionLayout="label"
-                                  onSelect={(nextDate) => {
-                                    handleFieldChange("date", nextDate ?? null);
-                                    setOpen(false);
-                                  }}
-                                />
-                              </PopoverContent>
-                            </Popover>
-                            {dateError && (
-                              <p
-                                id="checkout-date-error"
-                                className="absolute -bottom-[17px] left-0 text-xs text-red-500 "
-                              >
-                                {dateError}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="grid gap-2 mt-5">
-                          <Label htmlFor="checkout-comment">
-                            Комментарий к заказу
-                          </Label>
-                          <div className="space-y-2">
-                            <Textarea
-                              placeholder="Напишите ваш комментарий"
-                              id="checkout-comment"
-                              maxLength={200}
-                              value={formData.comment}
-                              onChange={(e) =>
-                                handleFieldChange("comment", e.target.value)
-                              }
-                              aria-invalid={Boolean(commentError)}
-                              aria-describedby={
-                                commentError
-                                  ? "checkout-comment-error"
-                                  : undefined
-                              }
-                              className={cn(
-                                commentError &&
-                                  "border-red-400 focus-visible:border-red-400 focus-visible:ring-red-400"
-                              )}
-                            />
-                            {commentError && (
-                              <p
-                                id="checkout-comment-error"
-                                className="text-xs text-red-500"
-                              >
-                                {commentError}
-                              </p>
-                            )}
-                            <div className="flex justify-end text-xs font-medium text-greySecondary">
-                              <span>{formData.comment.length} / 200</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-4 mt-6">
-                        <div className="rounded-[8px]  bg-greyPrimary p-4">
-                          <div className="flex items-center justify-start gap-2 text-greenPrimary">
-                            <p className="text-[20px] font-bold">Итого:</p>
-                            <p className="text-[20px] font-bold text-yellow-hover">
-                              <AnimatedAmount
-                                value={totalLabel}
-                                durationMs={200}
-                              />
-                            </p>
-                          </div>
-                          {sortedItems.length > 0 && (
-                            <ul className="mt-4 grid gap-4 ">
-                              {sortedItems.map((item) => {
-                                return (
-                                  <li
-                                    key={`summary-${item.id}`}
-                                    className="rounded-[6px] text-sm text-greenPrimary border-b pb-2 border-input"
-                                  >
-                                    <div className="flex items-center justify-between gap-4 text-greenPrimary">
-                                      <span className="font-semibold">
-                                        Тариф {item.calories} ккал
-                                      </span>
-                                      <span className="font-semibold ">
-                                        {item.selectedDays.length}{" "}
-                                        {daysWord(item.selectedDays.length)}
-                                      </span>
-                                    </div>
-                                    <p className="mt-1 text-xs text-greySecondary">
-                                      {item.dishesCount} блюд в день
-                                    </p>
-                                  </li>
-                                );
-                              })}
-                              <p className="text-[12px] text-yellow-hover">
-                                <span className="text-red-400">*</span> оплата
-                                производится наличными или картой при получении,
-                                или через систему ЕРИП
-                              </p>
-                            </ul>
-                          )}
-                        </div>
-                      </div>
+                      <CheckoutForm
+                        formData={formData}
+                        highlightedField={highlightedField}
+                        onFieldChange={handleFieldChange}
+                        cityOptions={CITIES}
+                      />
+                      <CheckoutSummary
+                        items={sortedItems}
+                        totalLabel={totalLabel}
+                      />
                     </div>
                   </div>
                 </m.section>
@@ -907,57 +403,19 @@ export const Basket: FC = () => {
 
             <AnimatePresence mode="sync" initial={false}>
               {!isCheckout ? (
-                <div className="px-6 py-4 bg-white shadow-sm shadow-greySecondary/70">
-                  <div className="w-full grid gap-4">
-                    <div className="flex items-center justify-start gap-2 text-greenPrimary">
-                      <p className="text-[20px] font-bold">Итого:</p>
-                      <p className="text-yellow-hover font-bold text-[20px]">
-                        <AnimatedAmount value={totalLabel} durationMs={200} />
-                      </p>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="default"
-                      className="w-full bg-yellowPrimary text-greenPrimary font-bold py-6 disabled:opacity-60 disabled:select-none"
-                      disabled={itemCount === 0}
-                      onClick={handleProceedToCheckout}
-                    >
-                      Перейти к оформлению
-                    </Button>
-                  </div>
-                </div>
+                <BasketFooter
+                  key="basket-footer"
+                  totalLabel={totalLabel}
+                  disabled={itemCount === 0}
+                  onProceed={handleProceedToCheckout}
+                />
               ) : (
-                <div className="px-6 py-4 bg-white shadow-sm shadow-greySecondary/70">
-                  <div className="grid gap-4">
-                    <div className="flex gap-4">
-                      <Switch
-                        id="consent-switch"
-                        checked={isConsentGiven}
-                        onCheckedChange={setIsConsentGiven}
-                      />
-                      <label className="flex items-center gap-3 text-greenPrimary ">
-                        <span className="text-sm font-semibold select-none text-greenPrimary">
-                          Я согласен на обработку персональных данных
-                        </span>
-                      </label>
-                    </div>
-
-                    <Button
-                      type="button"
-                      variant="default"
-                      disabled={!isConsentGiven}
-                      className={cn(
-                        "w-full py-6 font-bold transition-colors",
-                        !isConsentGiven &&
-                          "bg-greyPrimary text-greySecondary disabled:opacity-100 disabled:cursor-not-allowed",
-                        isConsentGiven && "bg-yellowPrimary text-greenPrimary"
-                      )}
-                      onClick={handleSubmit}
-                    >
-                      Оформить заказ
-                    </Button>
-                  </div>
-                </div>
+                <CheckoutFooter
+                  key="checkout-footer"
+                  isConsentGiven={isConsentGiven}
+                  onConsentChange={setIsConsentGiven}
+                  onSubmit={handleSubmit}
+                />
               )}
             </AnimatePresence>
           </div>
