@@ -238,11 +238,16 @@ export const Basket: FC = () => {
         toast("", {
           description: validation.error.message,
           duration: 3000,
-          icon: <MessageCircleWarning className="size-4 text-red-500" />,
+          icon: <MessageCircleWarning className="size-4 text-red-400" />,
           position: `top-center`,
+          style: {
+            border: "1px solid #FF6467",
+            borderRadius: "8px",
+          },
+
           classNames: {
             content: " ml-0 ",
-            description: " text-[14px] text-red-400 ",
+            description: "text-[14px] text-red-400 font-bold",
             toast: "bg-red-500",
             default: "bg-red-500",
           },

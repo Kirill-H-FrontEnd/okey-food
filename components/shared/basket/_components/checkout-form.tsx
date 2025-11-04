@@ -243,7 +243,9 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({
                   {formData.date
                     ? formData.date.toLocaleDateString("ru-RU")
                     : "Выбрать дату"}
-                  <CalendarDays />
+                  <CalendarDays
+                    className={`${isCalendarOpen ? "text-yellow-hover" : ""}`}
+                  />
                 </Button>
               </PopoverTrigger>
               <PopoverContent
