@@ -241,9 +241,10 @@ export const Basket: FC = () => {
           icon: <MessageCircleWarning className="size-4 text-red-500" />,
           position: `top-center`,
           classNames: {
-            content: " text-[18px] ml-0",
-            description: " text-[14px] text-red-400",
-            toast: "bg-white backdrop-blur-md ",
+            content: " ml-0 ",
+            description: " text-[14px] text-red-400 ",
+            toast: "bg-red-500",
+            default: "bg-red-500",
           },
         });
 
