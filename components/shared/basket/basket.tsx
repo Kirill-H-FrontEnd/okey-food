@@ -265,7 +265,7 @@ export const Basket: FC = () => {
     const [field, error] = firstErrorEntry;
     const message = error?.message ?? "Проверьте корректность данных";
     toast.error(message);
-    scrollFieldIntoView(field); // только скроллим к полю без фокуса
+    scrollFieldIntoView(field);
   };
 
   const handleSubmit = form.handleSubmit((data) => {
