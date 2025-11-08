@@ -1,8 +1,8 @@
 import { Footer } from "@/components/shared/footer/footer";
 import { Navbar } from "@/components/shared/navbar/navbar";
-import { Toaster } from "@/components/ui/sonner";
-import { Metadata } from "next";
 
+import { Metadata } from "next";
+import { Toaster } from "react-hot-toast";
 const SITE_URL = "https://okey-food.vercel.app";
 
 export const metadata: Metadata = {
@@ -65,7 +65,7 @@ export default async function HomeLayout({
       <div className="grid grid-rows-[auto_1fr_auto] min-h-screen">
         <Navbar />
         <main>{children}</main>\
-        <Toaster position="top-center" />
+        <Toaster />
         <Footer />
       </div>
     </>

@@ -1,10 +1,6 @@
 "use client";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
-import {
-  ChevronRight,
-  MessageCircleWarning,
-  ShoppingBasket,
-} from "lucide-react";
+import { ChevronRight, ShoppingBasket } from "lucide-react";
 import {
   AnimatePresence,
   LazyMotion,
@@ -12,7 +8,14 @@ import {
   m,
   useReducedMotion,
 } from "framer-motion";
-import { toast } from "sonner";
+import {
+  FieldError,
+  FormProvider,
+  Resolver,
+  SubmitErrorHandler,
+  useForm,
+} from "react-hook-form";
+import { toast } from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,7 +25,10 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { AnimatedAmount } from "@/components/magicui/animated-amount";
-import { checkoutSchema } from "@/schemas/checkout-schema";
+import {
+  checkoutSchema,
+  type CheckoutFormData,
+} from "@/schemas/checkout-schema";
 import { useBasketStore } from "@/store/useStore";
 import { BasketItem } from "./_components/basket-item";
 import { BasketEmpty } from "./_components/basket-empty";
@@ -32,14 +38,8 @@ import { CheckoutFooter } from "./_components/checkout-footer";
 import { CheckoutForm } from "./_components/checkout-form";
 import { CheckoutSummary } from "./_components/checkout-summary";
 import { listSelectableDays } from "@/lib/delivery-days";
-import { cn } from "@/lib/utils";
 
-import type { CheckoutFormField, CheckoutFormState, CityOption } from "./types";
-
-type ActiveError = {
-  field: CheckoutFormField;
-  message: string;
-};
+import type { CheckoutFormField, CityOption } from "./types";
 
 const CITIES: CityOption[] = [
   { value: "minsk", label: "Минск" },
@@ -61,7 +61,9 @@ const FIELD_ID_MAP: Record<CheckoutFormField, string> = {
   comment: "checkout-comment",
 };
 
-const createInitialFormState = (): CheckoutFormState => ({
+type CheckoutFormValues = CheckoutFormData;
+
+const createInitialFormValues = (): Partial<CheckoutFormValues> => ({
   firstName: "",
   lastName: "",
   phone: "",
@@ -70,7 +72,7 @@ const createInitialFormState = (): CheckoutFormState => ({
   street: "",
   house: "",
   apartment: "",
-  date: null,
+  date: undefined,
   comment: "",
 });
 
@@ -85,10 +87,34 @@ export const Basket: FC = () => {
 
   const [isCheckout, setIsCheckout] = useState(false);
   const [isConsentGiven, setIsConsentGiven] = useState(false);
-  const [formData, setFormData] = useState<CheckoutFormState>(() =>
-    createInitialFormState()
+
+  const checkoutResolver: Resolver<CheckoutFormValues> = useCallback(
+    async (values) => {
+      const parsed = checkoutSchema.safeParse(values);
+      if (parsed.success) {
+        return { values: parsed.data, errors: {} };
+      }
+      const fieldErrors = parsed.error.issues.reduce((acc, issue) => {
+        const path = issue.path[0];
+        if (typeof path !== "string") return acc;
+        acc[path as CheckoutFormField] = {
+          type: issue.code,
+          message: issue.message,
+        };
+        return acc;
+      }, {} as Record<CheckoutFormField, FieldError>);
+      return {
+        values: {},
+        errors: fieldErrors as unknown as Record<string, FieldError>,
+      };
+    },
+    []
   );
-  const [activeError, setActiveError] = useState<ActiveError | null>(null);
+
+  const form = useForm<CheckoutFormValues>({
+    resolver: checkoutResolver,
+    defaultValues: createInitialFormValues(),
+  });
 
   const handleCloseBasket = useCallback(() => {
     setIsBasketOpen(false);
@@ -97,8 +123,9 @@ export const Basket: FC = () => {
   const handleReturnToBasket = useCallback(() => {
     setIsCheckout(false);
     setIsConsentGiven(false);
-    setActiveError(null);
-  }, [setIsCheckout, setIsConsentGiven]);
+    form.reset(createInitialFormValues());
+    form.clearErrors();
+  }, [form]);
 
   const sortedItems = useMemo(
     () => [...items].sort((a, b) => Number(a.calories) - Number(b.calories)),
@@ -117,10 +144,10 @@ export const Basket: FC = () => {
   const itemCount = items.length;
 
   const resetFormState = useCallback(() => {
-    setFormData(createInitialFormState());
-    setActiveError(null);
+    form.reset(createInitialFormValues());
+    form.clearErrors();
     setIsConsentGiven(false);
-  }, []);
+  }, [form]);
 
   useEffect(() => {
     if (!isBasketOpen) {
@@ -135,29 +162,6 @@ export const Basket: FC = () => {
       resetFormState();
     }
   }, [sortedItems.length, resetFormState]);
-
-  const validateForm = useCallback((state: CheckoutFormState) => {
-    const parsed = checkoutSchema.safeParse(state);
-    if (parsed.success) {
-      return { valid: true as const, data: parsed.data };
-    }
-
-    const firstIssue = parsed.error.issues.find(
-      (issue) => typeof issue.path[0] === "string"
-    );
-
-    if (!firstIssue) {
-      return { valid: false as const, error: null };
-    }
-
-    return {
-      valid: false as const,
-      error: {
-        field: firstIssue.path[0] as CheckoutFormField,
-        message: firstIssue.message,
-      },
-    };
-  }, []);
 
   const handleIncrementDays = (id: string) => {
     const item = items.find((entry) => entry.id === id);
@@ -191,91 +195,47 @@ export const Basket: FC = () => {
     if (itemCount === 0) return;
     setIsCheckout(true);
     setIsConsentGiven(false);
-    setActiveError(null);
+    form.clearErrors();
   };
 
-  const handleFieldChange = <K extends CheckoutFormField>(
-    field: K,
-    value: CheckoutFormState[K]
-  ) => {
-    const nextState = {
-      ...formData,
-      [field]: value,
-    } as CheckoutFormState;
-
-    setFormData(nextState);
-    setActiveError((current) => {
-      if (!current || current.field !== field) return current;
-
-      const validation = checkoutSchema.safeParse(nextState);
-      if (validation.success) {
-        return null;
+  const focusField = (field: CheckoutFormField) => {
+    const fieldId = FIELD_ID_MAP[field];
+    if (!fieldId) {
+      form.setFocus(field as unknown as keyof CheckoutFormValues);
+      return;
+    }
+    requestAnimationFrame(() => {
+      const element = document.getElementById(fieldId);
+      if (element instanceof HTMLElement) {
+        element.focus();
       }
-
-      const issueForField = validation.error.issues.find(
-        (issue) => issue.path[0] === field
-      );
-
-      if (!issueForField) {
-        return null;
-      }
-
-      if (issueForField.message === current.message) {
-        return current;
-      }
-
-      return { field, message: issueForField.message };
     });
   };
 
-  const handleSubmit = () => {
-    const validation = validateForm(formData);
+  const handleSubmitError: SubmitErrorHandler<CheckoutFormValues> = (
+    errors
+  ) => {
+    const entries = Object.entries(errors) as [
+      CheckoutFormField,
+      FieldError | undefined
+    ][];
+    const firstErrorEntry =
+      entries.find(([, error]) => Boolean(error?.message)) ?? entries[0];
+    if (!firstErrorEntry) return;
+    const [field, error] = firstErrorEntry;
+    const message = error?.message ?? "Проверьте корректность данных";
+    toast.error(message);
+    focusField(field);
+  };
 
-    if (!validation.valid) {
-      if (validation.error) {
-        setActiveError(validation.error);
-        // toast.error(`${validation.error.message}`);
-        toast("", {
-          description: validation.error.message,
-          duration: 3000,
-          icon: <MessageCircleWarning className="size-4 text-red-400" />,
-          position: `top-center`,
-          style: {
-            border: "1px solid #FF6467",
-            borderRadius: "8px",
-          },
-
-          classNames: {
-            content: " ml-0 ",
-            description: "text-[14px] text-red-400 font-bold",
-            toast: "bg-red-500",
-            default: "bg-red-500",
-          },
-        });
-
-        const fieldId = FIELD_ID_MAP[validation.error.field];
-        if (fieldId) {
-          requestAnimationFrame(() => {
-            const element = document.getElementById(fieldId);
-            if (element instanceof HTMLElement) {
-              element.focus();
-            }
-          });
-        }
-      }
-      return;
-    }
-
-    setActiveError(null);
-
-    // TODO: отправка на сервер
+  const handleSubmit = form.handleSubmit((data) => {
     console.log("Checkout data", {
-      ...validation.data,
+      ...data,
       consent: isConsentGiven,
       orderItems: sortedItems,
       totalPrice,
     });
-  };
+  }, handleSubmitError);
 
   const prefersMotionReduction = Boolean(prefersReducedMotion);
 
@@ -304,8 +264,6 @@ export const Basket: FC = () => {
         : { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const },
     [prefersMotionReduction]
   );
-
-  const highlightedField = activeError?.field ?? null;
 
   return (
     <Sheet open={isBasketOpen} onOpenChange={setIsBasketOpen}>
@@ -390,13 +348,10 @@ export const Basket: FC = () => {
                   }}
                 >
                   <div className="mb-5">
-                    <div className="max-w-xl space-y-6 text-greenPrimary">
-                      <CheckoutForm
-                        formData={formData}
-                        highlightedField={highlightedField}
-                        onFieldChange={handleFieldChange}
-                        cityOptions={CITIES}
-                      />
+                    <div className="w-full space-y-6 text-greenPrimary">
+                      <FormProvider {...form}>
+                        <CheckoutForm cityOptions={CITIES} />
+                      </FormProvider>
                       <CheckoutSummary
                         items={sortedItems}
                         totalLabel={totalLabel}
