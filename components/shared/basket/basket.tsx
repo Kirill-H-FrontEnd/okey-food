@@ -357,7 +357,7 @@ export const Basket: FC = () => {
                   {sortedItems.length === 0 ? (
                     <BasketEmpty />
                   ) : (
-                    <ul className="grid gap-4 mt-0 md:mt-4 pb-6">
+                    <ul className="grid gap-4 mt-0 md:mt-4 pb-6 overflow-hidden">
                       <AnimatePresence initial={false}>
                         {sortedItems.map((item) => (
                           <BasketItem

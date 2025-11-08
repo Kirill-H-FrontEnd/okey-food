@@ -67,6 +67,7 @@ export default async function HomeLayout({
         <main>{children}</main>\
         <Toaster
           toastOptions={{
+            duration: 2000,
             className: "text-red-500 font-semibold text-sm",
             success: {
               style: {

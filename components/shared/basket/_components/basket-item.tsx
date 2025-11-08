@@ -1,5 +1,6 @@
 "use client";
 import { FC, useMemo, useCallback } from "react";
+import { m } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CartItem } from "@/store/useStore";
@@ -38,7 +39,12 @@ export const BasketItem: FC<BasketItemProps> = ({
   }, [canDecrement, onDecrement, item.id]);
 
   return (
-    <li
+    <m.li
+      layout
+      initial={{ opacity: 0, x: -12 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 40 }}
+      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
       className="flex items-start gap-4 border-b border-input pb-4"
       aria-label={`Тариф ${item.calories}`}
     >
@@ -46,7 +52,7 @@ export const BasketItem: FC<BasketItemProps> = ({
         <p>{item.calories}</p>
       </div>
 
-      <div className=" w-full  grid grid-cols-[auto_1fr_auto] justify-center ">
+      <div className="w-full grid grid-cols-[auto_1fr_auto] justify-center">
         <div className="md:grid gap-1 min-w-0">
           <p className="font-bold truncate text-greenPrimary">
             Тариф {item.calories}
@@ -67,7 +73,7 @@ export const BasketItem: FC<BasketItemProps> = ({
           </div>
         </div>
 
-        <div className="flex flex-col items-center  gap-3 shrink-0">
+        <div className="flex flex-col items-center gap-3 shrink-0">
           <div>
             <p className="text-greenPrimary text-sm font-semibold">
               Количество дней
@@ -123,6 +129,6 @@ export const BasketItem: FC<BasketItemProps> = ({
           </div>
         </div>
       </div>
-    </li>
+    </m.li>
   );
 };

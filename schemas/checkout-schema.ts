@@ -44,7 +44,7 @@ export const checkoutSchema = z.object({
       return value;
     }
     return undefined;
-  }, z.date({ error: "Укажите дату" })),
+  }, z.date({ error: "Укажите дату доставки" })),
   comment: z
     .string()
     .trim()

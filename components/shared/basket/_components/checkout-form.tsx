@@ -61,7 +61,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
         <div className="grid ">
           <div className="grid md:grid-cols-2 gap-4 mb-[16px]">
             <div className="grid gap-2">
-              <Label htmlFor="checkout-first-name">Имя</Label>
+              <Label>Имя</Label>
               <Input
                 {...register("firstName")}
                 enterKeyHint="next"
@@ -74,7 +74,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="checkout-last-name">Фамилия</Label>
+              <Label>Фамилия</Label>
               <Input
                 {...register("lastName")}
                 enterKeyHint="next"
@@ -87,7 +87,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="checkout-phone">Телефон</Label>
+              <Label>Телефон</Label>
               <Input
                 {...register("phone")}
                 enterKeyHint="next"
@@ -102,7 +102,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
 
             <div className="grid gap-2">
               <div className="flex items-center gap-2">
-                <Label htmlFor="checkout-social">Telegram / Instagram</Label>
+                <Label>Telegram / Instagram</Label>
                 <TooltipProvider delayDuration={150}>
                   <Tooltip>
                     <TooltipTrigger className="hidden md:block" asChild>
@@ -141,7 +141,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
           <div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               <div className="grid gap-2">
-                <Label htmlFor="checkout-city">Город</Label>
+                <Label>Город</Label>
                 <Controller
                   control={control}
                   name="city"
@@ -173,7 +173,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="checkout-street">Улица</Label>
+                <Label>Улица</Label>
                 <Input
                   {...register("street")}
                   enterKeyHint="next"
@@ -186,7 +186,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="checkout-house">Дом</Label>
+                <Label>Дом</Label>
                 <Input
                   {...register("house")}
                   enterKeyHint="next"
@@ -199,7 +199,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="checkout-apartment">Квартира</Label>
+                <Label>Квартира</Label>
                 <Input
                   {...register("apartment")}
                   enterKeyHint="next"
@@ -216,9 +216,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
               name="date"
               render={({ field }) => (
                 <div className="flex flex-col gap-3">
-                  <Label htmlFor="checkout-date" className="px-1">
-                    Дата доставки
-                  </Label>
+                  <Label className="px-1">Дата доставки</Label>
                   <Popover
                     open={isCalendarOpen}
                     onOpenChange={setIsCalendarOpen}
@@ -226,10 +224,9 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
-                        id="checkout-date"
                         onBlur={field.onBlur}
                         className={cn(
-                          "w-48 shadow-none justify-between font-normal",
+                          "w-full shadow-none justify-between font-normal",
                           withErrorStyles("date"),
                           fieldHasError("date") &&
                             "text-red-500 hover:bg-red-50/40 focus-visible:ring-red-400"
