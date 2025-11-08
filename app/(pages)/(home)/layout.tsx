@@ -65,7 +65,23 @@ export default async function HomeLayout({
       <div className="grid grid-rows-[auto_1fr_auto] min-h-screen">
         <Navbar />
         <main>{children}</main>\
-        <Toaster />
+        <Toaster
+          toastOptions={{
+            className: "text-red-500 font-semibold text-sm",
+            success: {
+              style: {
+                background: "green",
+              },
+            },
+
+            error: {
+              style: {
+                background: "",
+                color: "#1c373c",
+              },
+            },
+          }}
+        />
         <Footer />
       </div>
     </>
