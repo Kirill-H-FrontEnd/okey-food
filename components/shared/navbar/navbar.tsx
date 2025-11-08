@@ -43,7 +43,7 @@ export const Navbar: FC = ({}) => {
         isScrolled || openMenu || isBasketOpen
           ? " bg-white/80 backdrop-blur-lg  "
           : "bg-whitePrimary"
-      } $ w-full fixed  top-0 left-0 py-[10px] z-[100]  transition-[background-color, box-shadow] duration-300`}
+      } $ w-full fixed  top-0 left-0 py-[10px] z-[100] transition-[background-color, box-shadow] duration-300`}
     >
       <Container>
         <section className="w-full flex justify-between items-center">
