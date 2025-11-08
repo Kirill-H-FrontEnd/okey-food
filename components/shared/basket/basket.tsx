@@ -61,6 +61,19 @@ const FIELD_ID_MAP: Record<CheckoutFormField, string> = {
   comment: "checkout-comment",
 };
 
+const FIELD_ORDER: CheckoutFormField[] = [
+  "firstName",
+  "lastName",
+  "phone",
+  "social",
+  "city",
+  "street",
+  "house",
+  "apartment",
+  "date",
+  "comment",
+];
+
 type CheckoutFormValues = CheckoutFormData;
 
 const createInitialFormValues = (): Partial<CheckoutFormValues> => ({
@@ -94,18 +107,45 @@ export const Basket: FC = () => {
       if (parsed.success) {
         return { values: parsed.data, errors: {} };
       }
-      const fieldErrors = parsed.error.issues.reduce((acc, issue) => {
-        const path = issue.path[0];
-        if (typeof path !== "string") return acc;
-        acc[path as CheckoutFormField] = {
-          type: issue.code,
-          message: issue.message,
-        };
-        return acc;
-      }, {} as Record<CheckoutFormField, FieldError>);
+
+      const issues = parsed.error.issues;
+      type Issue = (typeof issues)[number];
+
+      const getFieldPosition = (field: CheckoutFormField) => {
+        const index = FIELD_ORDER.indexOf(field);
+        return index === -1 ? Number.MAX_SAFE_INTEGER : index;
+      };
+
+      const firstIssue = issues
+        .map((issue) => {
+          const path = issue.path[0];
+          if (typeof path !== "string") return null;
+          return {
+            field: path as CheckoutFormField,
+            issue,
+          };
+        })
+        .filter((entry): entry is { field: CheckoutFormField; issue: Issue } =>
+          Boolean(entry?.field)
+        )
+        .sort(
+          (a, b) => getFieldPosition(a.field) - getFieldPosition(b.field)
+        )[0];
+
+      if (!firstIssue) {
+        return { values: {}, errors: {} };
+      }
+
+      const { field, issue } = firstIssue;
+
       return {
         values: {},
-        errors: fieldErrors as unknown as Record<string, FieldError>,
+        errors: {
+          [field]: {
+            type: issue.code,
+            message: issue.message,
+          },
+        } as Record<string, FieldError>,
       };
     },
     []
@@ -114,6 +154,7 @@ export const Basket: FC = () => {
   const form = useForm<CheckoutFormValues>({
     resolver: checkoutResolver,
     defaultValues: createInitialFormValues(),
+    shouldFocusError: false,
   });
 
   const handleCloseBasket = useCallback(() => {
@@ -198,16 +239,15 @@ export const Basket: FC = () => {
     form.clearErrors();
   };
 
-  const focusField = (field: CheckoutFormField) => {
+  const scrollFieldIntoView = (field: CheckoutFormField) => {
     const fieldId = FIELD_ID_MAP[field];
     if (!fieldId) {
-      form.setFocus(field as unknown as keyof CheckoutFormValues);
       return;
     }
     requestAnimationFrame(() => {
       const element = document.getElementById(fieldId);
       if (element instanceof HTMLElement) {
-        element.focus();
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     });
   };
@@ -225,7 +265,7 @@ export const Basket: FC = () => {
     const [field, error] = firstErrorEntry;
     const message = error?.message ?? "Проверьте корректность данных";
     toast.error(message);
-    focusField(field);
+    scrollFieldIntoView(field); // только скроллим к полю без фокуса
   };
 
   const handleSubmit = form.handleSubmit((data) => {
