@@ -329,7 +329,7 @@ export const Basket: FC = () => {
         className="shadow-none border-none md:border-l-[2px] border-grey-border p-0 overflow-hidden"
       >
         <LazyMotion features={domAnimation}>
-          <div className="flex h-full flex-col pt-[55px] md:pt-0">
+          <div className="flex h-full flex-col pt-[55px] md:pt-0 ">
             <SheetHeader className="relative ">
               <BasketHeader
                 isCheckout={isCheckout}

@@ -64,21 +64,30 @@ export default async function HomeLayout({
     <>
       <div className="grid grid-rows-[auto_1fr_auto] min-h-screen">
         <Navbar />
-        <main>{children}</main>\
+        <main>{children}</main>
         <Toaster
           toastOptions={{
             duration: 2000,
-            className: "text-red-500 font-semibold text-sm",
+            className: " font-semibold text-sm ",
+
             success: {
+              iconTheme: {
+                primary: "#00C950",
+                secondary: "#fff",
+              },
               style: {
-                background: "green",
+                background: "",
+                color: "#00C950",
               },
             },
 
             error: {
+              iconTheme: {
+                primary: "#FB2C36",
+                secondary: "#fff",
+              },
               style: {
-                background: "",
-                color: "#1c373c",
+                color: "#FB2C36",
               },
             },
           }}

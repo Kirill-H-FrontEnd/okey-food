@@ -26,6 +26,10 @@ export const BasketHeader: FC<BasketHeaderProps> = ({
       </SheetTitle>
 
       <button
+        style={{
+          outline: "none",
+          WebkitTapHighlightColor: "transparent",
+        }}
         type="button"
         onClick={isCheckout ? onReturn : onClose}
         className="group grid cursor-pointer rounded-sm bg-greyPrimary md:p-2"
