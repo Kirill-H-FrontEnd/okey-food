@@ -14,7 +14,7 @@ export const Footer: FC = ({}) => {
     {
       title: "Навигация",
       links: [
-        { title: "Меню", url: "/" },
+        { title: "Меню", url: "products" },
         { title: "О нас", url: "/about" },
         { title: "FAQ", url: "/menu" },
         { title: "Отзывы", url: "/contacts" },
