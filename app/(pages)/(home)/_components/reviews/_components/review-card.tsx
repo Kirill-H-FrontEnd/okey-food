@@ -16,6 +16,8 @@ export const ReviewCard: FC<TReviewCard> = ({ data }) => {
         max-w-[370px]
        w-full
         h-full
+
+        md:max-w-none
         p-6
         border border-slate-200
         rounded-lg

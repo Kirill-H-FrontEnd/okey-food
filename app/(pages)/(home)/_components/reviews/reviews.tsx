@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useRef, useState, useCallback } from "react";
 import { Container } from "@/components/ui/container";
 import { ReviewCard } from "./_components/review-card";
 
@@ -9,7 +9,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, A11y, Keyboard } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-
+import type { Swiper as SwiperType } from "swiper/types";
 const DATA_REVIEWS_CARD = [
   {
     name: "Анастасия",
@@ -45,11 +45,17 @@ export const Reviews: FC = () => {
   // Рендерим Swiper только на клиенте, чтобы исключить гидрацию
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-
+  const swiperInstanceRef = useRef<SwiperType | null>(null);
   // Навигация через рефы (инициализируем в onInit)
   const prevRef = useRef<HTMLButtonElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
+  const handlePrev = useCallback(() => {
+    swiperInstanceRef.current?.slidePrev();
+  }, []);
 
+  const handleNext = useCallback(() => {
+    swiperInstanceRef.current?.slideNext();
+  }, []);
   return (
     <section className="w-full bg-whitePrimary py-14 lg:py-20 overflow-x-hidden">
       <Container className="relative">
@@ -65,6 +71,7 @@ export const Reviews: FC = () => {
 
             {mounted && (
               <Swiper
+                loop
                 modules={[Navigation, Autoplay, A11y, Keyboard]}
                 onInit={(swiper) => {
                   // привязываем кнопки навигации ПОСЛЕ маунта
@@ -74,6 +81,9 @@ export const Reviews: FC = () => {
                   swiper.params.navigation.nextEl = nextRef.current;
                   swiper.navigation.init();
                   swiper.navigation.update();
+                }}
+                onSwiper={(swiper) => {
+                  swiperInstanceRef.current = swiper;
                 }}
                 navigation={{ enabled: true }}
                 autoplay={{
@@ -89,12 +99,12 @@ export const Reviews: FC = () => {
                 slidesPerView={1}
                 spaceBetween={24}
                 breakpoints={{
-                  480: { slidesPerView: 1.2, spaceBetween: 14 },
-                  640: { slidesPerView: 1.4, spaceBetween: 16 },
-                  700: { slidesPerView: 1.7, spaceBetween: 16 },
-                  768: { slidesPerView: 2.5, spaceBetween: 16 },
-                  1024: { slidesPerView: 3.2, spaceBetween: 16 },
-                  1280: { slidesPerView: 4, spaceBetween: 16 },
+                  480: { slidesPerView: 1.2, spaceBetween: 16 },
+                  640: { slidesPerView: 1.45, spaceBetween: 20 },
+                  768: { slidesPerView: 2.1, spaceBetween: 20 },
+                  1024: { slidesPerView: 2.8, spaceBetween: 24 },
+                  1280: { slidesPerView: 3.2, spaceBetween: 24 },
+                  1536: { slidesPerView: 3.6, spaceBetween: 28 },
                 }}
                 className="reviews-swiper"
                 style={{ overflow: "visible" }}
@@ -111,6 +121,8 @@ export const Reviews: FC = () => {
 
             {/* стрелки — показываем только на md+ */}
             <button
+              onClick={handlePrev}
+              type="button"
               ref={prevRef}
               aria-label="Предыдущий отзыв"
               className="hidden md:flex absolute -left-12 top-1/2 -translate-y-1/2 h-8 w-8 items-center justify-center rounded-full border border-grey-border bg-white text-greenPrimary hover:bg-whitePrimary transition-colors z-10"
