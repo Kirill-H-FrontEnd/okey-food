@@ -86,8 +86,8 @@ export const Reviews: FC = () => {
                 watchOverflow
                 resistanceRatio={0.85}
                 centeredSlides={false}
-                slidesPerView={1.05}
-                spaceBetween={12}
+                slidesPerView={1}
+                spaceBetween={24}
                 breakpoints={{
                   480: { slidesPerView: 1.2, spaceBetween: 14 },
                   640: { slidesPerView: 1.4, spaceBetween: 16 },
@@ -97,7 +97,7 @@ export const Reviews: FC = () => {
                   1280: { slidesPerView: 4, spaceBetween: 16 },
                 }}
                 className="reviews-swiper"
-                style={{ overflow: "visible" }} // чтобы тени карточек не срезались
+                style={{ overflow: "visible" }}
               >
                 {DATA_REVIEWS_CARD.map((review, idx) => (
                   <SwiperSlide key={idx} className="reviews-slide">

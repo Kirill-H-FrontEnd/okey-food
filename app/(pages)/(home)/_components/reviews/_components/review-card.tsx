@@ -14,8 +14,7 @@ export const ReviewCard: FC<TReviewCard> = ({ data }) => {
       className="
         flex flex-col
         max-w-[370px]
-        md:w-full
-        w-auto
+       w-full
         h-full
         p-6
         border border-slate-200
