@@ -1,15 +1,19 @@
 "use client";
 
-import React, { FC, useEffect, useRef, useState, useCallback } from "react";
+import React, { FC, useMemo } from "react";
+import Autoplay from "embla-carousel-autoplay";
+
 import { Container } from "@/components/ui/container";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
 import { ReviewCard } from "./_components/review-card";
 
-// Swiper
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Autoplay, A11y, Keyboard } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import type { Swiper as SwiperType } from "swiper/types";
 const DATA_REVIEWS_CARD = [
   {
     name: "Анастасия",
@@ -42,20 +46,16 @@ const DATA_REVIEWS_CARD = [
 ];
 
 export const Reviews: FC = () => {
-  // Рендерим Swiper только на клиенте, чтобы исключить гидрацию
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  const swiperInstanceRef = useRef<SwiperType | null>(null);
-  // Навигация через рефы (инициализируем в onInit)
-  const prevRef = useRef<HTMLButtonElement>(null);
-  const nextRef = useRef<HTMLButtonElement>(null);
-  const handlePrev = useCallback(() => {
-    swiperInstanceRef.current?.slidePrev();
-  }, []);
+  const autoplayPlugin = useMemo(
+    () =>
+      Autoplay({
+        delay: 3500,
+        stopOnInteraction: false,
+        stopOnMouseEnter: true,
+      }),
+    []
+  );
 
-  const handleNext = useCallback(() => {
-    swiperInstanceRef.current?.slideNext();
-  }, []);
   return (
     <section className="w-full bg-whitePrimary py-14 lg:py-20 overflow-x-hidden">
       <Container className="relative">
@@ -69,108 +69,38 @@ export const Reviews: FC = () => {
             <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-10 bg-gradient-to-r from-whitePrimary to-transparent" />
             <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-10 bg-gradient-to-l from-whitePrimary to-transparent" />
 
-            {mounted && (
-              <Swiper
-                loop
-                modules={[Navigation, Autoplay, A11y, Keyboard]}
-                onInit={(swiper) => {
-                  // привязываем кнопки навигации ПОСЛЕ маунта
-                  // @ts-ignore
-                  swiper.params.navigation.prevEl = prevRef.current;
-                  // @ts-ignore
-                  swiper.params.navigation.nextEl = nextRef.current;
-                  swiper.navigation.init();
-                  swiper.navigation.update();
-                }}
-                onSwiper={(swiper) => {
-                  swiperInstanceRef.current = swiper;
-                }}
-                navigation={{ enabled: true }}
-                autoplay={{
-                  delay: 3500,
-                  disableOnInteraction: false,
-                  pauseOnMouseEnter: true,
-                }}
-                keyboard={{ enabled: true }}
-                a11y={{ enabled: true }}
-                watchOverflow
-                resistanceRatio={0.85}
-                centeredSlides={false}
-                slidesPerView={1}
-                spaceBetween={24}
-                breakpoints={{
-                  480: { slidesPerView: 1.2, spaceBetween: 16 },
-                  640: { slidesPerView: 1.45, spaceBetween: 20 },
-                  768: { slidesPerView: 2.1, spaceBetween: 20 },
-                  1024: { slidesPerView: 2.8, spaceBetween: 24 },
-                  1280: { slidesPerView: 3.2, spaceBetween: 24 },
-                  1536: { slidesPerView: 3.6, spaceBetween: 28 },
-                }}
-                className="reviews-swiper"
-                style={{ overflow: "visible" }}
-              >
+            <Carousel
+              opts={{ align: "start", loop: true, skipSnaps: false }}
+              // plugins={[autoplayPlugin]}
+              className="relative"
+            >
+              <CarouselContent className="gap-4 [--slide-gap:1rem] [--slides-per-view:1] sm:[--slides-per-view:1.25] md:[--slides-per-view:2] lg:[--slides-per-view:3] 2xl:[--slides-per-view:4]">
                 {DATA_REVIEWS_CARD.map((review, idx) => (
-                  <SwiperSlide key={idx} className="reviews-slide">
-                    <div className="w-full h-[300px] min-h-[300px] flex">
-                      <ReviewCard data={review} />
-                    </div>
-                  </SwiperSlide>
+                  <CarouselItem
+                    key={idx}
+                    className="flex h-full"
+                    style={{
+                      flexBasis:
+                        "calc((100% - (var(--slides-per-view) - 1) * var(--slide-gap, 1.5rem)) / var(--slides-per-view))",
+                    }}
+                  >
+                    <ReviewCard data={review} />
+                  </CarouselItem>
                 ))}
-              </Swiper>
-            )}
+              </CarouselContent>
 
-            {/* стрелки — показываем только на md+ */}
-            <button
-              onClick={handlePrev}
-              type="button"
-              ref={prevRef}
-              aria-label="Предыдущий отзыв"
-              className="hidden md:flex absolute -left-12 top-1/2 -translate-y-1/2 h-8 w-8 items-center justify-center rounded-full border border-grey-border bg-white text-greenPrimary hover:bg-whitePrimary transition-colors z-10"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24">
-                <path
-                  d="M15 18l-6-6 6-6"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-            <button
-              ref={nextRef}
-              aria-label="Следующий отзыв"
-              className="hidden md:flex absolute -right-12 top-1/2 -translate-y-1/2 h-8 w-8 items-center justify-center rounded-full border border-grey-border bg-white text-greenPrimary hover:bg-whitePrimary transition-colors z-10"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24">
-                <path
-                  d="M9 18l6-6-6-6"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
+              <CarouselPrevious
+                aria-label="Предыдущий отзыв"
+                className="hidden md:flex border border-grey-border bg-white text-greenPrimary hover:bg-whitePrimary"
+              />
+              <CarouselNext
+                aria-label="Следующий отзыв"
+                className="hidden md:flex border border-grey-border bg-white text-greenPrimary hover:bg-whitePrimary"
+              />
+            </Carousel>
           </div>
         </article>
       </Container>
-
-      {/* Немного «страховки», чтобы контент не распирал трек */}
-      <style jsx>{`
-        :global(.reviews-swiper .swiper-wrapper) {
-          align-items: stretch;
-        }
-        :global(.reviews-slide) {
-          height: auto;
-          min-width: 0;
-        }
-        :global(.reviews-slide *) {
-          min-width: 0;
-        }
-      `}</style>
     </section>
   );
 };

@@ -10,20 +10,7 @@ type TReviewCard = {
 
 export const ReviewCard: FC<TReviewCard> = ({ data }) => {
   return (
-    <article
-      className="
-        flex flex-col
-        max-w-[370px]
-       w-full
-        h-full
-
-        md:max-w-none
-        p-6
-        border border-slate-200
-        rounded-lg
-        bg-greyPrimary
-        "
-    >
+    <article className="flex h-full w-full max-w-[370px] flex-col rounded-lg border border-slate-200 bg-greyPrimary p-6 md:max-w-none">
       <div className="flex-shrink-0">
         <div className="flex gap-3 items-center">
           <Image
