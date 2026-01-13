@@ -36,7 +36,7 @@ export function HyperText({
   className,
   duration = 800,
   delay = 0,
-  as: Component = "div",
+  as: Component = "span",
   startOnView = false,
   animateOnHover = true,
   characterSet = DEFAULT_CHARACTER_SET,

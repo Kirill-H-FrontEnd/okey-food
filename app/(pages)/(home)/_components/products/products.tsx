@@ -134,25 +134,7 @@ const genProductsForDiet = (count: number, dietCalories: string): TProduct[] =>
 
 // ================== MAIN ==================
 export const Products: FC<TProducts> = () => {
-  const [selectedRange, setSelectedRange] = React.useState<string | null>(
-    () => {
-      if (typeof window === "undefined") return null;
-
-      try {
-        const stored = window.localStorage.getItem(RANGE_STORAGE_KEY);
-        if (!stored) return null;
-
-        const parsed = JSON.parse(stored) as { range?: string | null };
-        if (parsed && typeof parsed.range === "string") {
-          return parsed.range;
-        }
-      } catch {
-        return null;
-      }
-
-      return null;
-    }
-  );
+  const [selectedRange, setSelectedRange] = React.useState<string | null>(null);
   const [activeCal, setActiveCal] = React.useState<string>(
     DATA_CALORIES_TABS[0].calories
   );
@@ -180,7 +162,21 @@ export const Products: FC<TProducts> = () => {
     () => itemForActiveCal?.selectedDays ?? [],
     [itemForActiveCal]
   );
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
 
+    try {
+      const stored = window.localStorage.getItem(RANGE_STORAGE_KEY);
+      if (!stored) return;
+
+      const parsed = JSON.parse(stored) as { range?: string | null };
+      if (parsed && typeof parsed.range === "string") {
+        setSelectedRange(parsed.range);
+      }
+    } catch {
+      return;
+    }
+  }, []);
   React.useEffect(() => {
     if (typeof window === "undefined") return;
 

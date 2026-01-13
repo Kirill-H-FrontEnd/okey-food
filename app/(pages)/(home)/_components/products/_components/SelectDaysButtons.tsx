@@ -1,5 +1,5 @@
 "use client";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { format, parseISO, addDays, isBefore, isToday } from "date-fns";
 import { ru } from "date-fns/locale";
 import clsx from "clsx";
@@ -16,7 +16,13 @@ export const SelectDaysButtons: FC<TSelectDaysButtons> = ({
   onToggleDay,
   selectedDays,
 }) => {
-  if (!range) return null;
+  const [today, setToday] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setToday(new Date());
+  }, []);
+
+  if (!range || !today) return null;
 
   const [startStr, endStr] = range.split("_");
   const start = parseISO(startStr);
@@ -32,7 +38,7 @@ export const SelectDaysButtons: FC<TSelectDaysButtons> = ({
   const renderBtn = (day: Date) => {
     const value = format(day, "yyyy-MM-dd");
     const label = format(day, "EEE, d MMM", { locale: ru });
-    const isDisabled = isBefore(day, new Date()) && !isToday(day);
+    const isDisabled = isBefore(day, today) && !isToday(day);
     const isSelected = selectedDays.includes(value);
 
     return (

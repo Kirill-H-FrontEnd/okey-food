@@ -3,7 +3,7 @@ import { Container } from "@/components/ui/container";
 import { ArticleBanner } from "./_components/article-banner";
 import { FormBanner } from "./_components/form-banner";
 import dynamic from "next/dynamic";
-const Silk = dynamic(() => import("@/components/ui/Silk"), { ssr: false });
+import { SilkClient } from "@/components/ui/silk-client";
 
 type TContactBanner = {};
 
@@ -14,13 +14,7 @@ export const ContactBanner: FC = ({}) => {
         <section className="text-center bg-greenPrimary py-14 px-6 rounded-[16px]">
           <ArticleBanner />
           <FormBanner />
-          <Silk
-            speed={5}
-            scale={1}
-            color="#7B7481"
-            noiseIntensity={1.5}
-            rotation={0}
-          />
+          {/* <SilkClient /> */}
         </section>
       </Container>
     </section>
