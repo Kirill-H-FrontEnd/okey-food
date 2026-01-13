@@ -41,7 +41,7 @@ export const Navbar: FC = ({}) => {
     <header
       className={`${
         isScrolled || openMenu || isBasketOpen
-          ? " bg-white/80 backdrop-blur-lg  "
+          ? " bg-white/80 backdrop-blur-lg  shadow-sm shadow-black/5"
           : "bg-whitePrimary"
       } $ w-full sticky  top-0 left-0 py-[10px] z-[100] transition-[background-color, box-shadow] duration-300`}
     >
@@ -50,7 +50,10 @@ export const Navbar: FC = ({}) => {
           <div className="flex gap-6 items-center">
             <Logo />
             <div className="hidden lg:flex  gap-4">
-              <Link className="hover:opacity-80" href={"tel:+375447256666"}>
+              <Link
+                className="hover:opacity-80 text-yellow-hover"
+                href={"tel:+375447256666"}
+              >
                 +375 44 725 66 66
               </Link>
               <div className="flex gap-3 items-center">

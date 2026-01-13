@@ -62,14 +62,17 @@ export default async function HomeLayout({
 }>) {
   return (
     <>
-      <div className="grid grid-rows-[auto_1fr_auto] min-h-screen">
+      <div className="grid grid-rows-[auto_1fr_auto] min-h-screen text-green-400">
         <Navbar />
         <main>{children}</main>
         <Toaster
           toastOptions={{
             duration: 2000,
-            className: " font-semibold text-sm ",
-
+            className: " font-medium text-sm ",
+            style: {
+              borderRadius: "4px",
+              padding: "8px 12px",
+            },
             success: {
               iconTheme: {
                 primary: "#00C950",
@@ -77,7 +80,7 @@ export default async function HomeLayout({
               },
               style: {
                 background: "",
-                color: "#00C950",
+                color: "#05DF72",
               },
             },
 
@@ -87,7 +90,8 @@ export default async function HomeLayout({
                 secondary: "#fff",
               },
               style: {
-                color: "#FB2C36",
+                background: "#fff",
+                color: "#FF6467",
               },
             },
           }}

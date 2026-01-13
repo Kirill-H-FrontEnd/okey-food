@@ -19,7 +19,7 @@ export default function RootLayout({
         <link rel="canonical" href={`https://okey-food.vercel.app`} />
         <link rel="icon" href="/okeyfood-logo.svg" />
       </head>
-      <body style={font.style} className={` antialiased`}>
+      <body style={font.style} className={` antialiased bg-whitePrimary`}>
         {children}
       </body>
     </html>

@@ -2,6 +2,7 @@
 
 import { AboutUs } from "./_components/aboutUs/about";
 import { Calculator } from "./_components/calculator/calculator";
+import { ContactBanner } from "./_components/contact-banner/contact-banner";
 import { FAQ } from "./_components/FAQ/FAQ";
 import { Hero } from "./_components/hero/hero";
 import { Products } from "./_components/products/products";
@@ -17,9 +18,10 @@ export default function HomePage() {
       <Products />
       <Calculator />
       <AboutUs />
-      <Reviews />
-      <FAQ />
+      {/* <Reviews /> */}
       <YandexMap />
+      <FAQ />
+      <ContactBanner />
     </>
   );
 }

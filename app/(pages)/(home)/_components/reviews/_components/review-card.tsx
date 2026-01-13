@@ -10,7 +10,7 @@ type TReviewCard = {
 
 export const ReviewCard: FC<TReviewCard> = ({ data }) => {
   return (
-    <article className="flex h-full w-full max-w-[370px] flex-col rounded-lg border border-slate-200 bg-greyPrimary p-6 md:max-w-none">
+    <article className=" h-full w-full flex-col rounded-lg border border-slate-200 bg-greyPrimary p-6">
       <div className="flex-shrink-0">
         <div className="flex gap-3 items-center">
           <Image
@@ -33,9 +33,13 @@ export const ReviewCard: FC<TReviewCard> = ({ data }) => {
           ))}
         </div>
       </div>
-      <div className="flex-grow py-4">
-        <p className="line-clamp-5 text-greenPrimary">{data.content}</p>
+
+      <div className="flex-grow py-4 overflow-hidden">
+        <p className="line-clamp-5 text-greenPrimary break-words">
+          {data.content}
+        </p>
       </div>
+
       <div className="flex-shrink-0 text-sm text-slate-500">
         <button className="cursor-pointer hover:text-yellow-hover">
           Читать полностью

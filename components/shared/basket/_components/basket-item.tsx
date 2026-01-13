@@ -95,7 +95,7 @@ export const BasketItem: FC<BasketItemProps> = ({
                 value={daysCount}
                 inputMode="numeric"
                 aria-readonly="true"
-                className="w-[50px] sm:w-[80px] text-center font-bold border-[1px] border-grey-border bg-white text-greenPrimary rounded-[6px]"
+                className="w-[50px] sm:w-[80px] text-center font-bold border-[1px] border-grey-border bg-white text-greenPrimary rounded-[6px] select-none focus-visible:ring-0"
               />
 
               <Button
