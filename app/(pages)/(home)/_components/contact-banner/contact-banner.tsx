@@ -14,13 +14,13 @@ export const ContactBanner: FC = ({}) => {
         <section className="text-center bg-greenPrimary py-14 px-6 rounded-[16px]">
           <ArticleBanner />
           <FormBanner />
-          {/* <Silk
+          <Silk
             speed={5}
             scale={1}
             color="#7B7481"
             noiseIntensity={1.5}
             rotation={0}
-          /> */}
+          />
         </section>
       </Container>
     </section>
