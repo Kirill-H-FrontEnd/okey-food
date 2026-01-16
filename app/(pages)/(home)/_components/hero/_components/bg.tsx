@@ -14,6 +14,8 @@ export const Background: FC = ({}) => {
             alt=""
             fill
             priority
+            placeholder="blur"
+            blurDataURL="/images/home/hero/heroBg3.png"
             style={{ objectFit: "contain" }}
           />
         </div>
