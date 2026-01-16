@@ -18,7 +18,7 @@ export const BasketEmpty: FC<BasketEmptyProps> = ({
       <div className="flex flex-col items-center text-center text-greenPrimary">
         <div className="relative w-[250px] h-[210px] md:w-[350px] md:h-[290px] overflow-hidden">
           <Image
-            src="/basketEmpty2.jpg"
+            src="/basketEmpty.png"
             alt=""
             fill
             className="object-contain object-bottom"
