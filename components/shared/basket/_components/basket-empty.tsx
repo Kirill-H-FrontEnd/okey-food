@@ -2,11 +2,12 @@
 "use client";
 import { FC } from "react";
 import { ShoppingCart } from "lucide-react";
+import Image from "next/image";
 
 type BasketEmptyProps = { text?: string };
 
 export const BasketEmpty: FC<BasketEmptyProps> = ({
-  text = "Ваша корзина пуста.",
+  text = "Ваша корзина пуста..",
 }) => {
   return (
     <div
@@ -14,11 +15,19 @@ export const BasketEmpty: FC<BasketEmptyProps> = ({
       role="status"
       aria-live="polite"
     >
-      <div className="flex flex-col items-center text-center gap-3 text-greenPrimary">
-        <div className="rounded-xl p-4 bg-greyPrimary">
-          <ShoppingCart className="w-10 h-10" aria-hidden />
+      <div className="flex flex-col items-center text-center text-greenPrimary">
+        <div className="relative w-[250px] h-[210px] md:w-[350px] md:h-[290px] overflow-hidden">
+          <Image
+            src="/basketEmpty2.jpg"
+            alt=""
+            fill
+            className="object-contain object-bottom"
+            priority
+          />
         </div>
-        <p className="text-sm text-greySecondary max-w-[28ch]">{text}</p>
+        <div>
+          <h5 className="text-xl font-bold text-greenPrimary ">{text}</h5>
+        </div>
       </div>
     </div>
   );

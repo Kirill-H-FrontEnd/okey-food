@@ -19,8 +19,8 @@ export default function HomePage() {
       <Calculator />
       <AboutUs />
       {/* <Reviews /> */}
-      <YandexMap />
       <FAQ />
+      <YandexMap />
       <ContactBanner />
     </>
   );

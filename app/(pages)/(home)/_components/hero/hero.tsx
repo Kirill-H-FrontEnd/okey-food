@@ -15,11 +15,11 @@ export const Hero: FC = ({}) => {
       className={`w-full grid place-items-center bg-whitePrimary`}
     >
       <Container className="w-full h-full grid md:place-items-center">
-        <section className=" bg-greenPrimary px-5 rounded-[16px] relative overflow-hidden w-full mt-4 h-[550px] md:px-10 lg:px-20 grid  items-start md:items-center ">
+        <section className=" bg-greenPrimary px-5 rounded-2xl relative overflow-hidden w-full mt-4 h-[550px] md:px-10 lg:px-20 grid  items-start md:items-center ">
           <Article />
           <Background />
           {/* Vector background */}
-          <div className="absolute hidden md:block top-0 right-[20px] lg:right-[50px] z-1 w-[550px] h-[550px] overflow-hidden">
+          <div className="absolute hidden md:block top-0 right-5 lg:right-12.5 z-1 w-[550px] h-[550px] overflow-hidden">
             <Image
               alt=""
               fill

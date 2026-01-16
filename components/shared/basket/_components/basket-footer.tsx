@@ -16,7 +16,7 @@ export const BasketFooter: FC<BasketFooterProps> = ({
   disabled,
   onProceed,
 }) => (
-  <div className="w-full bg-white px-6 py-4 shadow-sm shadow-greySecondary/70">
+  <div className="w-full bg-white border-t border-slate-200 px-6 py-4 shadow-sm shadow-greySecondary/70">
     <div className="grid gap-4">
       <div className="flex items-center gap-2 text-greenPrimary">
         <p className="text-[20px] font-bold">Итого:</p>
