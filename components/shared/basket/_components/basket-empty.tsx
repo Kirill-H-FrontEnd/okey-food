@@ -11,7 +11,7 @@ export const BasketEmpty: FC<BasketEmptyProps> = ({
 }) => {
   return (
     <div
-      className="min-h-full grid place-items-center px-4"
+      className="min-h-full bg-whitePrimary grid place-items-center px-4"
       role="status"
       aria-live="polite"
     >
@@ -23,6 +23,8 @@ export const BasketEmpty: FC<BasketEmptyProps> = ({
             fill
             className="object-contain object-bottom"
             priority
+            placeholder="blur"
+            blurDataURL="/basketEmpty.png"
           />
         </div>
         <div>

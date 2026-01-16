@@ -179,7 +179,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
                   enterKeyHint="next"
                   inputMode="text"
                   id="checkout-street"
-                  placeholder="Введите улицу"
+                  placeholder="Ул."
                   aria-invalid={fieldHasError("street")}
                   className={cn(withErrorStyles("street"))}
                 />
@@ -192,7 +192,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
                   enterKeyHint="next"
                   inputMode="text"
                   id="checkout-house"
-                  placeholder="Номер дома"
+                  placeholder="Дом"
                   aria-invalid={fieldHasError("house")}
                   className={cn(withErrorStyles("house"))}
                 />
@@ -205,7 +205,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
                   enterKeyHint="next"
                   inputMode="text"
                   id="checkout-apartment"
-                  placeholder="№ "
+                  placeholder="№ Кв. "
                   aria-invalid={fieldHasError("apartment")}
                   className={cn(withErrorStyles("apartment"))}
                 />
@@ -226,16 +226,24 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
                         variant="outline"
                         onBlur={field.onBlur}
                         className={cn(
-                          "w-full shadow-none justify-between font-normal",
+                          "w-full shadow-none justify-between font-normal hover:bg-white",
                           withErrorStyles("date"),
                           fieldHasError("date") &&
                             "text-red-500 hover:bg-red-50/40 focus-visible:ring-red-400"
                         )}
                         aria-invalid={fieldHasError("date")}
                       >
-                        {field.value
-                          ? field.value.toLocaleDateString("ru-RU")
-                          : "Выбрать дату"}
+                        {field.value ? (
+                          field.value.toLocaleDateString("ru-RU")
+                        ) : (
+                          <p
+                            className={
+                              isCalendarOpen ? "text-yellow-hover" : undefined
+                            }
+                          >
+                            Выбрать дату
+                          </p>
+                        )}
                         <CalendarDays
                           className={
                             isCalendarOpen ? "text-yellow-hover" : undefined

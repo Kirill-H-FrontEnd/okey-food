@@ -32,7 +32,7 @@ export const BasketHeader: FC<BasketHeaderProps> = ({
         }}
         type="button"
         onClick={isCheckout ? onReturn : onClose}
-        className="group grid cursor-pointer rounded-sm bg-greenPrimary/10 md:p-2"
+        className="group grid cursor-pointer rounded-sm bg-greenPrimary/5 md:p-2"
         aria-label={isCheckout ? "Вернуться к корзине" : "Закрыть корзину"}
       >
         <span className="inline-flex items-center text-greenPrimary">
