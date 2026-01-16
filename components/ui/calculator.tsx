@@ -200,7 +200,7 @@ export default function CalorieCalculator() {
             placeholder="Вес, кг"
             min={30}
             max={250}
-            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary focus:text-greenPrimary transition-colors"
+            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary bg-transparent focus:text-greenPrimary transition-colors"
             value={weight}
             onChange={(e) =>
               setWeight(e.target.value === "" ? "" : e.target.valueAsNumber)
@@ -214,7 +214,7 @@ export default function CalorieCalculator() {
             placeholder="Рост, см"
             min={120}
             max={230}
-            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary focus:text-greenPrimary transition-colors"
+            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary bg-transparent focus:text-greenPrimary transition-colors"
             value={height}
             onChange={(e) =>
               setHeight(e.target.value === "" ? "" : e.target.valueAsNumber)
@@ -228,7 +228,7 @@ export default function CalorieCalculator() {
             placeholder="Возраст"
             min={14}
             max={100}
-            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary focus:text-greenPrimary transition-colors"
+            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary bg-transparent focus:text-greenPrimary transition-colors"
             value={age}
             onChange={(e) =>
               setAge(e.target.value === "" ? "" : e.target.valueAsNumber)

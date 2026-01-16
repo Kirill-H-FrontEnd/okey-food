@@ -40,10 +40,10 @@ export const Navbar: FC = ({}) => {
   return (
     <header
       className={`${
-        isScrolled || openMenu || isBasketOpen
-          ? " bg-white/80 backdrop-blur-lg  shadow-sm shadow-black/5"
+        (isScrolled || openMenu) && !isBasketOpen
+          ? " bg-whitePrimary/60 backdrop-blur-lg  shadow-sm shadow-black/5"
           : "bg-whitePrimary"
-      } $ w-full sticky  top-0 left-0 py-[10px] z-[100] transition-[background-color, box-shadow] duration-300`}
+      } $ w-full sticky  top-0 left-0 py-2 md:py-1.5 z-100 transition-[background-color, box-shadow] duration-300`}
     >
       <Container>
         <section className="w-full flex justify-between items-center">

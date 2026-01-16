@@ -1,6 +1,13 @@
 "use client";
 
-import { ChevronLeft, ShoppingBasket, XIcon } from "lucide-react";
+import {
+  BaggageClaim,
+  ChevronLeft,
+  MapPinHouse,
+  ShoppingBag,
+  ShoppingBasket,
+  XIcon,
+} from "lucide-react";
 import { FC } from "react";
 
 import { SheetTitle } from "@/components/ui/sheet";
@@ -17,11 +24,16 @@ export const BasketHeader: FC<BasketHeaderProps> = ({
   onReturn,
 }) => {
   const title = isCheckout ? "Оформление заказа" : "Корзина";
+  const icon = isCheckout ? (
+    <MapPinHouse className="h-7 w-7 text-yellowPrimary" />
+  ) : (
+    <ShoppingBag className="h-7 w-7 text-yellowPrimary" />
+  );
 
   return (
     <div className="relative flex items-center justify-between">
       <SheetTitle className="flex w-full items-center gap-2 text-center text-[20px] font-bold text-greenPrimary md:w-auto md:justify-start md:text-left md:text-[24px]">
-        <ShoppingBasket className="h-7 w-7 text-yellowPrimary" />
+        {icon}
         <span>{title}</span>
       </SheetTitle>
 

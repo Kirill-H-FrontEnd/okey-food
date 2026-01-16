@@ -1,6 +1,6 @@
 "use client";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
-import { ChevronRight, ShoppingBasket } from "lucide-react";
+import { ChevronRight, ShoppingBag, ShoppingBasket } from "lucide-react";
 import {
   AnimatePresence,
   LazyMotion,
@@ -314,7 +314,7 @@ export const Basket: FC = () => {
           </span>
           <span className="w-[1px] h-[50%] bg-greenPrimary/50" aria-hidden />
           <div className="grid grid-cols-2-auto gap-2 items-center md:group-hover:opacity-0 transition-opacity text-greenPrimary">
-            <ShoppingBasket size={10} />
+            <ShoppingBag size={10} />
           </div>
           <ChevronRight
             size={18}
