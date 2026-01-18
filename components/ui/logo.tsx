@@ -5,7 +5,7 @@ import Image from "next/image";
 
 type TLogo = { url?: string };
 
-export const Logo: FC<TLogo> = ({ url = "/logo.png" }) => {
+export const Logo: FC<TLogo> = ({ url = "/logo.PNG" }) => {
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     window.scrollTo({
