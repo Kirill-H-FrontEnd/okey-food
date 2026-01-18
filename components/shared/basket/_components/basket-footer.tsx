@@ -16,9 +16,9 @@ export const BasketFooter: FC<BasketFooterProps> = ({
   disabled,
   onProceed,
 }) => (
-  <div className="w-full bg-whitePrimary border-t border-input px-6 py-4 ">
+  <div className="w-full bg-whitePrimary border-t border-grey-border/50 px-6 py-4 ">
     <div className="grid gap-4">
-      <div className="flex items-center gap-2 text-greenPrimary">
+      <div className="flex items-center gap-2 text-primary">
         <p className="text-[20px] font-bold">Итого:</p>
         <p className="text-[20px] font-bold text-yellow-hover">
           <AnimatedAmount value={totalLabel} durationMs={200} />
@@ -27,7 +27,7 @@ export const BasketFooter: FC<BasketFooterProps> = ({
       <Button
         type="button"
         variant="default"
-        className="w-full bg-yellowPrimary py-6 font-bold text-greenPrimary disabled:opacity-60"
+        className="w-full bg-yellowPrimary py-6 font-bold text-primary disabled:opacity-60"
         disabled={disabled}
         onClick={onProceed}
       >

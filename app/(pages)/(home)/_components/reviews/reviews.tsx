@@ -53,7 +53,7 @@ export const Reviews: FC = () => {
         stopOnInteraction: false,
         stopOnMouseEnter: true,
       }),
-    []
+    [],
   );
 
   return (
@@ -78,8 +78,8 @@ export const Reviews: FC = () => {
             ))}
           </CarouselContent>
 
-          <CarouselPrevious className="hidden md:flex border border-grey-border bg-white text-greenPrimary hover:bg-whitePrimary" />
-          <CarouselNext className="hidden md:flex border border-grey-border bg-white text-greenPrimary hover:bg-whitePrimary" />
+          <CarouselPrevious className="hidden md:flex border border-grey-border bg-white text-whiteSecondary hover:bg-whitePrimary" />
+          <CarouselNext className="hidden md:flex border border-grey-border bg-white text-whiteSecondary hover:bg-whitePrimary" />
         </Carousel>
       </Container>
     </section>

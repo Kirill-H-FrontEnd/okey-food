@@ -7,9 +7,9 @@ import dynamic from "next/dynamic";
 const DynamicYandexMap = dynamic(
   () =>
     import("@/components/ui/yandex-map-component").then(
-      (mod) => mod.YandexMapComponent
+      (mod) => mod.YandexMapComponent,
     ),
-  { ssr: false }
+  { ssr: false },
 );
 type TYandexMap = {};
 
@@ -19,12 +19,12 @@ export const YandexMap: FC = ({}) => {
       <Container>
         <section>
           <article className="mb-8">
-            <h3 className="text-[28px] lg:text-[32px] font-bold text-greenPrimary">
+            <h3 className="text-[28px] lg:text-[32px] font-bold text-colorPrimary">
               Зона доставки
             </h3>
           </article>
           <DynamicYandexMap zoom={10} />
-          <section className="grid gap-2 md:grid-cols-[400px] mt-10 text-greenPrimary">
+          <section className="grid gap-2 md:grid-cols-[400px] mt-10 text-colorPrimary">
             <p>Время доставки 19:00 - 23:00</p>
 
             <p>

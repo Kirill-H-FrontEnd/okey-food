@@ -12,12 +12,16 @@ export const FormBanner: FC = ({}) => {
   return (
     <form className="max-w-[450px] gap-4 m-auto grid mt-6">
       <div className="grid md:flex gap-2 text-black">
-        <Input name="name" placeholder="Имя" className="bg-white  h-[40px]" />
+        <Input
+          name="name"
+          placeholder="Имя"
+          className="bg-whiteSecondary  h-[40px]"
+        />
         <Input
           placeholder="Номер телефона"
           name="phone"
           type="number"
-          className="bg-white h-[40px]"
+          className="bg-whiteSecondary h-[40px]"
         />
       </div>
       <div className="flex items-center justify-start gap-2 text-greySecondary">
@@ -39,12 +43,12 @@ export const FormBanner: FC = ({}) => {
 
       <Button
         disabled={!accepted}
-        className="bg-yellowPrimary text-greenPrimary font-bold w-full py-6 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="bg-yellowPrimary text-colorPrimary font-bold w-full py-6 disabled:opacity-50 disabled:cursor-not-allowed"
         variant="default"
       >
         Связаться с нами
       </Button>
-      <p className="text-greySecondary text-sm ">
+      <p className="text-whitePrimary text-sm ">
         Обычно мы перезваниваем в течение 15 минут
       </p>
     </form>

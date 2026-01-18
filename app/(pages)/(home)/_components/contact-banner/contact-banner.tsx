@@ -12,7 +12,7 @@ export const ContactBanner: FC = () => {
   return (
     <section className="py-14 lg:py-20 relative">
       <Container>
-        <section className="relative overflow-hidden bg-greenPrimary py-14 px-6 rounded-[50px] text-center">
+        <section className="relative overflow-hidden bg-colorPrimary py-14 px-6 rounded-[50px] text-center">
           {/* RIPPLE */}
           <Ripple
             className="absolute inset-0 flex items-center justify-center"

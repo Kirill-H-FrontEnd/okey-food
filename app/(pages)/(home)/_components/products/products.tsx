@@ -399,7 +399,7 @@ export const Products: FC<TProducts> = () => {
     <section id="products" className="py-14 lg:py-20 bg-whitePrimary">
       <Container>
         <article className="w-full max-w-[450px] lg:max-w-full">
-          <h3 className="text-[28px] lg:text-[32px] font-bold text-greenPrimary">
+          <h3 className="text-[28px] lg:text-[32px] font-bold text-colorPrimary">
             Рационы питания
           </h3>
         </article>
@@ -414,11 +414,11 @@ export const Products: FC<TProducts> = () => {
           className="grid gap-4 mt-6"
         >
           <div className="flex justify-between items-center">
-            <h4 className="text-[18px] lg:text-[22px] font-bold text-greenPrimary">
+            <h4 className="text-[18px] lg:text-[22px] font-bold text-colorPrimary">
               Выберите калорийность
             </h4>
             <ScrollLink
-              className="text-greenPrimary hover:text-yellow-hover transition-colors cursor-pointer hidden md:block"
+              className="text-colorPrimary hover:text-yellow-hover transition-colors cursor-pointer hidden md:block"
               to={"calculator"}
               smooth={true}
               duration={500}
@@ -432,7 +432,7 @@ export const Products: FC<TProducts> = () => {
           <CaloriesTabsList tabs={DATA_CALORIES_TABS} />
 
           <section>
-            <h5 className="text-[16px] lg:text-[20px] font-bold text-greenPrimary">
+            <h5 className="text-[16px] lg:text-[20px] font-bold text-colorPrimary">
               Меню на неделю
             </h5>
             <div className="mt-2">
@@ -459,7 +459,7 @@ export const Products: FC<TProducts> = () => {
                 <TabsContent
                   key={tab.calories}
                   value={tabValue}
-                  className="text-greenPrimary font-medium mt-6"
+                  className="text-colorPrimary font-medium mt-6"
                 >
                   <motion.div
                     key={`${tab.calories}-${activeDay}`}

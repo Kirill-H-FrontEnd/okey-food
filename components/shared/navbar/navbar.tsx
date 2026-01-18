@@ -51,7 +51,7 @@ export const Navbar: FC = ({}) => {
             <Logo />
             <div className="hidden lg:flex  gap-4">
               <Link
-                className="hover:text-yellow-hover transition-all font-semibold text-greenPrimary"
+                className="hover:text-yellow-hover transition-all font-semibold text-primary"
                 href={"tel:+375447256666"}
               >
                 +375 44 725 66 66
@@ -59,14 +59,14 @@ export const Navbar: FC = ({}) => {
               <div className="flex gap-3 items-center">
                 <Link
                   aria-label="Instagram"
-                  className="text-greenPrimary hover:text-yellow-hover transition-colors"
+                  className="text-primary hover:text-yellow-hover transition-colors"
                   href=""
                 >
                   <FaInstagram size={26} />
                 </Link>
                 <Link
                   aria-label="Telegram"
-                  className="text-greenPrimary hover:text-yellow-hover transition-colors"
+                  className="text-primary hover:text-yellow-hover transition-colors"
                   href=""
                 >
                   <RiTelegram2Fill size={26} />
@@ -97,7 +97,7 @@ export const Navbar: FC = ({}) => {
               className="items-center grid  lg:hidden"
               href={"tel:+375447256666"}
             >
-              <Phone className="text-greenPrimary" size={24} />
+              <Phone className="text-primary" size={24} />
             </Link>
             <Basket />
             <MobileMenu

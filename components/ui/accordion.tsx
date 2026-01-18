@@ -23,7 +23,7 @@ function AccordionItem({
       data-slot="accordion-item"
       className={cn(
         "border-none transition-all data-[state=open]:bg-whitePrimary",
-        className
+        className,
       )}
       {...props}
     />
@@ -41,14 +41,14 @@ function AccordionTrigger({
         data-slot="accordion-trigger"
         className={cn(
           "flex flex-1 items-center cursor-pointer justify-between  gap-4 rounded-md py-4 text-left text-sm font-medium  outline-none disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180",
-          className
+          className,
         )}
         {...props}
       >
         {children}
         <ChevronDownIcon
           strokeWidth={1.5}
-          className="pointer-events-none size-6 shrink-0 translate-y-0.5  data-[state=open]:text-greenPrimary  transition-transform duration-200"
+          className="pointer-events-none size-6 shrink-0 translate-y-0.5  data-[state=open]:text-primary  transition-transform duration-200"
         />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
@@ -65,7 +65,7 @@ function AccordionContent({
       data-slot="accordion-content"
       className={cn(
         " data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm rounded-[6px]",
-        className
+        className,
       )}
       {...props}
     >

@@ -31,10 +31,10 @@ export const Article: FC = ({}) => {
             variant={"default"}
             className="bg-yellowPrimary w-full md:w-[250px] py-6 group "
           >
-            <p className="text-greenPrimary font-bold">Выбрать рацион</p>
+            <p className="text-colorPrimary font-bold">Выбрать рацион</p>
             <BsArrowRight
               strokeWidth={0.6}
-              className="text-greenPrimary group-hover:translate-x-1 transition-transform hidden md:block"
+              className="text-colorPrimary group-hover:translate-x-1 transition-transform hidden md:block"
             />
           </Button>
         </ScrollLink>

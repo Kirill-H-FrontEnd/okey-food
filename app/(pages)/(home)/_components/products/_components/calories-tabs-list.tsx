@@ -19,10 +19,10 @@ export const CaloriesTabsList: React.FC<CaloriesTabsListProps> = ({ tabs }) => {
             <TabsTrigger
               key={tab.calories}
               value={`calories-${tab.calories}`}
-              className="w-[220px] min-w-[220px] max-w-[220px] shrink-0 snap-start text-greenPrimary font-medium bg-white py-4 border-[1px] border-grey-border cursor-pointer data-[state=active]:bg-greenPrimary data-[state=active]:border-greenPrimary data-[state=active]:text-whitePrimary group shadow-none"
+              className="w-[220px] min-w-[220px] max-w-[220px] shrink-0 snap-start text-colorPrimary font-medium bg-white py-4 border-[1px] border-grey-border cursor-pointer data-[state=active]:bg-colorPrimary data-[state=active]:border-colorPrimary data-[state=active]:text-whitePrimary group shadow-none"
             >
               <div>
-                <p className="text-greenPrimary group-data-[state=active]:text-whitePrimary font-bold">
+                <p className="text-colorPrimary group-data-[state=active]:text-whitePrimary font-bold">
                   {tab.calories}
                 </p>
                 <p className="text-greySecondary group-data-[state=active]:text-yellowPrimary">
@@ -40,10 +40,10 @@ export const CaloriesTabsList: React.FC<CaloriesTabsListProps> = ({ tabs }) => {
           <TabsTrigger
             key={tab.calories}
             value={`calories-${tab.calories}`}
-            className="w-full text-greenPrimary font-medium bg-white py-4 border-[1px] border-grey-border cursor-pointer data-[state=active]:bg-greenPrimary data-[state=active]:border-greenPrimary data-[state=active]:text-whitePrimary group shadow-none"
+            className="w-full text-colorPrimary font-medium bg-whiteSecondary py-4 border-[1px] border-grey-border cursor-pointer data-[state=active]:bg-colorPrimary data-[state=active]:border-colorPrimary data-[state=active]:text-whitePrimary group shadow-none"
           >
             <div>
-              <p className="text-greenPrimary group-data-[state=active]:text-whitePrimary font-bold">
+              <p className="text-colorPrimary group-data-[state=active]:text-whitePrimary font-bold">
                 {tab.calories}
               </p>
               <p className="text-greySecondary group-data-[state=active]:text-yellowPrimary">

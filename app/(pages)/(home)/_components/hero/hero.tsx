@@ -15,7 +15,7 @@ export const Hero: FC = ({}) => {
       className={`w-full grid place-items-center bg-whitePrimary`}
     >
       <Container className="w-full h-full grid md:place-items-center">
-        <section className=" bg-greenPrimary px-5 rounded-2xl relative overflow-hidden w-full mt-4 h-[550px] md:px-10 lg:px-20 grid  items-start md:items-center ">
+        <section className=" bg-colorPrimary px-5 rounded-2xl relative overflow-hidden w-full mt-4 h-[550px] md:px-10 lg:px-20 grid  items-start md:items-center ">
           <Article />
           <Background />
           {/* Vector background */}

@@ -32,7 +32,7 @@ export const BasketHeader: FC<BasketHeaderProps> = ({
 
   return (
     <div className="relative flex items-center justify-between">
-      <SheetTitle className="flex w-full items-center gap-2 text-center text-[20px] font-bold text-greenPrimary md:w-auto md:justify-start md:text-left md:text-[24px]">
+      <SheetTitle className="flex w-full items-center gap-2 text-center text-[20px] font-bold text-primary md:w-auto md:justify-start md:text-left md:text-[24px]">
         {icon}
         <span>{title}</span>
       </SheetTitle>
@@ -44,13 +44,13 @@ export const BasketHeader: FC<BasketHeaderProps> = ({
         }}
         type="button"
         onClick={isCheckout ? onReturn : onClose}
-        className="group grid cursor-pointer rounded-sm bg-greenPrimary/5 md:p-2"
+        className="group grid cursor-pointer rounded-sm bg-primary/5 md:p-2"
         aria-label={isCheckout ? "Вернуться к корзине" : "Закрыть корзину"}
       >
-        <span className="inline-flex items-center text-greenPrimary">
+        <span className="inline-flex items-center text-primary">
           {isCheckout ? (
             <>
-              <ChevronLeft className="hidden h-4 w-4 text-greenPrimary transition-colors group-hover:text-yellow-hover md:block" />
+              <ChevronLeft className="hidden h-4 w-4 text-primary transition-colors group-hover:text-yellow-hover md:block" />
               <span className="flex items-center gap-1 px-3 py-1 text-[13px] font-bold md:hidden">
                 <ChevronLeft size={14} />
                 Назад
@@ -58,7 +58,7 @@ export const BasketHeader: FC<BasketHeaderProps> = ({
             </>
           ) : (
             <>
-              <XIcon className="hidden h-4 w-4 text-greenPrimary transition-colors group-hover:text-yellow-hover md:block" />
+              <XIcon className="hidden h-4 w-4 text-primary transition-colors group-hover:text-yellow-hover md:block" />
               <span className="px-3 py-1 text-[13px] font-bold md:hidden">
                 Закрыть
               </span>

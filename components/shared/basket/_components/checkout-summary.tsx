@@ -15,7 +15,7 @@ export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
   items,
   totalLabel,
 }) => (
-  <div className="rounded-[8px] bg-greyPrimary p-4 text-greenPrimary">
+  <div className="rounded-[8px] bg-greyPrimary p-4 text-primary">
     <div className="flex items-center gap-2">
       <p className="text-[20px] font-bold">Итого:</p>
       <p className="text-[20px] font-bold text-yellow-hover">

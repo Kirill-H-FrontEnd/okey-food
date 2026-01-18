@@ -45,16 +45,16 @@ export const BasketItem: FC<BasketItemProps> = ({
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 40 }}
       transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-      className="flex items-start gap-4 border-b border-input pb-4"
+      className="flex items-start gap-4 border-b border-grey-border/50 pb-4"
       aria-label={`Тариф ${item.calories}`}
     >
-      <div className="hidden w-20 h-20 shrink-0 md:grid place-items-center bg-greyPrimary rounded-md text-greenPrimary font-bold">
+      <div className="hidden w-20 h-20 shrink-0 md:grid place-items-center bg-whiteSecondary text-colorPrimary rounded-md font-bold">
         <p>{item.calories}</p>
       </div>
 
       <div className="w-full grid grid-cols-[auto_1fr_auto] justify-center">
         <div className="md:grid gap-1 min-w-0">
-          <p className="font-bold truncate text-greenPrimary">
+          <p className="font-bold truncate text-colorPrimary">
             Тариф {item.calories}
           </p>
           <p className="text-xs text-greySecondary line-clamp-1">
@@ -63,7 +63,7 @@ export const BasketItem: FC<BasketItemProps> = ({
 
           <div className="mt-2 hidden md:block">
             <button
-              className="h-auto text-greenPrimary cursor-pointer inline-flex items-center gap-1 hover:text-red-400 transition-colors"
+              className="h-auto text-primary cursor-pointer inline-flex items-center gap-1 hover:text-red-500 transition-colors"
               onClick={() => onRemove(item.id)}
               aria-label={`Удалить тариф ${item.calories} из корзины`}
             >
@@ -75,7 +75,7 @@ export const BasketItem: FC<BasketItemProps> = ({
 
         <div className="flex flex-col items-center gap-3 shrink-0">
           <div>
-            <p className="text-greenPrimary text-sm font-semibold">
+            <p className="text-primary text-sm font-semibold">
               Количество дней
             </p>
             <div className="flex items-center gap-1 md:gap-2">
@@ -83,7 +83,7 @@ export const BasketItem: FC<BasketItemProps> = ({
                 onClick={handleDec}
                 disabled={!canDecrement}
                 title={!canDecrement ? "Минимум 1 день" : undefined}
-                className="px-3 py-2 border-[1px] border-grey-border bg-white text-greenPrimary rounded-[6px] hover:bg-whitePrimary/70 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-2 border-[1px] border-grey-border bg-whiteSecondary text-colorPrimary rounded-[6px] hover:bg-whitePrimary/70 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Уменьшить дни"
                 aria-disabled={!canDecrement}
               >
@@ -95,12 +95,12 @@ export const BasketItem: FC<BasketItemProps> = ({
                 value={daysCount}
                 inputMode="numeric"
                 aria-readonly="true"
-                className="w-[50px] sm:w-[80px] text-center font-bold border-[1px] border-grey-border bg-white text-greenPrimary rounded-[6px] select-none focus-visible:ring-0"
+                className="w-[50px] sm:w-[80px] text-center font-bold border-[1px] border-grey-border bg-whiteSecondary text-colorPrimary rounded-[6px] select-none focus-visible:ring-0"
               />
 
               <Button
                 onClick={() => onIncrement(item.id)}
-                className="px-3 py-2 border-[1px] border-grey-border bg-white text-greenPrimary rounded-[6px] hover:bg-whitePrimary/70 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-2 border-[1px] border-grey-border bg-whiteSecondary text-colorPrimary rounded-[6px] hover:bg-whitePrimary/70 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Увеличить дни"
                 disabled={!canIncrement}
               >
@@ -119,7 +119,7 @@ export const BasketItem: FC<BasketItemProps> = ({
           </p>
           <div className="mt-1 md:hidden">
             <button
-              className="h-auto text-greenPrimary cursor-pointer inline-flex items-center gap-1 hover:text-red-400 transition-colors"
+              className="h-auto text-primary cursor-pointer inline-flex items-center gap-1 hover:text-red-400 transition-colors"
               onClick={() => onRemove(item.id)}
               aria-label={`Удалить тариф ${item.calories} из корзины`}
             >

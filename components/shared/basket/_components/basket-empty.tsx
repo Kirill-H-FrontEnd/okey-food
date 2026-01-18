@@ -15,7 +15,7 @@ export const BasketEmpty: FC<BasketEmptyProps> = ({
       role="status"
       aria-live="polite"
     >
-      <div className="flex flex-col items-center text-center text-greenPrimary">
+      <div className="flex flex-col items-center text-center text-primary">
         <div className="relative w-[250px] h-[210px] md:w-[350px] md:h-[290px] overflow-hidden">
           <Image
             src="/basketEmpty.png"
@@ -28,7 +28,7 @@ export const BasketEmpty: FC<BasketEmptyProps> = ({
           />
         </div>
         <div>
-          <h5 className="text-xl font-bold text-greenPrimary ">{text}</h5>
+          <h5 className="text-xl font-bold text-primary ">{text}</h5>
         </div>
       </div>
     </div>

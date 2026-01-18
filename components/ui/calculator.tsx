@@ -177,7 +177,7 @@ export default function CalorieCalculator() {
               key={g}
               className={`py-[22px] font-semibold border-grey-border border-[1px]  ${
                 gender === g
-                  ? "bg-whitePrimary text-greenPrimary "
+                  ? "bg-whitePrimary text-primary "
                   : "bg-transparent text-whitePrimary hover:bg-whitePrimary/5 "
               }`}
               onClick={() => setGender(g)}
@@ -200,7 +200,7 @@ export default function CalorieCalculator() {
             placeholder="Вес, кг"
             min={30}
             max={250}
-            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary bg-transparent focus:text-greenPrimary transition-colors"
+            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary bg-transparent focus:text-primary transition-colors"
             value={weight}
             onChange={(e) =>
               setWeight(e.target.value === "" ? "" : e.target.valueAsNumber)
@@ -214,7 +214,7 @@ export default function CalorieCalculator() {
             placeholder="Рост, см"
             min={120}
             max={230}
-            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary bg-transparent focus:text-greenPrimary transition-colors"
+            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary bg-transparent focus:text-primary transition-colors"
             value={height}
             onChange={(e) =>
               setHeight(e.target.value === "" ? "" : e.target.valueAsNumber)
@@ -228,7 +228,7 @@ export default function CalorieCalculator() {
             placeholder="Возраст"
             min={14}
             max={100}
-            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary bg-transparent focus:text-greenPrimary transition-colors"
+            className="py-[22px] font-semibold border-grey-border border-[1px] placeholder:text-whitePrimary hover:bg-whitePrimary/5 focus:bg-whitePrimary bg-transparent focus:text-primary transition-colors"
             value={age}
             onChange={(e) =>
               setAge(e.target.value === "" ? "" : e.target.valueAsNumber)
@@ -246,7 +246,7 @@ export default function CalorieCalculator() {
               key={g}
               className={`py-[22px] font-semibold border-grey-border border-[1px] ${
                 goal === g
-                  ? "bg-whitePrimary text-greenPrimary"
+                  ? "bg-whitePrimary text-primary"
                   : "bg-transparent text-whitePrimary hover:bg-whitePrimary/5"
               }`}
               onClick={() => setGoal(g)}
@@ -315,8 +315,8 @@ export default function CalorieCalculator() {
         </div>
 
         <section className="grid grid-rows-1 min-h-[260px] lg:minh-0 gap-4">
-          <div className="flex flex-col items-center justify-center rounded-[8px] bg-whitePrimary py-8">
-            <h3 className="text-greenPrimary text-[18px] font-bold">
+          <div className="flex flex-col items-center justify-center rounded-[8px] bg-whiteSecondary py-8">
+            <h3 className="text-primary text-[18px] font-bold">
               Рекомендуемый калораж:
             </h3>
 
@@ -331,12 +331,12 @@ export default function CalorieCalculator() {
                   duration={400}
                   startOnView={false}
                   animateOnHover={false}
-                  className="text-[50px] my-3 text-greenPrimary font-bold leading-none tabular-nums"
+                  className="text-[50px] my-3 text-primary font-bold leading-none tabular-nums"
                 >
                   {String(recommendation.targetCalories)}
                 </HyperText>
 
-                <div className="text-center text-greenPrimary font-semibold grid gap-1">
+                <div className="text-center text-primary font-semibold grid gap-1">
                   <p>
                     • {getCalorieLevel(recommendation.targetCalories)}{" "}
                     калорийность
@@ -363,7 +363,7 @@ export default function CalorieCalculator() {
           </div>
 
           <Button
-            className="bg-yellowPrimary text-greenPrimary font-bold py-6"
+            className="bg-yellowPrimary text-primary font-bold py-6"
             variant="default"
             disabled={!recommendation}
             onClick={handleAddToCart}

@@ -78,7 +78,7 @@ export const MobileMenu: FC<TMobileMenu> = ({
               <Link
                 aria-label="Instagram"
                 href="#"
-                className="hover:text-greenPrimary"
+                className="hover:text-primary"
               >
                 <Image
                   src="/images/icons/instagram.svg"
@@ -87,7 +87,7 @@ export const MobileMenu: FC<TMobileMenu> = ({
                   alt="Instagram"
                 />
               </Link>
-              <Link href="#" className="hover:text-greenPrimary">
+              <Link href="#" className="hover:text-primary">
                 <Image
                   src="/images/icons/telegram.svg"
                   width={22}
@@ -99,18 +99,18 @@ export const MobileMenu: FC<TMobileMenu> = ({
             <div className="grid">
               <Link
                 href="tel:+375447256666"
-                className="hover:opacity-80 font-medium text-greenPrimary"
+                className="hover:opacity-80 font-medium text-primary"
               >
                 +375 44 725 66 66
               </Link>
               <Link
                 href="mailto:okeygood@gmail.com"
-                className="hover:opacity-80 font-medium text-greenPrimary"
+                className="hover:opacity-80 font-medium text-primary"
               >
                 okeygood@gmail.com
               </Link>
             </div>
-            <div className="text-greenPrimary">
+            <div className="text-primary">
               <h5>г.Минск</h5>
               <h4>проспект Дзержинского 10</h4>
               <p>10:00 – 20:00</p>

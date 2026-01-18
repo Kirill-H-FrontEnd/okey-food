@@ -5,6 +5,7 @@ import { FC } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 type CheckoutFooterProps = {
   isConsentGiven: boolean;
@@ -17,7 +18,7 @@ export const CheckoutFooter: FC<CheckoutFooterProps> = ({
   onConsentChange,
   onSubmit,
 }) => (
-  <div className="w-full bg-whitePrimary border-t border-input px-6 py-4 ">
+  <div className="w-full bg-whitePrimary border-t border-grey-border/50 px-6 py-4 ">
     <div className="grid gap-4">
       <div className="flex items-center gap-4">
         <Switch
@@ -27,9 +28,12 @@ export const CheckoutFooter: FC<CheckoutFooterProps> = ({
         />
         <label
           htmlFor="consent-switch"
-          className="text-sm font-semibold text-greenPrimary"
+          className="text-[13px] font-semibold text-colorPrimary"
         >
-          Я согласен на обработку персональных данных
+          Ознакомьтесь с {""}{" "}
+          <Link href="/privacy-policy" className="text-yellow-hover">
+            политикой конфиденциальности
+          </Link>
         </label>
       </div>
 
@@ -40,8 +44,8 @@ export const CheckoutFooter: FC<CheckoutFooterProps> = ({
         className={cn(
           "w-full py-6 font-bold transition-colors",
           isConsentGiven
-            ? "bg-yellowPrimary text-greenPrimary"
-            : "bg-greyPrimary text-greySecondary disabled:cursor-not-allowed disabled:opacity-100"
+            ? "bg-yellowPrimary text-colorPrimary"
+            : "bg-greyPrimary text-greySecondary disabled:cursor-not-allowed disabled:opacity-100",
         )}
         onClick={onSubmit}
       >

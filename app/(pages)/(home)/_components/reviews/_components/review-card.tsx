@@ -21,7 +21,9 @@ export const ReviewCard: FC<TReviewCard> = ({ data }) => {
             alt={`${data.name}'s avatar`}
           />
           <div className="leading-5">
-            <h4 className="text-greenPrimary font-bold text-lg">{data.name}</h4>
+            <h4 className="text-whiteSecondary font-bold text-lg">
+              {data.name}
+            </h4>
             <span className="text-sm text-slate-500">{data.date}</span>
           </div>
         </div>
@@ -35,7 +37,7 @@ export const ReviewCard: FC<TReviewCard> = ({ data }) => {
       </div>
 
       <div className="flex-grow py-4 overflow-hidden">
-        <p className="line-clamp-5 text-greenPrimary break-words">
+        <p className="line-clamp-5 text-whiteSecondary break-words">
           {data.content}
         </p>
       </div>

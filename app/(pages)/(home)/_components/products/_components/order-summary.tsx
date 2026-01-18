@@ -36,11 +36,11 @@ const OrderSummaryComponent: React.FC<OrderSummaryProps> = ({
     return "блюд";
   }
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 justify-between bg-greyPrimary items-end gap-8 md:gap-10 border border-grey-border pt-4 rounded-[8px] w-full md:max-w-[580px] p-4 mt-2">
+    <div className="grid grid-cols-1 md:grid-cols-2 justify-between bg-whiteSecondary items-end gap-8 md:gap-10 border border-grey-border pt-4 rounded-[8px] w-full md:max-w-[580px] p-4 mt-2">
       <div>
-        <h5 className="font-bold text-greenPrimary">Ваш выбор:</h5>
+        <h5 className="font-bold text-colorPrimary">Ваш выбор:</h5>
         <div className="mt-4">
-          <span className="font-bold flex items-center gap-3 text-[18px] text-greenPrimary">
+          <span className="font-bold flex items-center gap-3 text-[18px] text-colorPrimary">
             Тариф {activeCal}{" "}
             <span className="text-sm text-greySecondary font-light">
               {" "}
@@ -50,13 +50,13 @@ const OrderSummaryComponent: React.FC<OrderSummaryProps> = ({
         </div>
 
         <div className="grid gap-2 mt-2">
-          <p className="text-greenPrimary text-sm font-semibold">
+          <p className="text-colorPrimary text-sm font-semibold">
             Количество дней
           </p>
           <div className="flex items-center gap-2">
             <Button
               onClick={onDec}
-              className="px-4 py-2 border-[1px] border-grey-border bg-white text-greenPrimary rounded-[6px] hover:bg-whitePrimary/70 transition-colors"
+              className="px-4 py-2 border-[1px] border-grey-border bg-whitePrimary text-colorPrimary rounded-[6px] hover:bg-whitePrimary/70 transition-colors"
               aria-label="Уменьшить дни"
             >
               −
@@ -67,12 +67,12 @@ const OrderSummaryComponent: React.FC<OrderSummaryProps> = ({
               value={daysCount}
               inputMode="numeric"
               aria-readonly="true"
-              className="w-[85px] text-center font-bold border-[1px] border-grey-border bg-white text-greenPrimary rounded-[6px]"
+              className="w-[85px] text-center font-bold border-[1px] border-grey-border bg-whitePrimary text-colorPrimary rounded-[6px]"
             />
 
             <Button
               onClick={onInc}
-              className="px-4 py-2 border-[1px] border-grey-border bg-white text-greenPrimary rounded-[6px] hover:bg-whitePrimary/70 transition-colors"
+              className="px-4 py-2 border-[1px] border-grey-border bg-whitePrimary text-colorPrimary rounded-[6px] hover:bg-whitePrimary/70 transition-colors"
               aria-label="Увеличить дни"
               disabled={!hasRange}
             >
@@ -82,8 +82,8 @@ const OrderSummaryComponent: React.FC<OrderSummaryProps> = ({
         </div>
       </div>
       <div className="grid content-end gap-4">
-        <div className="flex items-center justify-between text-greenPrimary">
-          <p className="font-bold flex gap-2 text-greenPrimary">
+        <div className="flex items-center justify-between text-whiteSecondary">
+          <p className="font-bold flex gap-2 text-colorPrimary">
             Итого:
             <span className="text-yellow-hover inline-block min-h-[1em]">
               {totalPrice ? (
@@ -106,7 +106,7 @@ const OrderSummaryComponent: React.FC<OrderSummaryProps> = ({
         <Button
           size="lg"
           variant="default"
-          className="bg-yellowPrimary text-greenPrimary font-bold "
+          className="bg-yellowPrimary text-colorPrimary font-bold "
           onClick={onAdd}
           disabled={!hasRange || daysCount === 0}
         >

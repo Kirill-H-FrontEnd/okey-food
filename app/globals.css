@@ -27,8 +27,9 @@ html {
     } */
 }
 @theme {
-  --color-whitePrimary: #f9f9f9;
-  --color-greenPrimary: #302a41;
+  --color-whitePrimary: #f2efe8;
+  --color-whiteSecondary: #f9f9f9;
+  --color-colorPrimary: #302a41;
   --color-yellowPrimary: #d0ed1c;
   --color-yellow-hover: #a8c215;
   --color-greyPrimary: #f1f1f1;

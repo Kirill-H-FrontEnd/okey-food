@@ -19,7 +19,7 @@ type PolyLL = RingLL[];
 type MultiPolyLL = PolyLL[];
 
 const BTN =
-  "w-10 h-10 rounded-lg bg-white shadow-lg flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-all text-greenPrimary";
+  "w-10 h-10 rounded-lg bg-white shadow-lg flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-all text-primary";
 
 const EPS = 1e-6;
 const samePt = (a: LL, b: LL) =>
@@ -134,7 +134,7 @@ function stitchClosedRing(segments: RingLL[]): RingLL | null {
           Math.hypot(s[0][0] - tail[0], s[0][1] - tail[1]) +
           Math.hypot(
             s[s.length - 1][0] - tail[0],
-            s[s.length - 1][1] - tail[1]
+            s[s.length - 1][1] - tail[1],
           );
         if (d < bestDist) {
           bestDist = d;
@@ -146,7 +146,7 @@ function stitchClosedRing(segments: RingLL[]): RingLL | null {
         const dHead = Math.hypot(s[0][0] - tail[0], s[0][1] - tail[1]);
         const dTail = Math.hypot(
           s[s.length - 1][0] - tail[0],
-          s[s.length - 1][1] - tail[1]
+          s[s.length - 1][1] - tail[1],
         );
         const add = dHead < dTail ? s : s.slice().reverse();
         ring.push(...add.slice(1));
@@ -164,7 +164,7 @@ export const YandexMapComponent: FC<{ zoom?: number }> = ({ zoom = 10 }) => {
   const mapRef = useRef<any>(null);
 
   const [mapType, setMapType] = useState<"yandex#map" | "yandex#satellite">(
-    "yandex#map"
+    "yandex#map",
   );
   const [loading, setLoading] = useState(false);
   const [cityClipped, setCityClipped] = useState<MultiPolyLL>([]);
@@ -194,7 +194,7 @@ export const YandexMapComponent: FC<{ zoom?: number }> = ({ zoom = 10 }) => {
             (f: any) =>
               f.geometry &&
               (f.geometry.type === "MultiPolygon" ||
-                f.geometry.type === "Polygon")
+                f.geometry.type === "Polygon"),
           ) || gj.features[0];
 
         if (!cityFeat?.geometry) {
@@ -269,13 +269,13 @@ export const YandexMapComponent: FC<{ zoom?: number }> = ({ zoom = 10 }) => {
         /** === 3) Пересечение: Минск ∩ (внутри МКАД) === */
         const clippedRaw = pc.intersection(
           cityMultiLonLat as any,
-          mkadPolyLonLat as any
+          mkadPolyLonLat as any,
         );
         const clippedMultiLonLat = normalizePC(clippedRaw);
 
         if (!clippedMultiLonLat.length) {
           console.warn(
-            "Пересечение пустое — возможно Overpass вернул разные версии данных. Обнови страницу или попробуй ещё раз."
+            "Пересечение пустое — возможно Overpass вернул разные версии данных. Обнови страницу или попробуй ещё раз.",
           );
           setCityClipped([]);
           return;
@@ -283,7 +283,7 @@ export const YandexMapComponent: FC<{ zoom?: number }> = ({ zoom = 10 }) => {
 
         // Переводим в формат Яндекса
         const resultYandex: MultiPolyLL = clippedMultiLonLat.map((poly) =>
-          poly.map((ring) => toYandexRing(ring))
+          poly.map((ring) => toYandexRing(ring)),
         );
 
         setCityClipped(resultYandex);
@@ -347,7 +347,7 @@ export const YandexMapComponent: FC<{ zoom?: number }> = ({ zoom = 10 }) => {
         const coords: LL = [pos.coords.latitude, pos.coords.longitude];
         mapRef.current.setCenter(coords, 14, { duration: 400 });
       },
-      (err) => alert("Геолокация не доступна: " + err.message)
+      (err) => alert("Геолокация не доступна: " + err.message),
     );
   };
 
@@ -384,14 +384,14 @@ export const YandexMapComponent: FC<{ zoom?: number }> = ({ zoom = 10 }) => {
     //     <div className="absolute z-10 right-3 top-1/2 -translate-y-1/2 flex flex-col items-end">
     //       <div className="flex flex-col rounded-lg bg-white shadow-lg overflow-hidden">
     //         <button
-    //           className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-all text-greenPrimary rounded-t-lg"
+    //           className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-all text-primary rounded-t-lg"
     //           onClick={() => handleZoom("in")}
     //           aria-label="Zoom in"
     //         >
     //           <Plus size={22} />
     //         </button>
     //         <button
-    //           className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-all text-greenPrimary rounded-b-lg"
+    //           className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-all text-primary rounded-b-lg"
     //           onClick={() => handleZoom("out")}
     //           aria-label="Zoom out"
     //         >

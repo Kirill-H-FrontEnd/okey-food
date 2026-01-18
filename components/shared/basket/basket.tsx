@@ -126,10 +126,10 @@ export const Basket: FC = () => {
           };
         })
         .filter((entry): entry is { field: CheckoutFormField; issue: Issue } =>
-          Boolean(entry?.field)
+          Boolean(entry?.field),
         )
         .sort(
-          (a, b) => getFieldPosition(a.field) - getFieldPosition(b.field)
+          (a, b) => getFieldPosition(a.field) - getFieldPosition(b.field),
         )[0];
 
       if (!firstIssue) {
@@ -148,7 +148,7 @@ export const Basket: FC = () => {
         } as Record<string, FieldError>,
       };
     },
-    []
+    [],
   );
 
   const form = useForm<CheckoutFormValues>({
@@ -170,16 +170,16 @@ export const Basket: FC = () => {
 
   const sortedItems = useMemo(
     () => [...items].sort((a, b) => Number(a.calories) - Number(b.calories)),
-    [items]
+    [items],
   );
 
   const totalPrice = useMemo(
     () =>
       items.reduce(
         (sum, item) => sum + item.pricePerDay * item.selectedDays.length,
-        0
+        0,
       ),
-    [items]
+    [items],
   );
   const totalLabel = totalPrice ? `${totalPrice} BYN` : "0 BYN";
   const itemCount = items.length;
@@ -253,11 +253,11 @@ export const Basket: FC = () => {
   };
 
   const handleSubmitError: SubmitErrorHandler<CheckoutFormValues> = (
-    errors
+    errors,
   ) => {
     const entries = Object.entries(errors) as [
       CheckoutFormField,
-      FieldError | undefined
+      FieldError | undefined,
     ][];
     const firstErrorEntry =
       entries.find(([, error]) => Boolean(error?.message)) ?? entries[0];
@@ -285,7 +285,7 @@ export const Basket: FC = () => {
       animate: { opacity: 1, x: 0 },
       exit: { opacity: 0, x: prefersMotionReduction ? 0 : -24 },
     }),
-    [prefersMotionReduction]
+    [prefersMotionReduction],
   );
 
   const checkoutSectionVariants = useMemo(
@@ -294,7 +294,7 @@ export const Basket: FC = () => {
       animate: { opacity: 1, x: 0 },
       exit: { opacity: 0, x: prefersMotionReduction ? 0 : -32 },
     }),
-    [prefersMotionReduction]
+    [prefersMotionReduction],
   );
 
   const sectionTransition = useMemo(
@@ -302,24 +302,24 @@ export const Basket: FC = () => {
       prefersMotionReduction
         ? { duration: 0.18, ease: "linear" as const }
         : { duration: 0.28, ease: [0.22, 1, 0.36, 1] as const },
-    [prefersMotionReduction]
+    [prefersMotionReduction],
   );
 
   return (
     <Sheet open={isBasketOpen} onOpenChange={setIsBasketOpen}>
       <SheetTrigger asChild>
         <Button className="relative group bg-yellowPrimary" variant="default">
-          <span className="text-[12px] text-greenPrimary font-bold whitespace-nowrap">
+          <span className="text-[12px] text-colorPrimary font-bold whitespace-nowrap">
             <AnimatedAmount value={totalLabel} durationMs={200} />
           </span>
-          <span className="w-[1px] h-[50%] bg-greenPrimary/50" aria-hidden />
-          <div className="grid grid-cols-2-auto gap-2 items-center md:group-hover:opacity-0 transition-opacity text-greenPrimary">
+          <span className="w-[1px] h-[50%] bg-colorPrimary" aria-hidden />
+          <div className="grid grid-cols-2-auto gap-2 items-center md:group-hover:opacity-0 transition-opacity text-colorPrimary">
             <ShoppingBag size={10} />
           </div>
           <ChevronRight
             size={18}
             strokeWidth={2}
-            className="absolute right-3 transition duration-300 -translate-x-1 opacity-0 md:group-hover:opacity-100 group-hover:translate-x-0 text-greenPrimary"
+            className="absolute right-3 transition duration-300 -translate-x-1 opacity-0 md:group-hover:opacity-100 group-hover:translate-x-0 text-colorPrimary"
           />
         </Button>
       </SheetTrigger>
@@ -388,7 +388,7 @@ export const Basket: FC = () => {
                   }}
                 >
                   <div className="mb-5">
-                    <div className="w-full space-y-6 text-greenPrimary">
+                    <div className="w-full space-y-6 text-whiteSecondary">
                       <FormProvider {...form}>
                         <CheckoutForm cityOptions={CITIES} />
                       </FormProvider>

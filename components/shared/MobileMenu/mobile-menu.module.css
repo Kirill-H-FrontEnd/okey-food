@@ -1,6 +1,6 @@
 .link {
 	position: relative;
-	color: var(--color-greenPrimary);
+	color: var(--color-primary);
 	font-weight: 700;
 	cursor: pointer;
 	transition: color 0.2s ease;

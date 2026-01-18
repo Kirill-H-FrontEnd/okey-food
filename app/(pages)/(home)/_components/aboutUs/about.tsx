@@ -32,10 +32,10 @@ export const AboutUs: FC = ({}) => {
       <Container>
         <section>
           <article className="mb-8">
-            <h3 className="text-[28px] lg:text-[32px] font-bold text-greenPrimary">
+            <h3 className="text-[28px] lg:text-[32px] font-bold text-colorPrimary">
               О нас
             </h3>
-            <div className=" mt-4 w-full max-w-[650px] text-greenPrimary font-medium">
+            <div className=" mt-4 w-full max-w-[650px] text-colorPrimary font-medium">
               <p>
                 Мы – сервис доставки здорового и вкусного питания, созданный для
                 тех, кто ценит свое время и заботится о своем здоровье. Наши

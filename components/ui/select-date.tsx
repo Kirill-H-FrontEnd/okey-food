@@ -71,12 +71,12 @@ export const SelectDate: FC<TSelectDate> = ({ onChange, defaultValue }) => {
       ranges.push({
         value: `${format(rangeStart, "yyyy-MM-dd")}_${format(
           rangeEnd,
-          "yyyy-MM-dd"
+          "yyyy-MM-dd",
         )}`,
         label: `${format(rangeStart, "dd.MM", { locale: ru })}–${format(
           rangeEnd,
           "dd.MM",
-          { locale: ru }
+          { locale: ru },
         )}`,
         disabled: isPast,
       });
@@ -94,7 +94,7 @@ export const SelectDate: FC<TSelectDate> = ({ onChange, defaultValue }) => {
 
     if (defaultValue) {
       const match = deliveryRanges.find(
-        (range) => range.value === defaultValue && !range.disabled
+        (range) => range.value === defaultValue && !range.disabled,
       );
       if (match) {
         nextValue = match.value;
@@ -124,7 +124,7 @@ export const SelectDate: FC<TSelectDate> = ({ onChange, defaultValue }) => {
     >
       <SelectTrigger
         aria-label="Выбрать дату"
-        className="w-[150px] text-greenPrimary font-semibold border-grey-border cursor-pointer select-none"
+        className="w-[150px] text-colorPrimary font-semibold border-grey-border cursor-pointer select-none bg-whiteSecondary"
       >
         <SelectValue placeholder="Выберите период доставки" />
       </SelectTrigger>
@@ -138,7 +138,7 @@ export const SelectDate: FC<TSelectDate> = ({ onChange, defaultValue }) => {
               key={range.value}
               value={range.value}
               disabled={range.disabled}
-              className="text-greenPrimary"
+              className="text-colorPrimary"
             >
               {range.label}
             </SelectItem>

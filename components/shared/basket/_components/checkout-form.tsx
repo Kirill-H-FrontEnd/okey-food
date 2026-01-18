@@ -56,7 +56,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
       : undefined;
 
   return (
-    <div className=" space-y-6 text-greenPrimary">
+    <div className=" space-y-6 text-primary">
       <div className="space-y-3">
         <div className="grid ">
           <div className="grid md:grid-cols-2 gap-4 mb-[16px]">
@@ -109,13 +109,13 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
                       <button
                         type="button"
                         aria-label="Подсказка по полю «Социальные сети»"
-                        className="items-center text-greySecondary hover:text-greenPrimary"
+                        className="items-center text-greySecondary hover:text-primary"
                       >
                         <HelpCircle className="h-3 w-3" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent
-                      className="max-w-[280px] bg-whitePrimary text-greenPrimary text-[13px] shadow-sm"
+                      className="max-w-[280px] bg-whitePrimary text-primary text-[13px] shadow-sm"
                       side="top"
                       sideOffset={6}
                     >
@@ -216,7 +216,9 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
               name="date"
               render={({ field }) => (
                 <div className="flex flex-col gap-3">
-                  <Label className="px-1">Дата доставки</Label>
+                  <Label className="px-1 text-colorPrimary">
+                    Дата доставки
+                  </Label>
                   <Popover
                     open={isCalendarOpen}
                     onOpenChange={setIsCalendarOpen}
@@ -226,10 +228,10 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
                         variant="outline"
                         onBlur={field.onBlur}
                         className={cn(
-                          "w-full shadow-none justify-between font-normal hover:bg-white",
+                          "w-full shadow-none justify-between font-normal hover:bg-white bg-whiteSecondary",
                           withErrorStyles("date"),
                           fieldHasError("date") &&
-                            "text-red-500 hover:bg-red-50/40 focus-visible:ring-red-400"
+                            "text-red-500 hover:bg-red-50/40 focus-visible:ring-red-400",
                         )}
                         aria-invalid={fieldHasError("date")}
                       >
