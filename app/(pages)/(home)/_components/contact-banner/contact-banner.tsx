@@ -15,7 +15,7 @@ export const ContactBanner: FC = () => {
         <section className="relative overflow-hidden bg-greenPrimary py-14 px-6 rounded-[50px] text-center">
           {/* RIPPLE */}
           <Ripple
-            className="absolute  inset-0 flex items-center justify-center"
+            className="absolute inset-0 flex items-center justify-center"
             mainCircleSize={media ? 300 : 150}
             mainCircleOpacity={0.4}
             numCircles={6}

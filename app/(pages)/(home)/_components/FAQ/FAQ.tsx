@@ -24,7 +24,7 @@ export const FAQ: FC = ({}) => {
   return (
     <section id="faq" className="bg-greenPrimary py-14 lg:py-20">
       <Container>
-        <section className="grid lg:grid-cols-[380px_1fr] gap-10 lg:gap-20">
+        <section className="grid lg:grid-cols-[480px_1fr] gap-10 lg:gap-20">
           <article className="w-full max-w-[450px] lg:max-w-full">
             <h3 className="text-[28px] lg:text-[32px] font-bold text-whitePrimary">
               Часто задаваемые вопросы
@@ -43,7 +43,7 @@ export const FAQ: FC = ({}) => {
                   value={`item-${index}`}
                   className="border border-whitePrimary rounded-lg"
                 >
-                  <AccordionTrigger className="text-whitePrimary px-4 md:px-8 text-base lg:text-[18px] font-semibold bg-[#324B4F] data-[state=open]:bg-whitePrimary data-[state=open]:md:hover:bg-whitePrimary md:hover:bg-[#324B4F]/70 transition-all data-[state=open]:text-greenPrimary">
+                  <AccordionTrigger className="text-whitePrimary px-4 md:px-6 text-base py-3 lg:text-[18px] font-semibold bg-whitePrimary/10 data-[state=open]:bg-whitePrimary data-[state=open]:md:hover:bg-whitePrimary md:hover:bg-whitePrimary/20 transition-all data-[state=open]:text-greenPrimary">
                     {item.title}
                   </AccordionTrigger>
                   <AccordionContent className="text-greenPrimary font-normal px-4 md:px-8">

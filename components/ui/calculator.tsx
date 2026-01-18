@@ -60,7 +60,7 @@ function calcBMR(
   gender: Gender,
   weightKg: number,
   heightCm: number,
-  ageY: number
+  ageY: number,
 ) {
   return gender === "male"
     ? 10 * weightKg + 6.25 * heightCm - 5 * ageY + 5
@@ -105,13 +105,13 @@ export default function CalorieCalculator() {
     () =>
       Boolean(
         gender &&
-          goal &&
-          activityValue !== null &&
-          isValidNum(weight, 30, 250) &&
-          isValidNum(height, 120, 230) &&
-          isValidNum(age, 14, 100)
+        goal &&
+        activityValue !== null &&
+        isValidNum(weight, 30, 250) &&
+        isValidNum(height, 120, 230) &&
+        isValidNum(age, 14, 100),
       ),
-    [gender, goal, activityValue, weight, height, age]
+    [gender, goal, activityValue, weight, height, age],
   );
 
   const recommendation = useMemo<Recommendation | null>(() => {
@@ -131,7 +131,7 @@ export default function CalorieCalculator() {
         Math.abs(candidate.cal - target) < Math.abs(closest.cal - target)
           ? candidate
           : closest,
-      PLANS[0]
+      PLANS[0],
     );
 
     return {
@@ -254,8 +254,8 @@ export default function CalorieCalculator() {
               {g === "loss"
                 ? "Похудение"
                 : g === "tone"
-                ? "Тонус"
-                : "Набор массы"}
+                  ? "Тонус"
+                  : "Набор массы"}
             </Button>
           ))}
         </div>
@@ -320,11 +320,11 @@ export default function CalorieCalculator() {
               Рекомендуемый калораж:
             </h3>
 
-            {!recommendation && (
+            {/* {!recommendation && (
               <p className="text-gray-500">Заполните все поля</p>
-            )}
+            )} */}
 
-            {recommendation && (
+            {recommendation ? (
               <>
                 <HyperText
                   key={recommendation.targetCalories}
@@ -351,6 +351,14 @@ export default function CalorieCalculator() {
                   <p>• от {recommendation.plan.price} BYN / день</p>
                 </div>
               </>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-4">
+                <div className="text-[50px] my-3 text-gray-300 font-bold leading-none">
+                  0000
+                </div>
+                <p className="text-gray-400 font-medium">Заполните поля выше</p>
+                <p className="text-xs text-gray-300 mt-2">для расчета нормы</p>
+              </div>
             )}
           </div>
 

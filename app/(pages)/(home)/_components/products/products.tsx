@@ -105,7 +105,11 @@ function getDishNameStable(seed: string) {
 }
 /** =============================================================== */
 
-const genProductsForDiet = (count: number, dietCalories: string): TProduct[] =>
+const genProductsForDiet = (
+  count: number,
+  dietCalories: string,
+  seed: string = "default",
+): TProduct[] =>
   Array.from({ length: count }, (_, i) => {
     const weight = 300;
     const calories = Math.round(Number(dietCalories) / count) + i * 5;
@@ -114,7 +118,7 @@ const genProductsForDiet = (count: number, dietCalories: string): TProduct[] =>
     const carbs = 30 + (i % 4) * 5;
     const meal: MealRu = MEALS[i % MEALS.length];
 
-    const id = `${dietCalories}-${i + 1}`;
+    const id = `${dietCalories}-${i + 1}-${seed}`;
     const name = getDishNameStable(id); // 👈 детерминированное имя
 
     return {
@@ -136,7 +140,7 @@ const genProductsForDiet = (count: number, dietCalories: string): TProduct[] =>
 export const Products: FC<TProducts> = () => {
   const [selectedRange, setSelectedRange] = React.useState<string | null>(null);
   const [activeCal, setActiveCal] = React.useState<string>(
-    DATA_CALORIES_TABS[0].calories
+    DATA_CALORIES_TABS[0].calories,
   );
 
   const items = useBasketStore((state) => state.items);
@@ -148,19 +152,19 @@ export const Products: FC<TProducts> = () => {
   const dishesByCal = React.useMemo(
     () =>
       Object.fromEntries(
-        DATA_CALORIES_TABS.map((t) => [t.calories, t.countProduct] as const)
+        DATA_CALORIES_TABS.map((t) => [t.calories, t.countProduct] as const),
       ),
-    []
+    [],
   );
 
   // CHANGED: один item на калорийность
   const itemForActiveCal = React.useMemo(
     () => items.find((item) => item.calories === activeCal) ?? null,
-    [items, activeCal]
+    [items, activeCal],
   );
   const selectedDays = React.useMemo(
     () => itemForActiveCal?.selectedDays ?? [],
-    [itemForActiveCal]
+    [itemForActiveCal],
   );
   React.useEffect(() => {
     if (typeof window === "undefined") return;
@@ -183,7 +187,7 @@ export const Products: FC<TProducts> = () => {
     if (selectedRange) {
       window.localStorage.setItem(
         RANGE_STORAGE_KEY,
-        JSON.stringify({ range: selectedRange })
+        JSON.stringify({ range: selectedRange }),
       );
     } else {
       window.localStorage.removeItem(RANGE_STORAGE_KEY);
@@ -193,7 +197,30 @@ export const Products: FC<TProducts> = () => {
   const dishesCount = dishesByCal[activeCal] ?? 0;
   const pricePerDay = PRICE_BY_CAL[activeCal] ?? 0;
   const totalPrice = pricePerDay * selectedDays.length;
+  const [activeDay, setActiveDay] = React.useState<string | null>(null);
 
+  // Sync activeDay with selectedRange
+  React.useEffect(() => {
+    if (!selectedRange) {
+      setActiveDay(null);
+      return;
+    }
+    const selectable = listSelectableDays(selectedRange);
+    if (!activeDay || !selectable.includes(activeDay)) {
+      if (selectable.length > 0) {
+        setActiveDay(selectable[0]);
+      }
+    }
+  }, [selectedRange, activeDay]);
+
+  const productsByDiet = React.useMemo(() => {
+    const map: Record<string, TProduct[]> = {};
+    const seedDay = activeDay || "default";
+    for (const t of DATA_CALORIES_TABS) {
+      map[t.calories] = genProductsForDiet(t.countProduct, t.calories, seedDay);
+    }
+    return map;
+  }, [activeDay]);
   // CHANGED: создаём один item c массивом дней и опциональным range
   const createCartItem = React.useCallback(
     (days: string[], range: string | null) => ({
@@ -204,7 +231,7 @@ export const Products: FC<TProducts> = () => {
       pricePerDay,
       dishesCount,
     }),
-    [activeCal, pricePerDay, dishesCount]
+    [activeCal, pricePerDay, dishesCount],
   );
 
   // CHANGED: при смене диапазона фильтруем выбранные дни и обновляем item
@@ -214,7 +241,7 @@ export const Products: FC<TProducts> = () => {
       const selectable = new Set(listSelectableDays(value));
       if (!itemForActiveCal) return;
       const filteredDays = itemForActiveCal.selectedDays.filter((day) =>
-        selectable.has(day)
+        selectable.has(day),
       );
       if (filteredDays.length === 0) {
         removeItem(itemForActiveCal.id);
@@ -226,7 +253,7 @@ export const Products: FC<TProducts> = () => {
         range: value,
       }));
     },
-    [itemForActiveCal, removeItem, setSelectedRange, updateItem]
+    [itemForActiveCal, removeItem, setSelectedRange, updateItem],
   );
 
   // CHANGED: переключатель дня — теперь обновляет массив selectedDays
@@ -267,7 +294,7 @@ export const Products: FC<TProducts> = () => {
       createCartItem,
       selectedRange,
       activeCal,
-    ]
+    ],
   );
 
   // Counter: +
@@ -345,14 +372,6 @@ export const Products: FC<TProducts> = () => {
     setIsBasketOpen,
   ]);
 
-  const productsByDiet = React.useMemo(() => {
-    const map: Record<string, TProduct[]> = {};
-    for (const t of DATA_CALORIES_TABS) {
-      map[t.calories] = genProductsForDiet(t.countProduct, t.calories);
-    }
-    return map;
-  }, []);
-
   const containerV: Variants = {
     hidden: {},
     show: {
@@ -429,6 +448,8 @@ export const Products: FC<TProducts> = () => {
                 range={selectedRange}
                 onToggleDay={handleToggleDay}
                 selectedDays={selectedDays}
+                activeDay={activeDay}
+                onSetActiveDay={setActiveDay}
               />
             )}
 
@@ -442,6 +463,7 @@ export const Products: FC<TProducts> = () => {
                   className="text-greenPrimary font-medium mt-6"
                 >
                   <motion.div
+                    key={`${tab.calories}-${activeDay}`}
                     variants={containerV}
                     initial="hidden"
                     animate="show"

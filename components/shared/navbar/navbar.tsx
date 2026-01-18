@@ -51,7 +51,7 @@ export const Navbar: FC = ({}) => {
             <Logo />
             <div className="hidden lg:flex  gap-4">
               <Link
-                className="hover:opacity-80 text-yellow-hover"
+                className="hover:text-yellow-hover transition-all font-semibold text-greenPrimary"
                 href={"tel:+375447256666"}
               >
                 +375 44 725 66 66
@@ -74,8 +74,8 @@ export const Navbar: FC = ({}) => {
               </div>
             </div>
           </div>
-          <nav className="flex gap-5 lg:gap-10">
-            <ul className="hidden lg:flex items-center gap-4">
+          <nav className="flex gap-5 lg:gap-8">
+            <ul className="hidden lg:flex items-center gap-3">
               {DATA_LINKS.map((link, i) => (
                 <li key={i}>
                   <ScrollLink

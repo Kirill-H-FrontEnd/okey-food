@@ -9,12 +9,16 @@ type TSelectDaysButtons = {
   range: string; // формат: '2025-08-11_2025-08-16'
   onToggleDay: (day: string) => void;
   selectedDays: string[];
+  activeDay: string | null;
+  onSetActiveDay: (day: string) => void;
 };
 
 export const SelectDaysButtons: FC<TSelectDaysButtons> = ({
   range,
   onToggleDay,
   selectedDays,
+  activeDay,
+  onSetActiveDay,
 }) => {
   const [today, setToday] = useState<Date | null>(null);
 
@@ -40,18 +44,25 @@ export const SelectDaysButtons: FC<TSelectDaysButtons> = ({
     const label = format(day, "EEE, d MMM", { locale: ru });
     const isDisabled = isBefore(day, today) && !isToday(day);
     const isSelected = selectedDays.includes(value);
-
+    const isActive = activeDay === value;
     return (
       <Button
         key={value}
         disabled={isDisabled}
-        onClick={() => onToggleDay(value)}
+        onClick={() => {
+          onSetActiveDay(value);
+          if (!isSelected) {
+            onToggleDay(value);
+          }
+        }}
         className={clsx(
           "w-[120px] capitalize",
-          isSelected
-            ? "bg-greenPrimary text-whitePrimary border-greenPrimary"
-            : "bg-white text-greenPrimary border-[1px] border-grey-border hover:bg-whitePrimary",
-          isDisabled && "opacity-50 cursor-not-allowed hover:bg-white"
+          isActive
+            ? "bg-greenPrimary text-whitePrimary border-greenPrimary ring-2 ring-yellow-hover"
+            : isSelected
+              ? "bg-greenPrimary/80 text-whitePrimary border-greenPrimary"
+              : "bg-white text-greenPrimary border-[1px] border-grey-border hover:bg-whitePrimary",
+          isDisabled && "opacity-50 cursor-not-allowed hover:bg-white",
         )}
       >
         {label}

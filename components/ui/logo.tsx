@@ -5,7 +5,7 @@ import Image from "next/image";
 
 type TLogo = { url?: string };
 
-export const Logo: FC<TLogo> = ({ url = "/okeyfood-logo.svg" }) => {
+export const Logo: FC<TLogo> = ({ url = "/logo.png" }) => {
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     window.scrollTo({
@@ -19,7 +19,7 @@ export const Logo: FC<TLogo> = ({ url = "/okeyfood-logo.svg" }) => {
       href="/"
       aria-label="На главную"
       onClick={handleClick}
-      className="cursor-pointer block w-[40px] h-[40px] md:w-[50px] md:h-[50px] overflow-hidden"
+      className="cursor-pointer block w-[40px] h-[40px] md:w-[50px] md:h-[50px] overflow-hidden rounded-[2px]"
     >
       <Image
         src={url}

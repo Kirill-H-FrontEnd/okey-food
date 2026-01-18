@@ -3,7 +3,7 @@
 	padding-inline: 4px;
 	color: var(--color-greenPrimary);
 	cursor: pointer;
-	font-weight: 500;
+	font-weight: 600;
 	transition: color 0.2s ease;
 }
 

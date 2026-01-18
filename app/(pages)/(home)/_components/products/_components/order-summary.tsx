@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { ShoppingBasket, ShoppingCart } from "lucide-react";
+import { ShoppingBag, ShoppingBasket, ShoppingCart } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { HyperText } from "@/components/magicui/hyper-text";
 type OrderSummaryProps = {
@@ -110,7 +110,7 @@ const OrderSummaryComponent: React.FC<OrderSummaryProps> = ({
           onClick={onAdd}
           disabled={!hasRange || daysCount === 0}
         >
-          <ShoppingBasket size={10} />
+          <ShoppingBag size={10} />
           Корзина
         </Button>
       </div>
