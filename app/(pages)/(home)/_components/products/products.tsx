@@ -206,10 +206,8 @@ export const Products: FC<TProducts> = () => {
       return;
     }
     const selectable = listSelectableDays(selectedRange);
-    if (!activeDay || !selectable.includes(activeDay)) {
-      if (selectable.length > 0) {
-        setActiveDay(selectable[0]);
-      }
+    if (activeDay && !selectable.includes(activeDay)) {
+      setActiveDay(null);
     }
   }, [selectedRange, activeDay]);
 
@@ -410,6 +408,7 @@ export const Products: FC<TProducts> = () => {
           onValueChange={(v) => {
             const cal = v.replace("calories-", "");
             setActiveCal(cal);
+            setActiveDay(null);
           }}
           defaultValue={`calories-${DATA_CALORIES_TABS[0].calories}`}
           className="grid gap-4 mt-6"
