@@ -198,6 +198,7 @@ export const Products: FC<TProducts> = () => {
   const pricePerDay = PRICE_BY_CAL[activeCal] ?? 0;
   const totalPrice = pricePerDay * selectedDays.length;
   const [activeDay, setActiveDay] = React.useState<string | null>(null);
+  const lastActiveCalRef = React.useRef(activeCal);
 
   // Sync activeDay with selectedRange
   React.useEffect(() => {
@@ -210,6 +211,14 @@ export const Products: FC<TProducts> = () => {
       setActiveDay(null);
     }
   }, [selectedRange, activeDay]);
+
+  React.useEffect(() => {
+    if (lastActiveCalRef.current === activeCal) return;
+    const nextActive =
+      selectedDays.length > 0 ? [...selectedDays].sort()[0] : null;
+    setActiveDay(nextActive);
+    lastActiveCalRef.current = activeCal;
+  }, [activeCal, selectedDays]);
 
   const productsByDiet = React.useMemo(() => {
     const map: Record<string, TProduct[]> = {};
