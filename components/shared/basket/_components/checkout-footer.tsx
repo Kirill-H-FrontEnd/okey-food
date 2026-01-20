@@ -20,7 +20,7 @@ export const CheckoutFooter: FC<CheckoutFooterProps> = ({
 }) => (
   <div className="w-full bg-whitePrimary border-t border-grey-border/50 px-6 py-4 ">
     <div className="grid gap-4">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
         <Switch
           id="consent-switch"
           checked={isConsentGiven}
@@ -28,7 +28,7 @@ export const CheckoutFooter: FC<CheckoutFooterProps> = ({
         />
         <label
           htmlFor="consent-switch"
-          className="text-[13px] font-semibold text-colorPrimary"
+          className="text-[12px] font-bold text-colorPrimary"
         >
           Ознакомьтесь с {""}{" "}
           <Link href="/privacy-policy" className="text-yellow-hover">

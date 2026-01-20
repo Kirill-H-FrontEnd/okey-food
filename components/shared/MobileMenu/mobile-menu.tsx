@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { RemoveScroll } from "react-remove-scroll";
 import { Link as ScrollLink } from "react-scroll";
 import s from "./mobile-menu.module.css";
+import { Copyright } from "@/components/ui/copyright";
 
 type TMobileMenu = {
   openMenu: boolean;
@@ -48,14 +49,14 @@ export const MobileMenu: FC<TMobileMenu> = ({
 
       <SheetContent
         side="top"
-        className="bg-white border-none w-full h-full shadow-none pt-[85px] px-6 flex flex-col z-[90]"
+        className="bg-whitePrimary border-none w-full h-full shadow-none pt-[85px]  flex flex-col z-[90]"
         style={{
           outline: "none",
           WebkitTapHighlightColor: "transparent",
         }}
       >
         <RemoveScroll enabled={openMenu} className="flex-1 flex flex-col">
-          <nav className="grid gap-4">
+          <nav className="grid gap-4 px-6">
             {DATA_LINKS.map((link, i) => (
               <ScrollLink
                 key={i}
@@ -73,7 +74,7 @@ export const MobileMenu: FC<TMobileMenu> = ({
             ))}
           </nav>
 
-          <div className="grid gap-4 mt-8">
+          <div className="grid gap-4 mt-8 px-6">
             <div className="flex gap-4 items-center">
               <Link
                 aria-label="Instagram"
@@ -117,7 +118,7 @@ export const MobileMenu: FC<TMobileMenu> = ({
             </div>
           </div>
         </RemoveScroll>
-        <div className="w-[45px] h-[4px] bg-yellow-hover absolute bottom-[20px] left-1/2 -translate-x-1/2 rounded-full" />
+        <Copyright className="bg-whiteSecondary border-t-[1] border-input" />
       </SheetContent>
     </Sheet>
   );
