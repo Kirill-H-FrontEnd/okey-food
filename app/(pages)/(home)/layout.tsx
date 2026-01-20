@@ -67,7 +67,7 @@ export default async function HomeLayout({
         <main>{children}</main>
         <Toaster
           toastOptions={{
-            duration: 2000,
+            duration: 3000,
             className: " font-medium text-sm ",
             style: {
               borderRadius: "4px",
