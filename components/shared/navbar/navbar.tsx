@@ -40,7 +40,7 @@ export const Navbar: FC = ({}) => {
   return (
     <header
       className={`${
-        (isScrolled || openMenu) && !isBasketOpen
+        (isScrolled || openMenu) && !isBasketOpen && !openMenu
           ? " bg-whitePrimary/60 backdrop-blur-lg  shadow-sm shadow-black/5"
           : "bg-whitePrimary"
       } $ w-full sticky  top-0 left-0 py-2 md:py-1.5 z-100 transition-[background-color, box-shadow] duration-300`}

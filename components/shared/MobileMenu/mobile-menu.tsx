@@ -76,11 +76,7 @@ export const MobileMenu: FC<TMobileMenu> = ({
 
           <div className="grid gap-4 mt-8 px-6">
             <div className="flex gap-4 items-center">
-              <Link
-                aria-label="Instagram"
-                href="#"
-                className="hover:text-primary"
-              >
+              <Link aria-label="Instagram" href="#" className="">
                 <Image
                   src="/images/icons/instagram.svg"
                   width={22}
@@ -88,7 +84,7 @@ export const MobileMenu: FC<TMobileMenu> = ({
                   alt="Instagram"
                 />
               </Link>
-              <Link href="#" className="hover:text-primary">
+              <Link href="#" className="">
                 <Image
                   src="/images/icons/telegram.svg"
                   width={22}
