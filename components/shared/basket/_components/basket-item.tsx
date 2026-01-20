@@ -54,16 +54,16 @@ export const BasketItem: FC<BasketItemProps> = ({
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-1">
-            <h4 className="font-bold text-greenPrimary text-lg truncate">
+            <h4 className="font-bold text-colorPrimary text-lg truncate">
               Тариф {item.calories}
             </h4>
-            <div className="sm:hidden font-bold text-greenPrimary">
+            <div className="hidden font-bold text-colorPrimary">
               {totalPrice} BYN
             </div>
           </div>
 
           <div className="flex items-center gap-2 text-xs text-greySecondary font-medium">
-            <span className="bg-greenPrimary/10 text-greenPrimary py-0.5 rounded-full">
+            <span className=" text-greenPrimary rounded-full">
               {item.dishesCount} блюд
             </span>
           </div>
@@ -103,10 +103,10 @@ export const BasketItem: FC<BasketItemProps> = ({
         </div>
 
         <div className="flex flex-col items-end min-w-[100px]">
-          <span className="font-bold text-md text-yellow-hover">
-            {totalPrice} <span className="text-xs font-bold ">BYN</span>
+          <span className="font-semibold text-lg text-yellowPrimary">
+            {totalPrice} <span className="text-xs  ">BYN</span>
           </span>
-          <p className="text-[10px] text-colorPrimary font-extrabold uppercase tracking-wider">
+          <p className="text-[10px] text-greySecondary font-bold  tracking-wider">
             {item.pricePerDay} / день
           </p>
         </div>
