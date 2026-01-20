@@ -1,11 +1,10 @@
 "use client";
 import { FC, useMemo, useCallback } from "react";
-import { m } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { CartItem } from "@/store/useStore";
 import { listSelectableDays } from "@/lib/delivery-days";
-import { Trash } from "lucide-react";
+import { Trash2, Calendar, Plus, Minus } from "lucide-react";
 
 type BasketItemProps = {
   item: CartItem;
@@ -39,96 +38,87 @@ export const BasketItem: FC<BasketItemProps> = ({
   }, [canDecrement, onDecrement, item.id]);
 
   return (
-    <m.li
+    <motion.li
       layout
-      initial={{ opacity: 0, x: -12 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 40 }}
-      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-      className="flex items-start gap-4 border-b border-grey-border/50 pb-4"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      className="group relative flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-whiteSecondary backdrop-blur-sm border border-black/5 rounded-xl p-4 transition-all  "
       aria-label={`Тариф ${item.calories}`}
     >
-      <div className="hidden w-20 h-20 shrink-0 md:grid place-items-center bg-whiteSecondary text-colorPrimary rounded-md font-bold">
-        <p>{item.calories}</p>
-      </div>
-
-      <div className="w-full grid grid-cols-[auto_1fr_auto] justify-center">
-        <div className="md:grid gap-1 min-w-0">
-          <p className="font-bold truncate text-colorPrimary">
-            Тариф {item.calories}
-          </p>
-          <p className="text-xs text-greySecondary line-clamp-1">
-            {item.dishesCount} блюд в день
-          </p>
-
-          <div className="mt-2 hidden md:block">
-            <button
-              className="h-auto text-primary cursor-pointer inline-flex items-center gap-1 hover:text-red-500 transition-colors"
-              onClick={() => onRemove(item.id)}
-              aria-label={`Удалить тариф ${item.calories} из корзины`}
-            >
-              <Trash size={18} />
-              <span className="text-xs font-medium">Удалить</span>
-            </button>
-          </div>
+      <div className="flex w-full items-center gap-4">
+        <div className="w-16 h-16 sm:w-18 sm:h-18 shrink-0 grid place-items-center bg-greenPrimary/5 rounded-xl text-colorPrimary border border-greenPrimary/10">
+          <p className="text-lg font-black tracking-tighter">{item.calories}</p>
+          <p className="text-[10px] uppercase font-bold opacity-60">ккал</p>
         </div>
 
-        <div className="flex flex-col items-center gap-3 shrink-0">
-          <div>
-            <p className="text-primary text-sm font-semibold">
-              Количество дней
-            </p>
-            <div className="flex items-center gap-1 md:gap-2">
-              <Button
-                onClick={handleDec}
-                disabled={!canDecrement}
-                title={!canDecrement ? "Минимум 1 день" : undefined}
-                className="px-3 py-2 border-[1px] border-grey-border bg-whiteSecondary text-colorPrimary rounded-[6px] hover:bg-whitePrimary/70 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label="Уменьшить дни"
-                aria-disabled={!canDecrement}
-              >
-                −
-              </Button>
-
-              <Input
-                readOnly
-                value={daysCount}
-                inputMode="numeric"
-                aria-readonly="true"
-                className="w-[50px] sm:w-[80px] text-center font-bold border-[1px] border-grey-border bg-whiteSecondary text-colorPrimary rounded-[6px] select-none focus-visible:ring-0"
-              />
-
-              <Button
-                onClick={() => onIncrement(item.id)}
-                className="px-3 py-2 border-[1px] border-grey-border bg-whiteSecondary text-colorPrimary rounded-[6px] hover:bg-whitePrimary/70 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label="Увеличить дни"
-                disabled={!canIncrement}
-              >
-                +
-              </Button>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between mb-1">
+            <h4 className="font-bold text-greenPrimary text-lg truncate">
+              Тариф {item.calories}
+            </h4>
+            <div className="sm:hidden font-bold text-greenPrimary">
+              {totalPrice} BYN
             </div>
           </div>
-        </div>
 
-        <div className="text-right shrink-0">
-          <span className="font-bold text-sm text-yellow-hover whitespace-nowrap">
-            {totalPrice} BYN
-          </span>
-          <p className="text-xs hidden md:block text-greySecondary whitespace-nowrap">
-            {item.pricePerDay} BYN / день
-          </p>
-          <div className="mt-1 md:hidden">
-            <button
-              className="h-auto text-primary cursor-pointer inline-flex items-center gap-1 hover:text-red-400 transition-colors"
-              onClick={() => onRemove(item.id)}
-              aria-label={`Удалить тариф ${item.calories} из корзины`}
-            >
-              <Trash size={18} />
-              <span className="text-xs font-medium">Удалить</span>
-            </button>
+          <div className="flex items-center gap-2 text-xs text-greySecondary font-medium">
+            <span className="bg-greenPrimary/10 text-greenPrimary py-0.5 rounded-full">
+              {item.dishesCount} блюд
+            </span>
           </div>
         </div>
       </div>
-    </m.li>
+
+      <div className="flex relative w-full sm:w-auto items-center justify-between sm:justify-end pt-3 sm:pt-0 border-t sm:border-none border-black/5">
+        <div className="flex items-center bg-whitePrimary border border-black/10 rounded-xl p-1 ">
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={handleDec}
+            disabled={!canDecrement}
+            className="h-8 w-8 rounded-lg hover:bg-red-50 hover:text-red-500 disabled:opacity-20"
+            aria-label="Уменьшить дни"
+            aria-disabled={!canDecrement}
+            title={!canDecrement ? "Минимум 1 день" : undefined}
+          >
+            <Minus size={14} />
+          </Button>
+
+          <div className="w-10 text-center font-bold text-greenPrimary select-none">
+            {daysCount}
+          </div>
+
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => onIncrement(item.id)}
+            disabled={!canIncrement}
+            className="h-8 w-8 rounded-lg hover:bg-green-50 hover:text-green-500 disabled:opacity-20"
+            aria-label="Увеличить дни"
+            aria-disabled={!canIncrement}
+          >
+            <Plus size={14} />
+          </Button>
+        </div>
+
+        <div className="flex flex-col items-end min-w-[100px]">
+          <span className="font-bold text-md text-yellow-hover">
+            {totalPrice} <span className="text-xs font-bold ">BYN</span>
+          </span>
+          <p className="text-[10px] text-colorPrimary font-extrabold uppercase tracking-wider">
+            {item.pricePerDay} / день
+          </p>
+        </div>
+
+        <button
+          onClick={() => onRemove(item.id)}
+          className="p-2 text-greySecondary hover:text-red-500 cursor-pointer rounded-xl transition-all absolute bottom-[5px] left-[120px] "
+          aria-label={`Удалить тариф ${item.calories} из корзины`}
+        >
+          <Trash2 size={18} />
+        </button>
+      </div>
+    </motion.li>
   );
 };

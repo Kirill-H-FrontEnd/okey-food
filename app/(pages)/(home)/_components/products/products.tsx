@@ -390,15 +390,16 @@ export const Products: FC<TProducts> = () => {
   };
 
   const itemTransition: Transition = {
-    type: "tween",
-    duration: 0.38,
-    ease: [0.22, 1, 0.36, 1],
+    type: "spring",
+    stiffness: 260,
+    damping: 20,
   };
 
   const itemV: Variants = {
-    hidden: { opacity: 0, y: 14 },
+    hidden: { opacity: 0, scale: 0.95, y: 20 },
     show: {
       opacity: 1,
+      scale: 1,
       y: 0,
       transition: itemTransition,
     },

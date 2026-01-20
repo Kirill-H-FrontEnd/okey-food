@@ -37,7 +37,7 @@ export const AnimatedAmount: FC<AnimatedAmountProps> = ({
   return (
     <span
       ref={spanRef}
-      className="inline-block will-change-[transform,opacity] tabular-nums"
+      className="inline-block  will-change-[transform,opacity] tabular-nums"
       aria-live="polite"
     >
       {value}

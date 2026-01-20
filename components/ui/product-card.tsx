@@ -8,7 +8,7 @@ import {
   DialogTrigger,
   DialogTitle,
 } from "@/components/ui/dialog";
-
+import { motion } from "framer-motion";
 type TProductCardProps = { product: TProduct };
 
 export const ProductCard: FC<TProductCardProps> = ({ product }) => {
@@ -40,20 +40,25 @@ export const ProductCard: FC<TProductCardProps> = ({ product }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <div
+        <motion.div
           role="button"
           tabIndex={0}
           aria-haspopup="dialog"
+          whileHover={{
+            y: -8,
+            transition: { duration: 0.3, ease: [0.33, 1, 0.68, 1] },
+          }}
+          whileTap={{ scale: 0.98 }}
           onKeyDown={onKeyActivate}
-          className="bg-whiteSecondary rounded-[8px] shadow-md cursor-pointer hover:shadow-lg transition-shadow duration-200 p-4 w-full h-full grid grid-rows-[auto_1fr_auto] min-h-[300px] sm:min-h-[340px]"
+          className="bg-whiteSecondary rounded-2xl shadow-sm border border-black/5 cursor-pointer hover:shadow-xl hover:shadow-black/5 transition-shadow duration-300 p-4 w-full h-full grid grid-rows-[auto_1fr_auto] min-h-[300px] sm:min-h-[340px] will-change-transform"
         >
-          <div className="relative w-full max-w-[300px] aspect-[3/2] shrink-0 rounded-md overflow-hidden">
+          <div className="relative w-full max-w-[300px] aspect-[3/2] shrink-0 rounded-xl overflow-hidden group">
             <Image
               src={product.image}
               alt={product.name}
               fill
               sizes="(max-width: 639px) 50vw, 280px"
-              className="object-contain"
+              className="object-contain transition-transform duration-500 group-hover:scale-[105%]"
               placeholder="empty"
               blurDataURL={BLUR_14x9}
               priority={false}
@@ -65,29 +70,30 @@ export const ProductCard: FC<TProductCardProps> = ({ product }) => {
           {/* row 2: текст */}
           <div className="mt-4">
             <div className="mb-4 min-h-[64px]">
-              <h4 className="text-[18px] text-colorPrimary font-bold">
+              <h4 className="text-[13px] text-colorPrimary/60 font-bold  tracking-wider mb-1">
                 {product.meal}
               </h4>
-              <h5 className="text-colorPrimary font-medium leading-tight line-clamp-2">
+              <h5 className="text-[20px] text-greenPrimary font-bold leading-tight line-clamp-2">
                 {product.name}
               </h5>
             </div>
           </div>
 
           {/* row 3: низ карточки */}
-          <div className="text-sm text-colorPrimary">
-            <div className="flex gap-2 flex-wrap items-center">
-              <span>{product.calories} ккал</span>/
+          <div className="text-sm text-colorPrimary/80 font-medium">
+            <div className="flex gap-2 flex-wrap items-center bg-white/50 w-fit  py-1 rounded-full">
+              <span>{product.calories} ккал</span>
+              <span className="opacity-30">•</span>
               <span>{product.weight} г</span>
             </div>
           </div>
-        </div>
+        </motion.div>
       </DialogTrigger>
 
-      <DialogContent className="w-[calc(100vw-32px)] sm:max-w-[640px] md:max-w-[820px]">
+      <DialogContent className="w-[calc(100vw-32px)] sm:max-w-[640px] md:max-w-[820px] rounded-3xl">
         <DialogTitle className="sr-only">{product.name}</DialogTitle>
         <div className="flex flex-col md:flex-row gap-10 items-center text-colorPrimary sm:py-6 sm:px-6">
-          <div className="relative w-full max-w-[300px] aspect-[3/2] shrink-0 rounded-md bg-white overflow-hidden p-1">
+          <div className="relative w-full max-w-[300px] aspect-[3/2] shrink-0 rounded-2xl bg-white overflow-hidden p-1 shadow-inner">
             <Image
               src={product.image}
               alt={product.name}
@@ -102,14 +108,16 @@ export const ProductCard: FC<TProductCardProps> = ({ product }) => {
 
           <div className="flex-1">
             <div className="mb-3">
-              <div className="text-xs text-greySecondary ">{product.meal}</div>
-              <h5 className="text-[24px] text-colorPrimary font-bold my-1">
+              <div className="text-xs text-greySecondary font-bold uppercase tracking-widest">
+                {product.meal}
+              </div>
+              <h5 className="text-[28px] text-colorPrimary font-extrabold my-2 leading-tight">
                 {product.name}
               </h5>
-              <p className="text-sm text-greySecondary">
+              <p className="text-sm text-greySecondary font-medium">
                 Вес порции: {product.weight} г
               </p>
-              <div className="mt-3 mb-6">
+              <div className="mt-4 mb-6 text-colorPrimary/80 leading-relaxed">
                 <span className="text-colorPrimary font-bold">Состав:</span>{" "}
                 {product.description} куриная грудка, йогуртовый соус, кинза,
                 томат, огурец, паприка сладкая, соевый соус.
@@ -117,27 +125,27 @@ export const ProductCard: FC<TProductCardProps> = ({ product }) => {
             </div>
 
             <div className="flex justify-between sm:justify-start flex-wrap gap-5 text-center">
-              <div className="grid text-colorPrimary font-semibold">
+              <div className="grid text-colorPrimary font-bold text-lg">
                 {product.calories}{" "}
-                <span className="text-greySecondary font-normal text-sm">
+                <span className="text-greySecondary font-medium text-xs uppercase tracking-tighter">
                   ккал
                 </span>
               </div>
-              <div className="grid text-colorPrimary font-semibold">
+              <div className="grid text-colorPrimary font-bold text-lg">
                 {product.proteins}{" "}
-                <span className="text-greySecondary font-normal text-sm">
+                <span className="text-greySecondary font-medium text-xs uppercase tracking-tighter">
                   Белки
                 </span>
               </div>
-              <div className="grid text-colorPrimary font-semibold">
+              <div className="grid text-colorPrimary font-bold text-lg">
                 {product.fats}{" "}
-                <span className="text-greySecondary font-normal text-sm">
+                <span className="text-greySecondary font-medium text-xs uppercase tracking-tighter">
                   Жиры
                 </span>
               </div>
-              <div className="grid text-colorPrimary font-semibold">
+              <div className="grid text-colorPrimary font-bold text-lg">
                 {product.carbs}{" "}
-                <span className="text-greySecondary font-normal text-sm">
+                <span className="text-greySecondary font-medium text-xs uppercase tracking-tighter">
                   Углеводы
                 </span>
               </div>
