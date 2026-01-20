@@ -43,13 +43,17 @@ export const BasketItem: FC<BasketItemProps> = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className="group relative flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-whiteSecondary backdrop-blur-sm border border-black/5 rounded-xl p-4 transition-all  "
+      className="group relative flex flex-col sm:flex-row items-start sm:items-center gap-2 bg-whiteSecondary backdrop-blur-sm border border-black/5 rounded-xl p-3 transition-all  "
       aria-label={`Тариф ${item.calories}`}
     >
       <div className="flex w-full items-center gap-4">
         <div className="w-16 h-16 sm:w-18 sm:h-18 shrink-0 grid place-items-center bg-greenPrimary/5 rounded-xl text-colorPrimary border border-greenPrimary/10">
-          <p className="text-lg font-black tracking-tighter">{item.calories}</p>
-          <p className="text-[10px] uppercase font-bold opacity-60">ккал</p>
+          <div className="text-center">
+            <p className="text-lg font-extrabold tracking-tighter">
+              {item.calories}
+            </p>
+            <p className="text-[10px] uppercase font-bold opacity-60">ккал</p>
+          </div>
         </div>
 
         <div className="flex-1 min-w-0">
@@ -70,7 +74,7 @@ export const BasketItem: FC<BasketItemProps> = ({
         </div>
       </div>
 
-      <div className="flex relative w-full sm:w-auto items-center justify-between sm:justify-end pt-3 sm:pt-0 border-t sm:border-none border-black/5">
+      <div className="flex relative w-full sm:w-auto items-center justify-between sm:justify-end pt-2 sm:pt-0 border-t sm:border-none border-black/5">
         <div className="flex items-center bg-whitePrimary border border-black/10 rounded-xl p-1 ">
           <Button
             size="icon"
