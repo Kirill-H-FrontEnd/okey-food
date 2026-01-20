@@ -118,7 +118,7 @@ export const MobileMenu: FC<TMobileMenu> = ({
             </div>
           </div>
         </RemoveScroll>
-        <Copyright className="bg-whiteSecondary border-t-[1] border-input" />
+        <Copyright className="bg-whiteSecondary border-y border-input" />
       </SheetContent>
     </Sheet>
   );
