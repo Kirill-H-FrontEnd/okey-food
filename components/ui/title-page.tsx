@@ -16,7 +16,7 @@ export const TitlePage: FC<TTitlePage> = ({ title, description }) => {
       <Container>
         <motion.h3
           className="text-colorPrimary font-extrabold text-3xl md:text-4xl"
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
         >
@@ -25,7 +25,7 @@ export const TitlePage: FC<TTitlePage> = ({ title, description }) => {
 
         <motion.p
           className="text-greySecondary mt-2"
-          initial={{ opacity: 0, y: 6 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25, ease: "easeOut", delay: 0.05 }}
         >
