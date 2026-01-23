@@ -10,7 +10,9 @@ type TTitlePage = {
 export const TitlePage: FC<TTitlePage> = ({ title, description }) => {
   return (
     <article
-      className={"text-center py-14 md:py-18 w-full max-w-[700px] mx-auto"}
+      className={
+        "text-center bg-whitePrimary py-14 md:py-18 w-full max-w-[700px] mx-auto"
+      }
     >
       <Container>
         <h3 className="text-colorPrimary font-extrabold text-3xl md:text-4xl">
