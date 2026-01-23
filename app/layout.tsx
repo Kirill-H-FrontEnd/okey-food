@@ -2,6 +2,7 @@ import "simplebar/dist/simplebar.min.css";
 import "./globals.css";
 
 import { Mulish } from "next/font/google";
+import { AnalyticsConsentModal } from "@/components/ui/analytics-consent-modal";
 
 const font = Mulish({
   subsets: ["latin"],
@@ -21,6 +22,7 @@ export default function RootLayout({
       </head>
       <body style={font.style} className={` antialiased bg-whitePrimary`}>
         {children}
+        <AnalyticsConsentModal />
       </body>
     </html>
   );
