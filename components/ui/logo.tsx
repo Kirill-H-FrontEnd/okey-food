@@ -7,7 +7,7 @@ type TLogo = { url?: string };
 
 export const Logo: FC<TLogo> = ({ url = "/logo.PNG" }) => {
   const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
+    // e.preventDefault();
     window.scrollTo({
       top: 0,
       behavior: "smooth",

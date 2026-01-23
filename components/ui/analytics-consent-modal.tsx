@@ -80,7 +80,7 @@ gtag('config', '${GA_ID}', { anonymize_ip: true });`}
                   пользоваться сайтом, вы{" "}
                   <Link
                     className="text-yellow-hover hover:text-yellow-hover/60"
-                    href={""}
+                    href={"/privacy"}
                   >
                     соглашаетесь
                   </Link>{" "}

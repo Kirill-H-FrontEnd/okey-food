@@ -33,7 +33,7 @@ export const FormBanner: FC = ({}) => {
         <p className="text-[12px] leading-snug block text-left">
           Ознакомьтесь с{" "}
           <Link
-            href={""}
+            href={"/privacy"}
             className="text-yellow-hover hover:opacity-80 md:text-left md:inline-block"
           >
             политикой конфиденциальности.

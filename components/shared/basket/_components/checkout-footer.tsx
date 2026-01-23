@@ -31,7 +31,7 @@ export const CheckoutFooter: FC<CheckoutFooterProps> = ({
           className="text-[12px] font-bold text-colorPrimary"
         >
           Ознакомьтесь с {""}{" "}
-          <Link href="/privacy-policy" className="text-yellow-hover">
+          <Link href="/privacy" className="text-yellow-hover">
             политикой конфиденциальности
           </Link>
         </label>
