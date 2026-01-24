@@ -56,17 +56,17 @@ export const Navbar: FC = ({}) => {
               >
                 +375 44 725 66 66
               </Link>
-              <div className="flex gap-3 items-center">
+              <div className="flex gap-3 items-center ">
                 <Link
                   aria-label="Instagram"
-                  className="text-primary hover:text-yellow-hover transition-colors"
+                  className="text-colorPrimary hover:text-yellow-hover transition-colors"
                   href=""
                 >
                   <FaInstagram size={26} />
                 </Link>
                 <Link
                   aria-label="Telegram"
-                  className="text-primary hover:text-yellow-hover transition-colors"
+                  className="text-colorPrimary hover:text-yellow-hover transition-colors"
                   href=""
                 >
                   <RiTelegram2Fill size={26} />
