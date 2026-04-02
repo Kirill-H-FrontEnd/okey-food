@@ -5,13 +5,17 @@ import Image from "next/image";
 import {
   CalendarDays,
   CheckCircle2,
-  ChevronDown,
-  Phone,
   ShoppingBag,
-  User,
   BadgeInfo,
+  UtensilsCrossed,
 } from "lucide-react";
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,7 +24,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { daysWord, formatDeliveryDate } from "../utils";
+import { daysWord } from "../utils";
 
 import type { SuccessOrderSnapshot } from "../types";
 
@@ -161,61 +165,100 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                   </div>
                 </div> */}
 
-                <details className="group rounded-2xl border border-black/5 bg-whiteSecondary p-4 shadow">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-bold text-colorPrimary">
-                        Состав заказа
-                      </p>
-                      <p className="text-xs text-greySecondary">
-                        {summary.totalItems} поз. • {summary.totalDays}{" "}
-                        {daysWord(summary.totalDays)}
-                      </p>
-                    </div>
-
-                    <div className="shrink-0 rounded-full bg-whitePrimary p-2 transition group-open:rotate-180">
-                      <ChevronDown size={16} className="text-colorPrimary" />
-                    </div>
-                  </summary>
-
-                  <div className="mt-3 grid gap-3">
-                    {order.items.map((item) => (
-                      <div
-                        key={`success-${item.id}`}
-                        className="rounded-2xl border border-black/5 bg-whitePrimary p-3"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <p className="text-sm font-bold text-colorPrimary">
-                              Тариф {item.calories} ккал
-                            </p>
-                            <p className="mt-1 text-xs text-greySecondary">
-                              {item.selectedDays.length}{" "}
-                              {daysWord(item.selectedDays.length)}
-                            </p>
-                          </div>
-
-                          <div className="shrink-0 rounded-full bg-yellowPrimary/10 px-3 py-1 text-xs font-bold text-yellow-hover">
-                            {item.pricePerDay * item.selectedDays.length} BYN
-                          </div>
-                        </div>
-
-                        {item.selectedDays.length > 0 && (
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            {item.selectedDays.map((day) => (
-                              <span
-                                key={`${item.id}-${day}`}
-                                className="rounded-full border border-colorPrimary/10 bg-whiteSecondary px-2.5 py-1 text-[11px] font-semibold text-colorPrimary"
-                              >
-                                {day}
-                              </span>
-                            ))}
-                          </div>
-                        )}
+                <Accordion
+                  type="single"
+                  collapsible
+                  defaultValue="order-content"
+                  className="rounded-2xl border border-black/5 bg-whiteSecondary px-4 shadow"
+                >
+                  <AccordionItem value="order-content">
+                    <AccordionTrigger className="py-3 [&>svg]:size-4 [&>svg]:rounded-full [&>svg]:bg-whitePrimary [&>svg]:p-0.5">
+                      <div>
+                        <p className="text-sm font-bold text-colorPrimary">
+                          Состав заказа
+                        </p>
+                        <p className="text-xs text-greySecondary">
+                          {summary.totalItems} поз. • {summary.totalDays}{" "}
+                          {daysWord(summary.totalDays)}
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                </details>
+                    </AccordionTrigger>
+
+                    <AccordionContent className="mt-1">
+                      <div className="grid gap-3">
+                        {order.items.map((item) => (
+                          <article
+                            key={`success-${item.id}`}
+                            className="rounded-2xl border border-colorPrimary/10 bg-whitePrimary p-4"
+                          >
+                            <div className="mb-4 flex items-start justify-between gap-3">
+                              <div className="flex items-center gap-3">
+                                <div className="grid h-11 min-w-11 place-items-center rounded-xl border border-colorPrimary/10 bg-whiteSecondary px-2 text-xs font-extrabold text-colorPrimary shadow">
+                                  {item.calories}
+                                </div>
+
+                                <div>
+                                  <p className="text-sm font-extrabold text-colorPrimary">
+                                    Тариф {item.calories} ккал
+                                  </p>
+                                  <p className="mt-0.5 text-xs font-medium text-greySecondary">
+                                    {item.selectedDays.length}{" "}
+                                    {daysWord(item.selectedDays.length)}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="rounded-full border border-yellow-hover/15 bg-yellow-hover/10 px-3 py-1.5 text-xs font-bold text-yellow-hover">
+                                {item.pricePerDay * item.selectedDays.length}{" "}
+                                BYN
+                              </div>
+                            </div>
+
+                            <div className="grid gap-3">
+                              <div className="rounded-xl border border-black/5 bg-whiteSecondary p-3">
+                                <div className="mb-2 text-xs font-semibold tracking-[0.08em] text-greySecondary">
+                                  Выбранные дни
+                                </div>
+                                {item.selectedDays.length > 0 ? (
+                                  <div className="flex flex-wrap gap-2">
+                                    {item.selectedDays.map((day) => (
+                                      <span
+                                        key={`${item.id}-${day}`}
+                                        className="rounded-sm border border-colorPrimary/10 bg-colorPrimary/5 px-3 py-1 text-xs font-semibold text-colorPrimary"
+                                      >
+                                        {day}
+                                      </span>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <p className="text-xs font-medium text-greySecondary">
+                                    Дни пока не выбраны
+                                  </p>
+                                )}
+                              </div>
+
+                              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-black/5 bg-whiteSecondary p-3">
+                                <div className="flex items-center gap-2 text-sm font-semibold text-colorPrimary">
+                                  <UtensilsCrossed
+                                    size={15}
+                                    className="text-yellow-hover"
+                                  />
+                                  <span>
+                                    {item.dishesCount} полноценных блюд в день
+                                  </span>
+                                </div>
+
+                                <div className="text-xs font-semibold text-greySecondary">
+                                  {item.pricePerDay} BYN / день
+                                </div>
+                              </div>
+                            </div>
+                          </article>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
 
                 <div className="rounded-2xl border border-colorPrimary/10 bg-colorPrimary/10 p-3">
                   <div className="flex items-start gap-2 text-xs leading-5 text-colorPrimary">
