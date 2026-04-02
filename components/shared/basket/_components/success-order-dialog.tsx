@@ -189,7 +189,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                   className="rounded-2xl border border-colorPrimary/10 px-4 shadow bg-whiteSecondary"
                 >
                   <AccordionItem value="order-content" className="border-none">
-                    <AccordionTrigger className="rounded-2xl  py-3 [&>svg]:size-4 [&>svg]:rounded-full [&>svg]:bg-whitePrimary [&>svg]:p-0.5 bg-whiteSecondary">
+                    <AccordionTrigger className="  py-3 [&>svg]:size-8 [&>svg]:rounded-full [&>svg]:bg-whitePrimary [&>svg]:p-2 bg-whiteSecondary">
                       <div>
                         <p className="text-sm font-bold text-colorPrimary">
                           Состав заказа
