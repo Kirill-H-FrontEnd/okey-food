@@ -38,9 +38,11 @@ import { BasketHeader } from "./_components/basket-header";
 import { CheckoutFooter } from "./_components/checkout-footer";
 import { CheckoutForm } from "./_components/checkout-form";
 import { CheckoutSummary } from "./_components/checkout-summary";
+import { SuccessOrderDialog } from "./_components/success-order-dialog";
 import { listSelectableDays } from "@/lib/delivery-days";
 
 import type { CheckoutFormField, CityOption } from "./types";
+import type { SuccessOrderSnapshot } from "./types";
 
 const CITIES: CityOption[] = [
   { value: "minsk", label: "Минск" },
@@ -76,13 +78,12 @@ const FIELD_ORDER: CheckoutFormField[] = [
 ];
 
 type CheckoutFormValues = CheckoutFormData;
-
 const createInitialFormValues = (): Partial<CheckoutFormValues> => ({
   firstName: "",
   lastName: "",
   phone: "",
   social: "",
-  city: CITIES[0]?.value ?? "",
+  city: "",
   street: "",
   house: "",
   apartment: "",
@@ -102,6 +103,9 @@ export const Basket: FC = () => {
 
   const [isCheckout, setIsCheckout] = useState(false);
   const [isConsentGiven, setIsConsentGiven] = useState(false);
+  const [successOrder, setSuccessOrder] = useState<SuccessOrderSnapshot | null>(
+    null,
+  );
 
   const checkoutResolver: Resolver<CheckoutFormValues> = useCallback(
     async (values) => {
@@ -278,13 +282,31 @@ export const Basket: FC = () => {
     scrollFieldIntoView(field);
   };
 
+  const handleCloseSuccessDialog = () => {
+    setSuccessOrder(null);
+  };
+
   const handleSubmit = form.handleSubmit((data) => {
-    console.log("Checkout data", {
-      ...data,
-      consent: isConsentGiven,
-      orderItems: sortedItems,
+    setSuccessOrder({
+      customer: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
+        city: data.city ?? "",
+        street: data.street ?? "",
+        house: data.house ?? "",
+        apartment: data.apartment ?? "",
+        date: data.date ?? undefined,
+      },
+      items: sortedItems,
       totalPrice,
     });
+    setIsBasketOpen(false);
+    setIsCheckout(false);
+    setIsConsentGiven(false);
+    form.reset(createInitialFormValues());
+    form.clearErrors();
+    useBasketStore.getState().clear();
   }, handleSubmitError);
 
   const prefersMotionReduction = Boolean(prefersReducedMotion);
@@ -316,7 +338,8 @@ export const Basket: FC = () => {
   );
 
   return (
-    <Sheet open={isBasketOpen} onOpenChange={setIsBasketOpen}>
+    <>
+      <Sheet open={isBasketOpen} onOpenChange={setIsBasketOpen}>
       <SheetTrigger asChild>
         <Button className="relative group bg-yellowPrimary" variant="default">
           <span className="text-[12px] text-colorPrimary font-bold whitespace-nowrap">
@@ -434,6 +457,12 @@ export const Basket: FC = () => {
           </div>
         </LazyMotion>
       </SheetContent>
-    </Sheet>
+      </Sheet>
+
+      <SuccessOrderDialog
+        order={successOrder}
+        onClose={handleCloseSuccessDialog}
+      />
+    </>
   );
 };
