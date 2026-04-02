@@ -7,12 +7,12 @@ export const checkoutSchema = z.object({
   firstName: z
     .string()
     .trim()
-    .min(2, "Введите имя (минимум 2 символа)")
+    .min(2, "Введите имя ")
     .max(50, "Имя слишком длинное"),
   lastName: z
     .string()
     .trim()
-    .min(2, "Введите фамилию (минимум 2 символа)")
+    .min(2, "Введите фамилию ")
     .max(50, "Фамилия слишком длинная"),
   phone: z
     .string()
@@ -20,28 +20,22 @@ export const checkoutSchema = z.object({
     .min(1, "Укажите номер телефона")
     .regex(
       /^\+375\s?\(?\d{2}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}$/,
-      "Введите телефон в формате +375 (__) ___-__-__"
+      "Введите телефон в формате +375 (__) ___-__-__",
     ),
   social: z.string().trim(),
   city: z.string().trim(),
-  street: z
-    .string()
-    .trim()
-    .max(80, "Название улицы слишком длинное"),
-  house: z
-    .string()
-    .trim()
-    .max(10, "Слишком длинный номер дома"),
-  apartment: z
-    .string()
-    .trim()
-    .max(10, "Слишком длинный номер квартиры"),
-  date: z.preprocess((value) => {
-    if (value instanceof Date && !Number.isNaN(value.getTime())) {
-      return value;
-    }
-    return undefined;
-  }, z.date({ error: "Укажите дату доставки" })),
+  street: z.string().trim().max(80, "Название улицы слишком длинное"),
+  house: z.string().trim().max(10, "Слишком длинный номер дома"),
+  apartment: z.string().trim().max(10, "Слишком длинный номер квартиры"),
+  date: z.preprocess(
+    (value) => {
+      if (value instanceof Date && !Number.isNaN(value.getTime())) {
+        return value;
+      }
+      return undefined;
+    },
+    z.date({ error: "Укажите дату доставки" }),
+  ),
   comment: z
     .string()
     .trim()

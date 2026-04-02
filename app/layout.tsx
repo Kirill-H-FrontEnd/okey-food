@@ -29,8 +29,8 @@ export default function RootLayout({
             duration: 3000,
             className: " font-medium text-sm ",
             style: {
-              borderRadius: "4px",
-              padding: "8px 12px",
+              borderRadius: "8px",
+              padding: "6px 12px",
             },
             success: {
               iconTheme: {
@@ -39,7 +39,7 @@ export default function RootLayout({
               },
               style: {
                 background: "",
-                color: "#05DF72",
+                color: "#00C950",
               },
             },
 

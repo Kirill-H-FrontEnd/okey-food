@@ -83,14 +83,12 @@ export const FormBanner: FC = () => {
     }
   };
 
-  const onSubmit = handleSubmit(
-    (data) => {
-      console.log("Contact banner form", data);
-      toast.success("Спасибо! Мы скоро свяжемся с вами.");
-      reset({ name: "", phone: "", accepted: false });
-    },
-    onSubmitError,
-  );
+  const onSubmit = handleSubmit((data) => {
+    toast.success(
+      `Спасибо ${data.name} ! Мы свяжемся с вами в ближайшее время.`,
+    );
+    reset({ name: "", phone: "", accepted: false });
+  }, onSubmitError);
 
   return (
     <form onSubmit={onSubmit} className="max-w-[450px] gap-4 m-auto grid mt-6">
@@ -110,11 +108,7 @@ export const FormBanner: FC = () => {
           className={cn("bg-whiteSecondary h-[40px]", withErrorStyles("phone"))}
         />
       </div>
-      {(errors.name?.message || errors.phone?.message) && (
-        <p className="text-left text-xs text-red-400">
-          {errors.name?.message ?? errors.phone?.message}
-        </p>
-      )}
+
       <div className="flex items-center justify-start gap-2 text-greySecondary">
         <Controller
           name="accepted"
@@ -140,11 +134,6 @@ export const FormBanner: FC = () => {
           </Link>
         </p>
       </div>
-      {errors.accepted?.message && (
-        <p className="text-left text-xs text-red-400">
-          {errors.accepted.message}
-        </p>
-      )}
 
       <Button
         type="submit"

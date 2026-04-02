@@ -121,7 +121,7 @@ export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
           {enrichedItems.map((item) => (
             <article
               key={`summary-${item.id}`}
-              className="rounded-2xl border border-colorPrimary/10 bg-whitePrimary p-4 shadow-sm transition-transform"
+              className="rounded-2xl border border-colorPrimary/10 bg-whitePrimary p-4  transition-transform"
             >
               <div className="mb-4 flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
