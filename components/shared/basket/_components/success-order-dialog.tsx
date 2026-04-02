@@ -113,8 +113,8 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                   Заказ успешно оформлен
                 </DialogTitle>
                 <DialogDescription className="max-w-[340px] text-sm leading-5 text-greySecondary text-center">
-                  Мы скоро свяжемся с вами для подтверждения заказа и уточнения
-                  доставки.
+                  После подтверждения заказа менеджером мы свяжемся с вами для
+                  уточнения деталей доставки.
                 </DialogDescription>
               </DialogHeader>
             </div>
@@ -295,7 +295,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                   </AccordionItem>
                 </Accordion>
 
-                <div className="rounded-2xl border border-colorPrimary/10 bg-colorPrimary/10 p-3">
+                {/* <div className="rounded-2xl border border-colorPrimary/10 bg-colorPrimary/10 p-3">
                   <div className="flex items-start gap-2 text-xs leading-5 text-colorPrimary">
                     <BadgeInfo
                       size={20}
@@ -306,7 +306,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                       для уточнения деталей доставки.
                     </p>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
 
