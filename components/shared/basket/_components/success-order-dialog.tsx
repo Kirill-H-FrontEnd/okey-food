@@ -37,6 +37,21 @@ type SuccessOrderDialogProps = {
   onClose: () => void;
 };
 
+
+const formatSelectedDay = (value: string) => {
+  const parsed = new Date(value);
+
+  if (!Number.isNaN(parsed.getTime())) {
+    return new Intl.DateTimeFormat("ru-RU", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(parsed);
+  }
+
+  return value;
+};
+
 const formatAddress = (order: SuccessOrderSnapshot) => {
   const CITY_LABELS: Record<string, string> = {
     minsk: "Минск",
@@ -247,7 +262,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                                         key={`${item.id}-${day}`}
                                         className="rounded-sm border border-colorPrimary/10 bg-colorPrimary/5 px-3 py-1 text-xs font-semibold text-colorPrimary"
                                       >
-                                        {day}
+                                        {formatSelectedDay(day)}
                                       </span>
                                     ))}
                                   </div>
