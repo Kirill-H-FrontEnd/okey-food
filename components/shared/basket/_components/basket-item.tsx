@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { CartItem } from "@/store/useStore";
 import { listSelectableDays } from "@/lib/delivery-days";
-import { Trash2, Calendar, Plus, Minus } from "lucide-react";
+import { Trash2, Plus, Minus } from "lucide-react";
 
 type BasketItemProps = {
   item: CartItem;
@@ -39,43 +39,64 @@ export const BasketItem: FC<BasketItemProps> = ({
 
   return (
     <motion.li
-      layout
+      layout="position"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      className="group relative flex flex-col sm:flex-row items-start sm:items-center gap-2 bg-whiteSecondary backdrop-blur-sm border border-black/5 rounded-xl p-3 transition-all  "
+      exit={{ opacity: 0, y: -8 }}
+      transition={{
+        layout: { duration: 0.22, ease: [0.22, 1, 0.36, 1] },
+        duration: 0.2,
+      }}
+      className="group relative flex flex-col gap-3 rounded-2xl border border-black/5 bg-whiteSecondary p-3 transition-colors hover:border-greenPrimary/25 sm:p-4"
       aria-label={`Тариф ${item.calories}`}
     >
-      <div className="flex w-full items-center gap-4">
-        <div className="w-16 h-16 sm:w-18 sm:h-18 shrink-0 grid place-items-center bg-greenPrimary/5 rounded-xl text-colorPrimary border border-greenPrimary/10">
-          <div className="text-center">
-            <p className="text-lg font-extrabold tracking-tighter">
-              {item.calories}
-            </p>
-            <p className="text-[10px] uppercase font-bold opacity-60">ккал</p>
-          </div>
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-1">
-            <h4 className="font-bold text-colorPrimary text-lg truncate">
-              Тариф {item.calories}
-            </h4>
-            <div className="hidden font-bold text-colorPrimary">
-              {totalPrice} BYN
+      <div className="flex w-full items-start justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="grid h-16 w-16 shrink-0 place-items-center rounded-xl border border-greenPrimary/10 bg-greenPrimary/5 text-colorPrimary">
+            <div className="text-center">
+              <p className="text-lg font-extrabold tracking-tighter">
+                {item.calories}
+              </p>
+              <p className="text-[10px] uppercase font-bold opacity-60">ккал</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-greySecondary font-medium">
-            <span className=" text-greenPrimary rounded-full">
-              {item.dishesCount} блюд
-            </span>
+          <div className="min-w-0 flex-1 space-y-1">
+            <h4 className="truncate text-base font-bold text-colorPrimary sm:text-[18px]">
+              Тариф {item.calories}
+            </h4>
+            <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-greySecondary">
+              <span className="rounded-full bg-greenPrimary/10 px-2 py-0.5 text-greenPrimary">
+                {item.dishesCount} блюд
+              </span>
+              <span className="rounded-full bg-black/5 px-2 py-0.5">
+                {daysCount} {daysCount === 1 ? "день" : "дней"}
+              </span>
+            </div>
           </div>
         </div>
+
+        <button
+          onClick={() => onRemove(item.id)}
+          className="inline-flex shrink-0 items-center justify-center rounded-lg p-2 text-greySecondary transition-colors hover:bg-red-50 hover:text-red-500"
+          aria-label={`Удалить тариф ${item.calories} из корзины`}
+          title="Удалить из корзины"
+        >
+          <Trash2 size={16} />
+        </button>
       </div>
 
-      <div className="flex relative w-full sm:w-auto items-center justify-between sm:justify-end pt-2 sm:pt-0 border-t sm:border-none border-black/5">
-        <div className="flex items-center bg-whitePrimary border border-black/10 rounded-xl p-1 ">
+      <div className="flex w-full items-center justify-between border-t border-black/5 pt-2">
+        <div className="flex flex-col">
+          <span className="text-[11px] font-semibold text-greySecondary">
+            {item.pricePerDay} BYN / день
+          </span>
+          <span className="text-lg font-bold leading-none text-yellowPrimary">
+            {totalPrice} <span className="text-xs font-semibold">BYN</span>
+          </span>
+        </div>
+
+        <div className="flex items-center rounded-xl border border-black/10 bg-whitePrimary p-1">
           <Button
             size="icon"
             variant="ghost"
@@ -105,23 +126,6 @@ export const BasketItem: FC<BasketItemProps> = ({
             <Plus size={14} />
           </Button>
         </div>
-
-        <div className="flex flex-col items-end min-w-[100px]">
-          <span className="font-semibold text-lg text-yellowPrimary">
-            {totalPrice} <span className="text-xs  ">BYN</span>
-          </span>
-          <p className="text-[10px] text-greySecondary font-bold  tracking-wider">
-            {item.pricePerDay} / день
-          </p>
-        </div>
-
-        <button
-          onClick={() => onRemove(item.id)}
-          className="p-2 text-greySecondary hover:text-red-500 cursor-pointer rounded-xl transition-all absolute bottom-[5px] left-[120px] "
-          aria-label={`Удалить тариф ${item.calories} из корзины`}
-        >
-          <Trash2 size={18} />
-        </button>
       </div>
     </motion.li>
   );
