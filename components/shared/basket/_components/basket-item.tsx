@@ -66,7 +66,7 @@ export const BasketItem: FC<BasketItemProps> = ({
               Тариф {item.calories}
             </h4>
             <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-greySecondary">
-              <span className="rounded-full bg-greenPrimary/10 px-2 py-0.5 text-greenPrimary">
+              <span className="rounded-full bg-greenPrimary/10  py-0.5 text-greenPrimary">
                 {item.dishesCount} блюд
               </span>
               <span className="rounded-full text-yellow-hover bg-black/5 border border-colorPrimary/10 px-3 py-0.5">
