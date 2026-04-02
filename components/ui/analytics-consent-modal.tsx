@@ -46,7 +46,7 @@ export function AnalyticsConsentModal() {
       {GA_ID && consent === "granted" && (
         <>
           <Script
-            src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+            src={`https://www.googletagmanager.com/gtag/js?id=G-6F1ZNPMD2E`}
             strategy="afterInteractive"
           />
           <Script id="gtag-init" strategy="afterInteractive">
@@ -55,7 +55,7 @@ export function AnalyticsConsentModal() {
               function gtag(){dataLayer.push(arguments);}
               window.gtag = gtag;
               gtag('js', new Date());
-              gtag('config', '${GA_ID}', {
+              gtag('config', 'G-6F1ZNPMD2E', {
                 anonymize_ip: true
               });
             `}
