@@ -293,6 +293,7 @@ export const Basket: FC = () => {
         lastName: data.lastName,
         phone: data.phone,
         city: data.city ?? "",
+        social: data.social ?? "",
         street: data.street ?? "",
         house: data.house ?? "",
         apartment: data.apartment ?? "",
@@ -340,123 +341,123 @@ export const Basket: FC = () => {
   return (
     <>
       <Sheet open={isBasketOpen} onOpenChange={setIsBasketOpen}>
-      <SheetTrigger asChild>
-        <Button className="relative group bg-yellowPrimary" variant="default">
-          <span className="text-[12px] text-colorPrimary font-bold whitespace-nowrap">
-            <AnimatedAmount value={totalLabel} durationMs={200} />
-          </span>
-          <span className="w-[1px] h-[50%] bg-colorPrimary" aria-hidden />
-          <div className="grid grid-cols-2-auto gap-2 items-center md:group-hover:opacity-0 transition-opacity text-colorPrimary">
-            <ShoppingBag size={10} />
-          </div>
-          <ChevronRight
-            size={18}
-            strokeWidth={2}
-            className="absolute right-3 transition duration-300 -translate-x-1 opacity-0 md:group-hover:opacity-100 group-hover:translate-x-0 text-colorPrimary"
-          />
-        </Button>
-      </SheetTrigger>
+        <SheetTrigger asChild>
+          <Button className="relative group bg-yellowPrimary" variant="default">
+            <span className="text-[12px] text-colorPrimary font-bold whitespace-nowrap">
+              <AnimatedAmount value={totalLabel} durationMs={200} />
+            </span>
+            <span className="w-[1px] h-[50%] bg-colorPrimary" aria-hidden />
+            <div className="grid grid-cols-2-auto gap-2 items-center md:group-hover:opacity-0 transition-opacity text-colorPrimary">
+              <ShoppingBag size={10} />
+            </div>
+            <ChevronRight
+              size={18}
+              strokeWidth={2}
+              className="absolute right-3 transition duration-300 -translate-x-1 opacity-0 md:group-hover:opacity-100 group-hover:translate-x-0 text-colorPrimary"
+            />
+          </Button>
+        </SheetTrigger>
 
-      <SheetContent
-        showCloseButton={false}
-        className="shadow-none p-0 overflow-hidden bg-whitePrimary"
-      >
-        <LazyMotion features={domAnimation}>
-          <div className="flex h-full flex-col pt-[55px] md:pt-0 ">
-            <SheetHeader className="relative ">
-              <BasketHeader
-                isCheckout={isCheckout}
-                onClose={handleCloseBasket}
-                onReturn={handleReturnToBasket}
-              />
-            </SheetHeader>
+        <SheetContent
+          showCloseButton={false}
+          className="shadow-none p-0 overflow-hidden bg-whitePrimary"
+        >
+          <LazyMotion features={domAnimation}>
+            <div className="flex h-full flex-col pt-[55px] md:pt-0 ">
+              <SheetHeader className="relative ">
+                <BasketHeader
+                  isCheckout={isCheckout}
+                  onClose={handleCloseBasket}
+                  onReturn={handleReturnToBasket}
+                />
+              </SheetHeader>
 
-            <AnimatePresence mode="wait" initial={false}>
-              {!isCheckout ? (
-                <m.section
-                  key="basket-view"
-                  variants={basketSectionVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={sectionTransition}
-                  className="flex-1 overflow-y-auto px-5"
-                  style={{
-                    willChange: prefersMotionReduction
-                      ? undefined
-                      : "transform",
-                  }}
-                >
-                  {sortedItems.length === 0 ? (
-                    <BasketEmpty />
-                  ) : (
-                    <ul className="grid gap-4 mt-0 md:mt-4 pb-6 overflow-hidden">
-                      <AnimatePresence initial={false} mode="popLayout">
-                        {sortedItems.map((item) => (
-                          <BasketItem
-                            key={item.id}
-                            item={item}
-                            onRemove={removeItem}
-                            onIncrement={handleIncrementDays}
-                            onDecrement={handleDecrementDays}
-                          />
-                        ))}
-                      </AnimatePresence>
-                    </ul>
-                  )}
-                </m.section>
-              ) : (
-                <m.section
-                  key="checkout-view"
-                  variants={checkoutSectionVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={sectionTransition}
-                  className="flex-1 overflow-y-auto px-5 pt-1 md:pt-4"
-                  style={{
-                    willChange: prefersMotionReduction
-                      ? undefined
-                      : "transform",
-                  }}
-                >
-                  <div className="mb-5">
-                    <div className="w-full space-y-6 text-whiteSecondary">
-                      <FormProvider {...form}>
-                        <CheckoutForm cityOptions={CITIES} />
-                      </FormProvider>
+              <AnimatePresence mode="wait" initial={false}>
+                {!isCheckout ? (
+                  <m.section
+                    key="basket-view"
+                    variants={basketSectionVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={sectionTransition}
+                    className="flex-1 overflow-y-auto px-5"
+                    style={{
+                      willChange: prefersMotionReduction
+                        ? undefined
+                        : "transform",
+                    }}
+                  >
+                    {sortedItems.length === 0 ? (
+                      <BasketEmpty />
+                    ) : (
+                      <ul className="grid gap-4 mt-0 md:mt-4 pb-6 overflow-hidden">
+                        <AnimatePresence initial={false} mode="popLayout">
+                          {sortedItems.map((item) => (
+                            <BasketItem
+                              key={item.id}
+                              item={item}
+                              onRemove={removeItem}
+                              onIncrement={handleIncrementDays}
+                              onDecrement={handleDecrementDays}
+                            />
+                          ))}
+                        </AnimatePresence>
+                      </ul>
+                    )}
+                  </m.section>
+                ) : (
+                  <m.section
+                    key="checkout-view"
+                    variants={checkoutSectionVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={sectionTransition}
+                    className="flex-1 overflow-y-auto px-5 pt-1 md:pt-4"
+                    style={{
+                      willChange: prefersMotionReduction
+                        ? undefined
+                        : "transform",
+                    }}
+                  >
+                    <div className="mb-5">
+                      <div className="w-full space-y-6 text-whiteSecondary">
+                        <FormProvider {...form}>
+                          <CheckoutForm cityOptions={CITIES} />
+                        </FormProvider>
 
-                      <CheckoutSummary
-                        items={sortedItems}
-                        totalLabel={totalLabel}
-                        deliveryDate={deliveryDate}
-                      />
+                        <CheckoutSummary
+                          items={sortedItems}
+                          totalLabel={totalLabel}
+                          deliveryDate={deliveryDate}
+                        />
+                      </div>
                     </div>
-                  </div>
-                </m.section>
-              )}
-            </AnimatePresence>
+                  </m.section>
+                )}
+              </AnimatePresence>
 
-            <AnimatePresence mode="sync" initial={false}>
-              {!isCheckout ? (
-                <BasketFooter
-                  key="basket-footer"
-                  totalLabel={totalLabel}
-                  disabled={itemCount === 0}
-                  onProceed={handleProceedToCheckout}
-                />
-              ) : (
-                <CheckoutFooter
-                  key="checkout-footer"
-                  isConsentGiven={isConsentGiven}
-                  onConsentChange={setIsConsentGiven}
-                  onSubmit={handleSubmit}
-                />
-              )}
-            </AnimatePresence>
-          </div>
-        </LazyMotion>
-      </SheetContent>
+              <AnimatePresence mode="sync" initial={false}>
+                {!isCheckout ? (
+                  <BasketFooter
+                    key="basket-footer"
+                    totalLabel={totalLabel}
+                    disabled={itemCount === 0}
+                    onProceed={handleProceedToCheckout}
+                  />
+                ) : (
+                  <CheckoutFooter
+                    key="checkout-footer"
+                    isConsentGiven={isConsentGiven}
+                    onConsentChange={setIsConsentGiven}
+                    onSubmit={handleSubmit}
+                  />
+                )}
+              </AnimatePresence>
+            </div>
+          </LazyMotion>
+        </SheetContent>
       </Sheet>
 
       <SuccessOrderDialog

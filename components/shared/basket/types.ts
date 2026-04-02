@@ -12,6 +12,7 @@ export type SuccessOrderSnapshot = {
     lastName: string;
     phone: string;
     city: string;
+    social: string;
     street: string;
     house: string;
     apartment: string;
