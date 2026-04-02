@@ -30,7 +30,7 @@ export const CheckoutFooter: FC<CheckoutFooterProps> = ({
           htmlFor="consent-switch"
           className="text-[12px] font-bold text-colorPrimary"
         >
-          Ознакомьтесь с {""}{" "}
+          Я согласен с {""}{" "}
           <Link href="/privacy" className="text-yellow-hover">
             политикой конфиденциальности
           </Link>

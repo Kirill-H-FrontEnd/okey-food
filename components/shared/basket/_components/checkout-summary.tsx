@@ -1,83 +1,176 @@
 "use client";
 
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { AnimatedAmount } from "@/components/magicui/animated-amount";
 import { daysWord } from "@/components/shared/basket/utils";
 import { CartItem } from "@/store/useStore";
-import { Calendar, CheckCircle2, Info } from "lucide-react";
+import {
+  CalendarDays,
+  CheckCircle2,
+  CreditCard,
+  Info,
+  UtensilsCrossed,
+} from "lucide-react";
 
 type CheckoutSummaryProps = {
   items: CartItem[];
   totalLabel: string;
 };
 
+const formatSelectedDay = (value: string) => {
+  const parsed = new Date(value);
+
+  if (!Number.isNaN(parsed.getTime())) {
+    return new Intl.DateTimeFormat("ru-RU", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(parsed);
+  }
+
+  return value;
+};
+
 export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
   items,
   totalLabel,
-}) => (
-  <div className="rounded-2xl bg-whiteSecondary border border-black/5 p-4 shadow-xl shadow-black/5 text-colorPrimary overflow-hidden relative">
-    <div className="absolute top-0 right-0 p-8 opacity-[0.1] pointer-events-none text-yellow-hover">
-      <CheckCircle2 size={120} />
-    </div>
+}) => {
+  const enrichedItems = useMemo(() => {
+    return items.map((item) => {
+      const daysCount = item.selectedDays.length;
+      const itemTotal = item.pricePerDay * daysCount;
 
-    <div className="flex items-center justify-between mb-6 pb-4 border-b border-black/5">
-      <p className="text-xl font-bold text-colorPrimary">Итого к оплате</p>
-      <div className="text-md font-bold text-yellow-hover flex items-baseline gap-1">
-        <AnimatedAmount value={totalLabel} durationMs={400} />
+      return {
+        ...item,
+        daysCount,
+        itemTotal,
+        formattedDays: item.selectedDays.map(formatSelectedDay),
+      };
+    });
+  }, [items]);
+
+  return (
+    <section className="relative overflow-hidden rounded-[28px] border border-black/5 bg-whiteSecondary p-4 text-colorPrimary shadow-[0_20px_50px_rgba(0,0,0,0.06)] sm:p-5">
+      <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-yellow-hover/10 blur-2xl" />
+      <div className="pointer-events-none absolute -left-8 bottom-0 h-24 w-24 rounded-full bg-colorPrimary/10 blur-2xl" />
+
+      <div className="pointer-events-none absolute right-1 top-1 opacity-[0.07] text-yellow-hover">
+        <CheckCircle2 size={96} />
       </div>
-    </div>
 
-    {items.length > 0 && (
-      <ul className="grid gap-4">
-        {items.map((item) => (
-          <li
-            key={`summary-${item.id}`}
-            className="rounded-xl bg-whitePrimary border border-black/5 p-4"
-          >
-            <div className="flex items-center justify-between gap-4 mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-lg bg-greenPrimary text-yellow-hover grid place-items-center text-[10px] font-bold bg-whiteSecondary">
-                  {item.calories}
+      <div className="relative z-10 mb-5 rounded-2xl border border-black/5  p-4 ">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold  tracking-[0.14em] text-greySecondary">
+              Сумма заказа
+            </p>
+            <h2 className="mt-1 text-xl font-extrabold text-colorPrimary sm:text-2xl">
+              Итого к оплате
+            </h2>
+          </div>
+
+          <div className="rounded-2xl bg-yellow-hover/10 px-4 py-3 text-right">
+            <div className="text-xs font-semibold  tracking-[0.12em] text-yellow-hover/80">
+              Общая сумма
+            </div>
+            <div className="mt-1 text-lg font-extrabold text-yellow-hover sm:text-xl">
+              <AnimatedAmount value={totalLabel} durationMs={450} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {enrichedItems.length > 0 ? (
+        <div className="relative z-10 grid gap-4">
+          {enrichedItems.map((item) => (
+            <article
+              key={`summary-${item.id}`}
+              className="rounded-2xl border border-colorPrimary/10 bg-whitePrimary p-4 shadow-sm transition-transform"
+            >
+              <div className="mb-4 flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="grid h-11 min-w-11 place-items-center rounded-xl border border-colorPrimary/10 shadow bg-whiteSecondary px-2 text-xs font-extrabold text-colorPrimary">
+                    {item.calories}
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-extrabold text-colorPrimary sm:text-base">
+                      Тариф {item.calories} ккал
+                    </p>
+                    <p className="mt-0.5 text-xs font-medium text-greySecondary">
+                      {item.daysCount} {daysWord(item.daysCount)}
+                    </p>
+                  </div>
                 </div>
-                <span className="font-bold text-sm">
-                  Тариф {item.calories} ккал
-                </span>
+
+                <div className="rounded-full border border-yellow-hover/15 bg-yellow-hover/10 px-3 py-1.5 text-xs font-bold text-yellow-hover">
+                  {item.itemTotal} BYN
+                </div>
               </div>
-              <span className="font-bold text-sm bg-white px-3 py-1 rounded-full shadow-sm">
-                {item.selectedDays.length} {daysWord(item.selectedDays.length)}
-              </span>
+
+              <div className="grid gap-3">
+                <div className="rounded-xl border border-black/5 bg-whiteSecondary p-3">
+                  <div className="mb-2 flex items-center gap-2 text-xs font-semibold  tracking-[0.08em] text-greySecondary">
+                    <CalendarDays size={14} className="text-yellow-hover" />
+                    Выбранные дни
+                  </div>
+
+                  {item.formattedDays.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {item.formattedDays.map((day) => (
+                        <span
+                          key={day}
+                          className="rounded-full border border-colorPrimary/10 bg-colorPrimary/10 px-3 py-1 text-xs font-semibold text-colorPrimary"
+                        >
+                          {day}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs font-medium text-greySecondary">
+                      Дни пока не выбраны
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-black/5 bg-white/70 p-3">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-colorPrimary">
+                    <UtensilsCrossed size={15} className="text-yellow-hover" />
+                    <span>{item.dishesCount} полноценных блюд в день</span>
+                  </div>
+
+                  <div className="text-xs font-semibold text-greySecondary">
+                    {item.pricePerDay} BYN / день
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))}
+
+          <div className="flex gap-3 rounded-2xl border border-yellow-hover/20 bg-yellow-hover/10 p-4">
+            <div className="mt-0.5 shrink-0 self-start rounded-full bg-yellow-hover/15 p-1.5">
+              <Info size={16} className="text-yellow-hover" />
             </div>
 
-            <div className="grid gap-2">
-              <div className="flex items-start gap-2 text-[11px] font-bold text-greenPrimary/60 bg-white/50 p-2 rounded-lg">
-                <Calendar size={12} className="shrink-0 mt-0.5" />
-                <div className="flex flex-wrap gap-1">
-                  <span>Выбранные дни:</span>
-                  {item.selectedDays.map((day, idx) => (
-                    <span key={day} className="text-greenPrimary">
-                      {day}
-                      {idx !== item.selectedDays.length - 1 ? "," : ""}
-                    </span>
-                  ))}
-                </div>
+            <div>
+              <div className="mb-1 flex items-center gap-2 text-sm font-bold text-yellow-hover">
+                <CreditCard size={15} />
+                Способ оплаты
               </div>
-
-              <div className="flex items-center gap-2 text-[11px] font-bold text-greenPrimary/60 px-2">
-                <div className="w-1 h-1 rounded-full bg-greenPrimary/30" />
-                <span>{item.dishesCount} полноценных блюд в день</span>
-              </div>
+              <p className="text-xs font-medium leading-relaxed text-yellow-hover">
+                Оплата производится наличными или картой при получении, либо
+                через систему ЕРИП после подтверждения заказа менеджером.
+              </p>
             </div>
-          </li>
-        ))}
-
-        <div className=" p-4 rounded-xl bg-yellow-hover/10 border border-yellow-hover/20 flex gap-2">
-          <Info size={16} className="text-yellow-hover shrink-0" />
-          <p className="text-[11px] font-semibold text-yellow-hover leading-relaxed">
-            Оплата производится наличными или картой при получении, либо через
-            систему ЕРИП после подтверждения заказа менеджером.
+          </div>
+        </div>
+      ) : (
+        <div className="relative z-10 rounded-2xl border border-dashed border-black/10 bg-white/60 p-6 text-center">
+          <p className="text-sm font-semibold text-greySecondary">
+            В заказе пока нет выбранных рационов
           </p>
         </div>
-      </ul>
-    )}
-  </div>
-);
+      )}
+    </section>
+  );
+};

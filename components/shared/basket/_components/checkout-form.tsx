@@ -155,7 +155,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
                   name="city"
                   render={({ field }) => (
                     <Select
-                      value={field.value ?? ""}
+                      value={field.value || undefined}
                       onValueChange={(value) => {
                         field.onChange(value);
                         field.onBlur();
