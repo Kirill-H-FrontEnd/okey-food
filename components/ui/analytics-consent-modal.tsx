@@ -16,6 +16,8 @@ export function AnalyticsConsentModal() {
   const [consent, setConsent] = React.useState<ConsentStatus>("unknown");
 
   React.useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const stored = window.localStorage.getItem(GA_CONSENT_KEY);
 
     if (stored === "granted" || stored === "denied") {
@@ -41,7 +43,6 @@ export function AnalyticsConsentModal() {
 
   return (
     <>
-      {/* GA подключаем только при согласии */}
       {GA_ID && consent === "granted" && (
         <>
           <Script
@@ -49,10 +50,15 @@ export function AnalyticsConsentModal() {
             strategy="afterInteractive"
           />
           <Script id="gtag-init" strategy="afterInteractive">
-            {`window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', '${GA_ID}', { anonymize_ip: true });`}
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              window.gtag = gtag;
+              gtag('js', new Date());
+              gtag('config', '${GA_ID}', {
+                anonymize_ip: true
+              });
+            `}
           </Script>
         </>
       )}
@@ -61,6 +67,7 @@ gtag('config', '${GA_ID}', { anonymize_ip: true });`}
         {isVisible && (
           <motion.section
             role="dialog"
+            aria-modal="true"
             aria-live="polite"
             initial={{ opacity: 0, y: 16, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -74,32 +81,30 @@ gtag('config', '${GA_ID}', { anonymize_ip: true });`}
             "
           >
             <div className="flex flex-col gap-3">
-              <div className="flex flex-col gap-1">
-                <p className="text-sm text-colorPrimary leading-relaxed">
-                  Мы используем cookies для работы сайта и аналитики. Продолжая
-                  пользоваться сайтом, вы{" "}
-                  <Link
-                    className="text-yellow-hover hover:text-yellow-hover/60"
-                    href={"/privacy"}
-                  >
-                    соглашаетесь
-                  </Link>{" "}
-                  с этим.
-                </p>
-              </div>
+              <p className="text-sm leading-relaxed text-colorPrimary">
+                Мы используем cookies для работы сайта и аналитики. Продолжая
+                пользоваться сайтом, вы{" "}
+                <Link
+                  className="text-yellow-hover hover:text-yellow-hover/60"
+                  href="/privacy"
+                >
+                  соглашаетесь
+                </Link>{" "}
+                с этим.
+              </p>
 
               <div className="flex items-center gap-2">
                 <Button
-                  variant={"default"}
+                  variant="default"
                   type="button"
                   onClick={accept}
-                  className="bg-yellowPrimary text-colorPrimary font-semibold"
+                  className="bg-yellowPrimary font-semibold text-colorPrimary"
                 >
                   Разрешить
                 </Button>
 
                 <Button
-                  variant={"outline"}
+                  variant="outline"
                   type="button"
                   onClick={decline}
                   className="font-semibold text-colorPrimary"
