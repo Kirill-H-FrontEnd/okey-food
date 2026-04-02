@@ -29,6 +29,8 @@ import {
 import { daysWord, formatDeliveryDate } from "../utils";
 
 import type { SuccessOrderSnapshot } from "../types";
+import { FaTelegram } from "react-icons/fa6";
+import { RiTelegram2Line } from "react-icons/ri";
 
 type SuccessOrderDialogProps = {
   order: SuccessOrderSnapshot | null;
@@ -127,7 +129,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-colorPrimary/10 bg-whiteSecondary p-4 shadow">
+                {/* <div className="rounded-2xl border border-colorPrimary/10 bg-whiteSecondary p-4 shadow">
                   <p className="mb-3 text-sm font-bold text-colorPrimary">
                     Данные клиента
                   </p>
@@ -154,9 +156,10 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                     </div>
                     {order.customer.social && (
                       <div className="flex items-start gap-2">
-                        <span className="mt-0.5 shrink-0 text-sm font-bold text-yellow-hover">
-                          @
-                        </span>
+                        <RiTelegram2Line
+                          size={15}
+                          className="text-yellow-hover"
+                        />
                         <p className="min-w-0 break-words">
                           {order.customer.social}
                         </p>
@@ -180,7 +183,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                       </p>
                     )}
                   </div>
-                </div>
+                </div> */}
 
                 <Accordion
                   type="single"
@@ -189,7 +192,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                   className="rounded-2xl border border-colorPrimary/10 px-4 shadow bg-whiteSecondary"
                 >
                   <AccordionItem value="order-content" className="border-none">
-                    <AccordionTrigger className="  py-3 [&>svg]:size-8 [&>svg]:rounded-full [&>svg]:bg-whitePrimary [&>svg]:p-2 bg-whiteSecondary">
+                    <AccordionTrigger className="  py-3  bg-whiteSecondary">
                       <div>
                         <p className="text-sm font-bold text-colorPrimary">
                           Состав заказа
