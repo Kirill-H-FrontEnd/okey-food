@@ -205,7 +205,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                             {item.selectedDays.map((day) => (
                               <span
                                 key={`${item.id}-${day}`}
-                                className="rounded-full border border-black/5 bg-whiteSecondary px-2.5 py-1 text-[11px] font-semibold text-colorPrimary"
+                                className="rounded-full border border-colorPrimary/10 bg-whiteSecondary px-2.5 py-1 text-[11px] font-semibold text-colorPrimary"
                               >
                                 {day}
                               </span>
