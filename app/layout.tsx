@@ -3,8 +3,6 @@ import "./globals.css";
 
 import { Mulish } from "next/font/google";
 import { AnalyticsConsentModal } from "@/components/ui/analytics-consent-modal";
-import { Navbar } from "@/components/shared/navbar/navbar";
-import { Footer } from "@/components/shared/footer/footer";
 import { Toaster } from "react-hot-toast";
 
 const font = Mulish({

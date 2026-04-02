@@ -16,6 +16,7 @@ import {
   useForm,
 } from "react-hook-form";
 import { toast } from "react-hot-toast";
+import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -90,6 +91,7 @@ const createInitialFormValues = (): Partial<CheckoutFormValues> => ({
 });
 
 export const Basket: FC = () => {
+  const pathname = usePathname();
   const isBasketOpen = useBasketStore((s) => s.isBasketOpen);
   const setIsBasketOpen = useBasketStore((s) => s.setIsBasketOpen);
   const items = useBasketStore((s) => s.items);
@@ -196,6 +198,12 @@ export const Basket: FC = () => {
       resetFormState();
     }
   }, [isBasketOpen, resetFormState]);
+
+  useEffect(() => {
+    setIsBasketOpen(false);
+    setIsCheckout(false);
+    resetFormState();
+  }, [pathname, resetFormState, setIsBasketOpen]);
 
   useEffect(() => {
     if (sortedItems.length === 0) {
@@ -326,7 +334,7 @@ export const Basket: FC = () => {
 
       <SheetContent
         showCloseButton={false}
-        className="shadow-none border-none md:border-l-[2px] border-grey-border p-0 overflow-hidden bg-whitePrimary"
+        className="shadow-none  p-0 overflow-hidden bg-whitePrimary"
       >
         <LazyMotion features={domAnimation}>
           <div className="flex h-full flex-col pt-[55px] md:pt-0 ">
@@ -358,7 +366,7 @@ export const Basket: FC = () => {
                     <BasketEmpty />
                   ) : (
                     <ul className="grid gap-4 mt-0 md:mt-4 pb-6 overflow-hidden">
-                      <AnimatePresence initial={false}>
+                      <AnimatePresence initial={false} mode="popLayout">
                         {sortedItems.map((item) => (
                           <BasketItem
                             key={item.id}

@@ -47,12 +47,12 @@ export const BasketItem: FC<BasketItemProps> = ({
         layout: { duration: 0.22, ease: [0.22, 1, 0.36, 1] },
         duration: 0.2,
       }}
-      className="group relative flex flex-col gap-3 rounded-2xl border border-black/5 bg-whiteSecondary p-3 transition-colors hover:border-greenPrimary/25 sm:p-4"
+      className="group relative flex flex-col gap-3 rounded-2xl border border-black/10 bg-whiteSecondary p-3 transition-colors hover:border-greenPrimary/25 sm:p-4 ищу"
       aria-label={`Тариф ${item.calories}`}
     >
       <div className="flex w-full items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="grid h-16 w-16 shrink-0 place-items-center rounded-xl border border-greenPrimary/10 bg-greenPrimary/5 text-colorPrimary">
+          <div className="grid h-16 w-16 shrink-0 place-items-center rounded-xl border border-colorPrimary/10 shadow bg-greenPrimary/5 text-colorPrimary">
             <div className="text-center">
               <p className="text-lg font-extrabold tracking-tighter">
                 {item.calories}
@@ -69,7 +69,7 @@ export const BasketItem: FC<BasketItemProps> = ({
               <span className="rounded-full bg-greenPrimary/10 px-2 py-0.5 text-greenPrimary">
                 {item.dishesCount} блюд
               </span>
-              <span className="rounded-full bg-black/5 px-2 py-0.5">
+              <span className="rounded-full text-yellow-hover bg-black/5 border border-colorPrimary/10 px-3 py-0.5">
                 {daysCount} {daysCount === 1 ? "день" : "дней"}
               </span>
             </div>
@@ -78,15 +78,15 @@ export const BasketItem: FC<BasketItemProps> = ({
 
         <button
           onClick={() => onRemove(item.id)}
-          className="inline-flex shrink-0 items-center justify-center rounded-lg p-2 text-greySecondary transition-colors hover:bg-red-50 hover:text-red-500"
+          className="inline-flex shrink-0 items-center justify-center rounded-lg p-2 text-greySecondary transition-colors hover:bg-red-50 hover:text-red-500 cursor-pointer"
           aria-label={`Удалить тариф ${item.calories} из корзины`}
           title="Удалить из корзины"
         >
-          <Trash2 size={16} />
+          <Trash2 size={18} />
         </button>
       </div>
 
-      <div className="flex w-full items-center justify-between border-t border-black/5 pt-2">
+      <div className="flex w-full items-center justify-between border-t border-black/5 ">
         <div className="flex flex-col">
           <span className="text-[11px] font-semibold text-greySecondary">
             {item.pricePerDay} BYN / день
