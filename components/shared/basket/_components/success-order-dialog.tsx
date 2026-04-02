@@ -220,8 +220,8 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                 <div className="rounded-2xl border border-colorPrimary/10 bg-colorPrimary/10 p-3">
                   <div className="flex items-start gap-2 text-xs leading-5 text-colorPrimary">
                     <BadgeInfo
-                      size={16}
-                      className="mt-0.5 shrink-0 text-yellowPrimary"
+                      size={20}
+                      className="mt-0.5 shrink-0 text-yellow-hover"
                     />
                     <p className="font-semibold">
                       После подтверждения заказа менеджером мы свяжемся с вами
