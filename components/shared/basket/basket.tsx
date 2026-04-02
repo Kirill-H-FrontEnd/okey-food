@@ -44,12 +44,7 @@ import { listSelectableDays } from "@/lib/delivery-days";
 import type { CheckoutFormField, CityOption } from "./types";
 import type { SuccessOrderSnapshot } from "./types";
 
-const CITIES: CityOption[] = [
-  { value: "minsk", label: "Минск" },
-  { value: "brest", label: "Брест" },
-  { value: "gomel", label: "Гомель" },
-  { value: "vitebsk", label: "Витебск" },
-];
+const CITIES: CityOption[] = [{ value: "minsk", label: "Минск" }];
 
 const FIELD_ID_MAP: Record<CheckoutFormField, string> = {
   firstName: "checkout-first-name",

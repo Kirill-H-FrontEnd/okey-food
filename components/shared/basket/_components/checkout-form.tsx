@@ -148,13 +148,14 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
           </div>
           <div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-              <div className="grid gap-2">
+              <div className="grid gap-2 min-w-0">
                 <Label>Город</Label>
                 <Controller
                   control={control}
                   name="city"
                   render={({ field }) => (
                     <Select
+                      defaultValue={cityOptions[0]?.value}
                       value={field.value || undefined}
                       onValueChange={(value) => {
                         field.onChange(value);
@@ -162,11 +163,15 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
                       }}
                     >
                       <SelectTrigger
+                        defaultValue={cityOptions[0]?.value}
                         id="checkout-city"
                         aria-invalid={fieldHasError("city")}
-                        className={cn(withErrorStyles("city"), "w-full")}
+                        className={cn(
+                          withErrorStyles("city"),
+                          "w-full min-w-0",
+                        )}
                       >
-                        <SelectValue placeholder="Выберите город" />
+                        <SelectValue placeholder="Город" />
                       </SelectTrigger>
                       <SelectContent>
                         {cityOptions.map((city) => (
@@ -197,8 +202,9 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
                 <Label>Дом</Label>
                 <Input
                   {...register("house")}
+                  type="number"
                   enterKeyHint="next"
-                  inputMode="text"
+                  inputMode="numeric"
                   id="checkout-house"
                   placeholder="Дом"
                   aria-invalid={fieldHasError("house")}
@@ -209,9 +215,10 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
               <div className="grid gap-2">
                 <Label>Квартира</Label>
                 <Input
+                  type="number"
                   {...register("apartment")}
                   enterKeyHint="next"
-                  inputMode="text"
+                  inputMode="numeric"
                   id="checkout-apartment"
                   placeholder="№ Кв. "
                   aria-invalid={fieldHasError("apartment")}
@@ -236,7 +243,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
                         variant="outline"
                         onBlur={field.onBlur}
                         className={cn(
-                          "w-full shadow-none justify-between font-normal hover:bg-white bg-whiteSecondary",
+                          "w-full shadow-none justify-between font-normal hover:bg-white bg-whiteSecondary h-10",
                           withErrorStyles("date"),
                           fieldHasError("date") &&
                             "text-red-500 hover:bg-red-50/40 focus-visible:ring-red-400",
@@ -287,6 +294,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
           <div className="space-y-2">
             <Textarea
               {...register("comment")}
+              enterKeyHint="done"
               placeholder="Напишите ваш комментарий"
               id="checkout-comment"
               maxLength={200}
