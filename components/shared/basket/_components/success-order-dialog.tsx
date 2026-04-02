@@ -37,7 +37,6 @@ type SuccessOrderDialogProps = {
   onClose: () => void;
 };
 
-
 const formatSelectedDay = (value: string) => {
   const parsed = new Date(value);
 
@@ -96,7 +95,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
       >
         {order && summary && (
           <div className="flex max-h-[85vh] flex-col">
-            <div className="relative overflow-hidden border-b border-colorPrimary/10 bg-gradient-to-b from-greenPrimary/15 via-yellowPrimary/10 to-transparent px-4 pb-5 pt-5 text-center sm:px-6 sm:pt-6">
+            <div className="relative overflow-hidden  bg-gradient-to-b from-greenPrimary/15 via-yellowPrimary/10 to-transparent px-4 pb-5 pt-5 text-center sm:px-6 sm:pt-6">
               <div className="pointer-events-none absolute -left-8 top-0 h-24 w-24 rounded-full bg-greenPrimary/15 blur-2xl" />
               <div className="pointer-events-none absolute -right-8 top-6 h-24 w-24 rounded-full bg-yellowPrimary/15 blur-2xl" />
 
