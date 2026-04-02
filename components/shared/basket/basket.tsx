@@ -1,6 +1,6 @@
 "use client";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
-import { ChevronRight, ShoppingBag, ShoppingBasket } from "lucide-react";
+import { ChevronRight, ShoppingBag } from "lucide-react";
 import {
   AnimatePresence,
   LazyMotion,

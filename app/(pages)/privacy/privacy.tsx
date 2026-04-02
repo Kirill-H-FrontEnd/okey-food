@@ -43,9 +43,13 @@ export default function PrivacyPage() {
                   2. Оператор персональных данных
                 </h2>
                 <p>Оператором персональных данных является:</p>
-                <p>Наименование: (указать: ИП / ООО / ФИО физического лица)</p>
-                <p>Адрес регистрации: г.Минск проспект Дзержинского 10</p>
-                <p>
+                <p className="text-red-500 underline">
+                  Наименование: (указать: ИП / ООО / ФИО физического лица)
+                </p>
+                <p className="text-red-500 underline">
+                  Адрес регистрации: г.Минск проспект Дзержинского 10
+                </p>
+                <p className="text-red-500 underline">
                   Email:{" "}
                   <Link
                     className="text-yellow-hover"
@@ -54,7 +58,7 @@ export default function PrivacyPage() {
                     okeygood@gmail.com
                   </Link>
                 </p>
-                <p>
+                <p className="text-red-500 underline">
                   Телефон:{" "}
                   <Link
                     className="text-yellow-hover"
@@ -236,7 +240,7 @@ export default function PrivacyPage() {
                 </p>
                 <p>
                   Дата последнего обновления:{" "}
-                  <span className="text-yellow-hover">23.01.2026</span>
+                  <span className="text-yellow-hover">02.04.2026</span>
                 </p>
               </section>
             </div>

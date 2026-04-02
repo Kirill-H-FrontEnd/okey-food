@@ -4,12 +4,10 @@ import s from "./navbar.module.css";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
-import { IoCall } from "react-icons/io5";
 import { Basket } from "../basket/basket";
 import { Link as ScrollLink } from "react-scroll";
 import { MobileMenu } from "../MobileMenu/mobile-menu";
 import React from "react";
-import Image from "next/image";
 import { Phone } from "lucide-react";
 import { FaInstagram } from "react-icons/fa6";
 import { RiTelegram2Fill } from "react-icons/ri";
@@ -33,7 +31,7 @@ export const Navbar: FC = ({}) => {
   const DATA_LINKS = [
     { href: "products", label: "Меню", offset: -50 },
     { href: "aboutUs", label: "О нас", offset: -50 },
-    { href: "reviews", label: "Отзывы", offset: -50 },
+
     { href: "faq", label: "FAQ", offset: -50 },
     { href: "map", label: "Доставка", offset: -50 },
   ];

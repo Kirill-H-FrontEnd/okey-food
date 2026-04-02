@@ -43,15 +43,16 @@ function SheetOverlay({
       data-slot="sheet-overlay"
       className={cn(
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-[90] md:z-[200] bg-black/40",
-        className
+        className,
       )}
       {...props}
     />
   );
 }
 
-interface SheetContentProps
-  extends React.ComponentProps<typeof SheetPrimitive.Content> {
+interface SheetContentProps extends React.ComponentProps<
+  typeof SheetPrimitive.Content
+> {
   side?: "top" | "right" | "bottom" | "left";
   showCloseButton?: boolean;
 }
@@ -64,7 +65,7 @@ function SheetContent({
   ...props
 }: SheetContentProps) {
   const [contentNode, setContentNode] = React.useState<HTMLElement | null>(
-    null
+    null,
   );
   const setContentRef = React.useCallback((node: HTMLElement | null) => {
     setContentNode((previous) => (previous === node ? previous : node));
@@ -87,7 +88,7 @@ function SheetContent({
           side === "bottom" &&
             "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 h-auto border-t z-[300]",
           !side && "z-[300]",
-          className
+          className,
         )}
         {...props}
       >
@@ -115,7 +116,7 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="sheet-header"
-      className={cn("flex flex-col gap-1.5 p-4", className)}
+      className={cn("flex flex-col gap-1.5 p-4 ", className)}
       {...props}
     />
   );

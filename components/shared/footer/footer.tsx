@@ -1,12 +1,13 @@
 "use client";
 import { FC } from "react";
+
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
 import { FaInstagram } from "react-icons/fa6";
 import { RiTelegram2Fill } from "react-icons/ri";
 import { Copyright } from "@/components/ui/copyright";
-
+import { Link as ScrollLink } from "react-scroll";
 type TFooter = {};
 
 export const Footer: FC = ({}) => {
@@ -14,10 +15,11 @@ export const Footer: FC = ({}) => {
     {
       title: "Навигация",
       links: [
-        { title: "Меню", url: "products" },
-        { title: "О нас", url: "/about" },
-        { title: "FAQ", url: "/menu" },
-        { title: "Отзывы", url: "/contacts" },
+        { href: "products", label: "Меню", offset: -50 },
+        { href: "aboutUs", label: "О нас", offset: -50 },
+
+        { href: "faq", label: "FAQ", offset: -50 },
+        { href: "map", label: "Доставка", offset: -50 },
       ],
     },
   ];
@@ -44,13 +46,19 @@ export const Footer: FC = ({}) => {
                     </h3>
                     <ul className="flex justify-center md:justify-start md:flex-col gap-4 md:gap-2">
                       {item.links.map((link) => (
-                        <li key={link.title}>
-                          <Link
-                            href={link.url}
-                            className="hover:text-yellow-hover transition-all hover:translate-x-1 font-normal text-[15px]"
+                        <li key={link.label}>
+                          <ScrollLink
+                            className={
+                              "cursor-pointer hover:text-yellow-hover transition-colors"
+                            }
+                            to={link.href}
+                            smooth={true}
+                            duration={500}
+                            spy={true}
+                            offset={link.offset}
                           >
-                            {link.title}
-                          </Link>
+                            {link.label}
+                          </ScrollLink>
                         </li>
                       ))}
                     </ul>

@@ -12,3 +12,38 @@ export const daysWord = (count: number) => {
 
   return "дней";
 };
+const WEEKDAY_LABELS = ["Вс", "Пнд", "Вт", "Ср", "Чт", "Пт", "Сб"];
+const MONTH_LABELS = [
+  "Янв",
+  "Фев",
+  "Мар",
+  "Апр",
+  "Май",
+  "Июн",
+  "Июл",
+  "Авг",
+  "Сен",
+  "Окт",
+  "Ноя",
+  "Дек",
+];
+
+const formatDateLabel = (date: Date) => {
+  const weekday = WEEKDAY_LABELS[date.getDay()];
+  const month = MONTH_LABELS[date.getMonth()];
+  return `${weekday}.${date.getDate()}.${month}`;
+};
+
+export const formatDeliveryDay = (value: string) => {
+  const [year, month, day] = value.split("-").map(Number);
+  if (!year || !month || !day) return value;
+  const date = new Date(year, month - 1, day);
+  if (Number.isNaN(date.getTime())) return value;
+  return formatDateLabel(date);
+};
+
+export const formatDeliveryDate = (value?: Date | null) => {
+  if (!value) return "";
+  if (Number.isNaN(value.getTime())) return "";
+  return formatDateLabel(value);
+};

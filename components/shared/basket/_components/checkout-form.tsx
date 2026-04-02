@@ -61,7 +61,9 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
         <div className="grid ">
           <div className="grid md:grid-cols-2 gap-4 mb-[16px]">
             <div className="grid gap-2">
-              <Label>Имя</Label>
+              <Label>
+                Имя<span className="text-red-400 ">*</span>
+              </Label>
               <Input
                 {...register("firstName")}
                 enterKeyHint="next"
@@ -74,7 +76,9 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
             </div>
 
             <div className="grid gap-2">
-              <Label>Фамилия</Label>
+              <Label>
+                Фамилия<span className="text-red-400">*</span>
+              </Label>
               <Input
                 {...register("lastName")}
                 enterKeyHint="next"
@@ -87,7 +91,9 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
             </div>
 
             <div className="grid gap-2">
-              <Label>Телефон</Label>
+              <Label>
+                Телефон<span className="text-red-400 ">*</span>
+              </Label>
               <Input
                 {...register("phone")}
                 enterKeyHint="next"
@@ -115,12 +121,14 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
                       </button>
                     </TooltipTrigger>
                     <TooltipContent
-                      className="max-w-[280px] bg-whitePrimary text-primary text-[13px] shadow-sm"
+                      className="max-w-[280px] bg-white text-primary text-[13px] shadow-sm"
                       side="top"
                       sideOffset={6}
                     >
-                      Укажите ник в Telegram или Instagram — так нам будет проще
-                      связаться.
+                      Укажите ник в{" "}
+                      <span className="text-yellow-hover">Telegram</span> или
+                      <span className="text-yellow-hover"> Instagram</span> —
+                      так нам будет проще связаться.
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -132,7 +140,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
                 id="checkout-social"
                 placeholder="Введите ник @"
               />
-              <p className="text-[12px] md:hidden text-greySecondary">
+              <p className="text-[12px] md:hidden text-greySecondary ">
                 Укажите ник в Telegram или Instagram — так нам будет проще
                 связаться.
               </p>
@@ -217,7 +225,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
               render={({ field }) => (
                 <div className="flex flex-col gap-3">
                   <Label className="px-1 text-colorPrimary">
-                    Дата доставки
+                    Дата доставки<span className="text-red-400 ">*</span>
                   </Label>
                   <Popover
                     open={isCalendarOpen}

@@ -24,7 +24,7 @@ export const TitlePage: FC<TTitlePage> = ({ title, description }) => {
         </motion.h3>
 
         <motion.p
-          className="text-greySecondary mt-2"
+          className="text-greySecondary  mt-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25, ease: "easeOut", delay: 0.05 }}
