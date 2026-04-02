@@ -217,7 +217,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                   </div>
                 </details>
 
-                <div className="rounded-2xl border border-greenPrimary/15 bg-greenPrimary/10 p-3">
+                <div className="rounded-2xl border border-colorPrimary/10 bg-colorPrimary/10 p-3">
                   <div className="flex items-start gap-2 text-xs leading-5 text-colorPrimary">
                     <BadgeInfo
                       size={16}
@@ -232,7 +232,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
               </div>
             </div>
 
-            <div className="border-t border-black/5 bg-whitePrimary p-4 sm:p-5">
+            <div className="border-t border-colorPrimary/10 bg-whitePrimary p-4 sm:p-5">
               <Button
                 type="button"
                 variant="default"
