@@ -47,7 +47,7 @@ export const BasketItem: FC<BasketItemProps> = ({
         layout: { duration: 0.22, ease: [0.22, 1, 0.36, 1] },
         duration: 0.2,
       }}
-      className="group relative flex flex-col gap-3 rounded-2xl border border-black/10 bg-whiteSecondary p-3 transition-colors hover:border-greenPrimary/25 sm:p-4 ищу"
+      className="group relative flex flex-col gap-3 rounded-2xl border border-colorPrimary/20 bg-whiteSecondary p-3 transition-colors hover:border-greenPrimary/25 sm:p-4 ищу"
       aria-label={`Тариф ${item.calories}`}
     >
       <div className="flex w-full items-start justify-between gap-3">
@@ -86,7 +86,7 @@ export const BasketItem: FC<BasketItemProps> = ({
         </button>
       </div>
 
-      <div className="flex w-full items-center justify-between border-t border-black/5 ">
+      <div className="flex w-full items-center justify-between border-t border-colorPrimary/10 pt-2">
         <div className="flex flex-col">
           <span className="text-[11px] font-semibold text-greySecondary">
             {item.pricePerDay} BYN / день
