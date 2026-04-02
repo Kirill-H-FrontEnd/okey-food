@@ -115,7 +115,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-black/5 bg-whiteSecondary p-4 shadow">
+                {/* <div className="rounded-2xl border border-black/5 bg-whiteSecondary p-4 shadow">
                   <p className="mb-3 text-sm font-bold text-colorPrimary">
                     Данные клиента
                   </p>
@@ -159,7 +159,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                       </p>
                     )}
                   </div>
-                </div>
+                </div> */}
 
                 <details className="group rounded-2xl border border-black/5 bg-whiteSecondary p-4 shadow">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
