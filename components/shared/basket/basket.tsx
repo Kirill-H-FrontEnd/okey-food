@@ -159,6 +159,8 @@ export const Basket: FC = () => {
     shouldFocusError: false,
   });
 
+  const deliveryDate = form.watch("date");
+
   const handleCloseBasket = useCallback(() => {
     setIsBasketOpen(false);
   }, [setIsBasketOpen]);
@@ -334,7 +336,7 @@ export const Basket: FC = () => {
 
       <SheetContent
         showCloseButton={false}
-        className="shadow-none  p-0 overflow-hidden bg-whitePrimary"
+        className="shadow-none p-0 overflow-hidden bg-whitePrimary"
       >
         <LazyMotion features={domAnimation}>
           <div className="flex h-full flex-col pt-[55px] md:pt-0 ">
@@ -400,9 +402,11 @@ export const Basket: FC = () => {
                       <FormProvider {...form}>
                         <CheckoutForm cityOptions={CITIES} />
                       </FormProvider>
+
                       <CheckoutSummary
                         items={sortedItems}
                         totalLabel={totalLabel}
+                        deliveryDate={deliveryDate}
                       />
                     </div>
                   </div>

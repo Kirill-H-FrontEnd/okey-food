@@ -15,6 +15,7 @@ import {
 type CheckoutSummaryProps = {
   items: CartItem[];
   totalLabel: string;
+  deliveryDate?: Date | null;
 };
 
 const formatSelectedDay = (value: string) => {
@@ -31,10 +32,26 @@ const formatSelectedDay = (value: string) => {
   return value;
 };
 
+const formatDeliveryDate = (value?: Date | null) => {
+  if (!value) return null;
+
+  return new Intl.DateTimeFormat("ru-RU", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(value);
+};
+
 export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
   items,
   totalLabel,
+  deliveryDate,
 }) => {
+  const formattedDeliveryDate = useMemo(
+    () => formatDeliveryDate(deliveryDate),
+    [deliveryDate],
+  );
+
   const enrichedItems = useMemo(() => {
     return items.map((item) => {
       const daysCount = item.selectedDays.length;
@@ -58,10 +75,10 @@ export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
         <CheckCircle2 size={96} />
       </div>
 
-      <div className="relative z-10 mb-5 rounded-2xl border border-black/5  p-4 ">
-        <div className="flex items-center justify-between gap-4">
+      <div className="relative z-10 mb-5 rounded-2xl border border-black/5 p-4">
+        <div className="flex items-center justify-between gap-2 sm:gap-4">
           <div>
-            <p className="text-sm font-semibold  tracking-[0.14em] text-greySecondary">
+            <p className="text-sm font-semibold tracking-[0.14em] text-greySecondary">
               Сумма заказа
             </p>
             <h2 className="mt-1 text-xl font-extrabold text-colorPrimary sm:text-2xl">
@@ -69,8 +86,8 @@ export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
             </h2>
           </div>
 
-          <div className="rounded-2xl bg-yellow-hover/10 px-4 py-3 text-right">
-            <div className="text-xs font-semibold  tracking-[0.12em] text-yellow-hover/80">
+          <div className="rounded-2xl sm:bg-yellow-hover/10 sm:px-4 sm:py-3 text-right">
+            <div className="text-xs font-semibold tracking-[0.12em] text-yellow-hover/80">
               Общая сумма
             </div>
             <div className="mt-1 text-lg font-extrabold text-yellow-hover sm:text-xl">
@@ -79,6 +96,25 @@ export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
           </div>
         </div>
       </div>
+
+      {formattedDeliveryDate && (
+        <div className="relative z-10 mb-5 rounded-2xl border border-colorPrimary/10 bg-whitePrimary p-4 shadow-sm">
+          <div className="flex items-start gap-3">
+            <div className="shrink-0 rounded-full bg-yellow-hover/10 p-2">
+              <CalendarDays size={16} className="text-yellow-hover" />
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold text-greySecondary">
+                Выбранный день доставки
+              </p>
+              <p className="mt-1 text-sm font-bold text-colorPrimary sm:text-base">
+                {formattedDeliveryDate}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {enrichedItems.length > 0 ? (
         <div className="relative z-10 grid gap-4">
@@ -110,8 +146,7 @@ export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
 
               <div className="grid gap-3">
                 <div className="rounded-xl border border-black/5 bg-whiteSecondary p-3">
-                  <div className="mb-2 flex items-center gap-2 text-xs font-semibold  tracking-[0.08em] text-greySecondary">
-                    <CalendarDays size={14} className="text-yellow-hover" />
+                  <div className="mb-2 flex items-center gap-2 text-xs font-semibold tracking-[0.08em] text-greySecondary">
                     Выбранные дни
                   </div>
 
@@ -120,7 +155,7 @@ export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
                       {item.formattedDays.map((day) => (
                         <span
                           key={day}
-                          className="rounded-full border border-colorPrimary/10 bg-colorPrimary/5 px-3 py-1 text-xs font-semibold text-colorPrimary"
+                          className="rounded-sm border border-colorPrimary/10 bg-colorPrimary/5 px-3 py-1 text-xs font-semibold text-colorPrimary"
                         >
                           {day}
                         </span>
