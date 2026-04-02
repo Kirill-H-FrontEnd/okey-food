@@ -50,7 +50,7 @@ export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
   }, [items]);
 
   return (
-    <section className="relative overflow-hidden rounded-[28px] border border-black/5 bg-whiteSecondary p-4 text-colorPrimary shadow-[0_20px_50px_rgba(0,0,0,0.06)] sm:p-5">
+    <section className="relative overflow-hidden rounded-[28px] border border-black/5 bg-whiteSecondary p-4 text-colorPrimary sm:p-5">
       <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-yellow-hover/10 blur-2xl" />
       <div className="pointer-events-none absolute -left-8 bottom-0 h-24 w-24 rounded-full bg-colorPrimary/10 blur-2xl" />
 
@@ -120,7 +120,7 @@ export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
                       {item.formattedDays.map((day) => (
                         <span
                           key={day}
-                          className="rounded-full border border-colorPrimary/10 bg-colorPrimary/10 px-3 py-1 text-xs font-semibold text-colorPrimary"
+                          className="rounded-full border border-colorPrimary/10 bg-colorPrimary/5 px-3 py-1 text-xs font-semibold text-colorPrimary"
                         >
                           {day}
                         </span>
@@ -133,7 +133,7 @@ export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
                   )}
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-black/5 bg-white/70 p-3">
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-black/5 bg-whiteSecondary p-3">
                   <div className="flex items-center gap-2 text-sm font-semibold text-colorPrimary">
                     <UtensilsCrossed size={15} className="text-yellow-hover" />
                     <span>{item.dishesCount} полноценных блюд в день</span>
