@@ -36,8 +36,14 @@ type SuccessOrderDialogProps = {
 };
 
 const formatAddress = (order: SuccessOrderSnapshot) => {
+  const CITY_LABELS: Record<string, string> = {
+    minsk: "Минск",
+    brest: "Брест",
+    gomel: "Гомель",
+    vitebsk: "Витебск",
+  };
   const parts = [
-    order.customer.city,
+    CITY_LABELS[order.customer.city] ?? order.customer.city,
     order.customer.street,
     order.customer.house ? `дом ${order.customer.house}` : null,
     order.customer.apartment ? `кв. ${order.customer.apartment}` : null,
@@ -146,7 +152,16 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                         {order.customer.phone}
                       </p>
                     </div>
-
+                    {order.customer.social && (
+                      <div className="flex items-start gap-2">
+                        <span className="mt-0.5 shrink-0 text-sm font-bold text-yellow-hover">
+                          @
+                        </span>
+                        <p className="min-w-0 break-words">
+                          {order.customer.social}
+                        </p>
+                      </div>
+                    )}
                     {order.customer.date && (
                       <div className="flex items-start gap-2">
                         <CalendarDays
