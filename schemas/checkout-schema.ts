@@ -23,21 +23,18 @@ export const checkoutSchema = z.object({
       "Введите телефон в формате +375 (__) ___-__-__"
     ),
   social: z.string().trim(),
-  city: z.string().trim().min(1, "Выберите город доставки"),
+  city: z.string().trim(),
   street: z
     .string()
     .trim()
-    .min(2, "Укажите улицу")
     .max(80, "Название улицы слишком длинное"),
   house: z
     .string()
     .trim()
-    .min(1, "Укажите номер дома")
     .max(10, "Слишком длинный номер дома"),
   apartment: z
     .string()
     .trim()
-    .min(1, "Укажите квартиру")
     .max(10, "Слишком длинный номер квартиры"),
   date: z.preprocess((value) => {
     if (value instanceof Date && !Number.isNaN(value.getTime())) {
