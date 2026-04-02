@@ -65,7 +65,7 @@ gtag('config', '${GA_ID}', { anonymize_ip: true });`}
             initial={{ opacity: 0, y: 16, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
-            transition={{ duration: 0.22, ease: "easeOut", delay: 0.2 }}
+            transition={{ duration: 0.22, ease: "easeOut", delay: 2 }}
             className="
               fixed left-0 bottom-0 md:left-2 md:bottom-2 z-[9999]
               w-full md:w-[450px] md:max-w-[calc(100vw-32px)]
