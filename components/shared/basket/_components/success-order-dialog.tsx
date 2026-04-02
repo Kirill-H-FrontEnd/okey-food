@@ -1,7 +1,17 @@
 "use client";
 
-import { FC } from "react";
-import { MessageCircle } from "lucide-react";
+import { FC, useMemo } from "react";
+import Image from "next/image";
+import {
+  CalendarDays,
+  CheckCircle2,
+  ChevronDown,
+  Phone,
+  ShoppingBag,
+  User,
+  BadgeInfo,
+} from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,92 +23,228 @@ import {
 import { daysWord, formatDeliveryDate } from "../utils";
 
 import type { SuccessOrderSnapshot } from "../types";
-import Image from "next/image";
 
 type SuccessOrderDialogProps = {
   order: SuccessOrderSnapshot | null;
   onClose: () => void;
 };
 
+const formatAddress = (order: SuccessOrderSnapshot) => {
+  const parts = [
+    order.customer.city,
+    order.customer.street,
+    order.customer.house ? `дом ${order.customer.house}` : null,
+    order.customer.apartment ? `кв. ${order.customer.apartment}` : null,
+  ].filter(Boolean);
+
+  return parts.join(", ");
+};
+
 export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
   order,
   onClose,
-}) => (
-  <Dialog open={Boolean(order)} onOpenChange={(open) => !open && onClose()}>
-    <DialogContent
-      showCloseButton={false}
-      className="max-w-[560px] overflow-hidden rounded-3xl border-black/10 bg-whitePrimary p-0"
-    >
-      {order && (
-        <div className="grid">
-          <div className="relative flex flex-col items-center justify-center bg-gradient-to-b from-greenPrimary/20 via-yellowPrimary/10 to-transparent px-6 pb-8 pt-8 text-center">
-            <Image
-              width={200}
-              height={200}
-              alt=""
-              src={"/images/illustrations/success_order.png"}
-            />
-            <DialogHeader className="mt-3 items-center text-center">
-              <DialogTitle className="text-2xl font-extrabold text-colorPrimary">
-                Заказ успешно оформлен
-              </DialogTitle>
-              <DialogDescription className="max-w-[360px] text-sm text-greySecondary">
-                Спасибо за заказ! Мы скоро свяжемся с вами для подтверждения и
-                уточнения деталей доставки.
-              </DialogDescription>
-            </DialogHeader>
+}) => {
+  const summary = useMemo(() => {
+    if (!order) return null;
+
+    const totalDays = order.items.reduce(
+      (sum, item) => sum + item.selectedDays.length,
+      0,
+    );
+
+    return {
+      totalItems: order.items.length,
+      totalDays,
+      address: formatAddress(order),
+    };
+  }, [order]);
+
+  return (
+    <Dialog open={Boolean(order)} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent
+        showCloseButton={false}
+        className="w-[calc(100%-16px)] max-w-[520px] rounded-[24px] border border-black/10 bg-whitePrimary p-0 overflow-hidden"
+      >
+        {order && summary && (
+          <div className="flex max-h-[85vh] flex-col">
+            <div className="relative overflow-hidden border-b border-black/5 bg-gradient-to-b from-greenPrimary/15 via-yellowPrimary/10 to-transparent px-4 pb-5 pt-5 text-center sm:px-6 sm:pt-6">
+              <div className="pointer-events-none absolute -left-8 top-0 h-24 w-24 rounded-full bg-greenPrimary/15 blur-2xl" />
+              <div className="pointer-events-none absolute -right-8 top-6 h-24 w-24 rounded-full bg-yellowPrimary/15 blur-2xl" />
+
+              <Image
+                width={120}
+                height={120}
+                alt="Заказ успешно оформлен"
+                src="/images/illustrations/success_order.png"
+                className="mx-auto mb-2 h-auto w-auto object-contain"
+                priority
+              />
+
+              <DialogHeader className="items-center text-center">
+                <DialogTitle className="text-xl font-extrabold text-colorPrimary sm:text-2xl">
+                  Заказ успешно оформлен
+                </DialogTitle>
+                <DialogDescription className="max-w-[340px] text-sm leading-5 text-greySecondary text-center">
+                  Мы скоро свяжемся с вами для подтверждения заказа и уточнения
+                  доставки.
+                </DialogDescription>
+              </DialogHeader>
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-4 pb-4 pt-4 sm:px-6 sm:pb-6">
+              <div className="grid gap-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-2xl border border-black/5 bg-whiteSecondary p-3">
+                    <div className="mb-1 flex items-center gap-2 text-greySecondary">
+                      <ShoppingBag size={14} className="text-yellow-hover" />
+                      <span className="text-[11px] font-semibold">Позиции</span>
+                    </div>
+                    <p className="text-lg font-extrabold text-colorPrimary">
+                      {summary.totalItems}
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-yellowPrimary/20 bg-yellowPrimary/10 p-3">
+                    <div className="mb-1 flex items-center gap-2 text-yellow-hover">
+                      <CalendarDays size={14} />
+                      <span className="text-[11px] font-semibold">Итого</span>
+                    </div>
+                    <p className="text-lg font-extrabold text-yellow-hover">
+                      {order.totalPrice} BYN
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-black/5 bg-whiteSecondary p-4 shadow">
+                  <p className="mb-3 text-sm font-bold text-colorPrimary">
+                    Данные клиента
+                  </p>
+
+                  <div className="grid gap-2.5 text-sm text-colorPrimary">
+                    <div className="flex items-start gap-2">
+                      <User
+                        size={15}
+                        className="mt-0.5 shrink-0 text-yellow-hover"
+                      />
+                      <p className="min-w-0 break-words">
+                        {order.customer.firstName} {order.customer.lastName}
+                      </p>
+                    </div>
+
+                    <div className="flex items-start gap-2">
+                      <Phone
+                        size={15}
+                        className="mt-0.5 shrink-0 text-yellow-hover"
+                      />
+                      <p className="min-w-0 break-words">
+                        {order.customer.phone}
+                      </p>
+                    </div>
+
+                    {order.customer.date && (
+                      <div className="flex items-start gap-2">
+                        <CalendarDays
+                          size={15}
+                          className="mt-0.5 shrink-0 text-yellow-hover"
+                        />
+                        <p className="min-w-0 break-words">
+                          {formatDeliveryDate(order.customer.date)}
+                        </p>
+                      </div>
+                    )}
+
+                    {summary.address && (
+                      <p className="rounded-xl bg-whitePrimary px-3 py-2 text-xs leading-5 text-greySecondary break-words">
+                        {summary.address}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <details className="group rounded-2xl border border-black/5 bg-whiteSecondary p-4 shadow">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-bold text-colorPrimary">
+                        Состав заказа
+                      </p>
+                      <p className="text-xs text-greySecondary">
+                        {summary.totalItems} поз. • {summary.totalDays}{" "}
+                        {daysWord(summary.totalDays)}
+                      </p>
+                    </div>
+
+                    <div className="shrink-0 rounded-full bg-whitePrimary p-2 transition group-open:rotate-180">
+                      <ChevronDown size={16} className="text-colorPrimary" />
+                    </div>
+                  </summary>
+
+                  <div className="mt-3 grid gap-3">
+                    {order.items.map((item) => (
+                      <div
+                        key={`success-${item.id}`}
+                        className="rounded-2xl border border-black/5 bg-whitePrimary p-3"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold text-colorPrimary">
+                              Тариф {item.calories} ккал
+                            </p>
+                            <p className="mt-1 text-xs text-greySecondary">
+                              {item.selectedDays.length}{" "}
+                              {daysWord(item.selectedDays.length)}
+                            </p>
+                          </div>
+
+                          <div className="shrink-0 rounded-full bg-yellowPrimary/10 px-3 py-1 text-xs font-bold text-yellow-hover">
+                            {item.pricePerDay * item.selectedDays.length} BYN
+                          </div>
+                        </div>
+
+                        {item.selectedDays.length > 0 && (
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {item.selectedDays.map((day) => (
+                              <span
+                                key={`${item.id}-${day}`}
+                                className="rounded-full border border-black/5 bg-whiteSecondary px-2.5 py-1 text-[11px] font-semibold text-colorPrimary"
+                              >
+                                {day}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </details>
+
+                <div className="rounded-2xl border border-greenPrimary/15 bg-greenPrimary/10 p-3">
+                  <div className="flex items-start gap-2 text-xs leading-5 text-colorPrimary">
+                    <BadgeInfo
+                      size={16}
+                      className="mt-0.5 shrink-0 text-yellowPrimary"
+                    />
+                    <p className="font-semibold">
+                      После подтверждения заказа менеджером мы свяжемся с вами
+                      для уточнения деталей доставки.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-black/5 bg-whitePrimary p-4 sm:p-5">
+              <Button
+                type="button"
+                variant="default"
+                className="h-11 w-full bg-yellowPrimary font-bold text-colorPrimary"
+                onClick={onClose}
+              >
+                Понятно
+              </Button>
+            </div>
           </div>
-
-          <div className="space-y-3 px-6 pb-6 text-sm text-colorPrimary">
-            <div className="rounded-2xl border border-black/5 bg-whiteSecondary p-4">
-              <p>
-                <span className="font-semibold">Клиент:</span>{" "}
-                {order.customer.firstName} {order.customer.lastName}
-              </p>
-              <p>
-                <span className="font-semibold">Телефон:</span>{" "}
-                {order.customer.phone}
-              </p>
-              {order.customer.date && (
-                <p>
-                  <span className="font-semibold">Дата доставки:</span>{" "}
-                  {formatDeliveryDate(order.customer.date)}
-                </p>
-              )}
-            </div>
-
-            <div className="rounded-2xl border border-black/5 bg-whiteSecondary p-4">
-              <p className="font-semibold">Позиции: {order.items.length}</p>
-              <ul className="mt-2 space-y-1 text-xs text-greySecondary">
-                {order.items.map((item) => (
-                  <li key={`success-${item.id}`}>
-                    Тариф {item.calories} — {item.selectedDays.length}{" "}
-                    {daysWord(item.selectedDays.length)}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="flex items-center justify-between rounded-2xl border border-yellowPrimary/25 bg-yellowPrimary/10 p-4">
-              <span className="text-sm font-semibold text-colorPrimary">
-                Итого к оплате
-              </span>
-              <span className="text-xl font-extrabold text-yellow-hover">
-                {order.totalPrice} BYN
-              </span>
-            </div>
-
-            <Button
-              type="button"
-              variant="default"
-              className="w-full bg-yellowPrimary font-bold text-colorPrimary"
-              onClick={onClose}
-            >
-              Понятно
-            </Button>
-          </div>
-        </div>
-      )}
-    </DialogContent>
-  </Dialog>
-);
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+};
