@@ -8,6 +8,8 @@ import {
   ShoppingBag,
   BadgeInfo,
   UtensilsCrossed,
+  User,
+  Phone,
 } from "lucide-react";
 
 import {
@@ -24,7 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { daysWord } from "../utils";
+import { daysWord, formatDeliveryDate } from "../utils";
 
 import type { SuccessOrderSnapshot } from "../types";
 
@@ -71,7 +73,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
       >
         {order && summary && (
           <div className="flex max-h-[85vh] flex-col">
-            <div className="relative overflow-hidden border-b border-black/5 bg-gradient-to-b from-greenPrimary/15 via-yellowPrimary/10 to-transparent px-4 pb-5 pt-5 text-center sm:px-6 sm:pt-6">
+            <div className="relative overflow-hidden border-b border-colorPrimary/10 bg-gradient-to-b from-greenPrimary/15 via-yellowPrimary/10 to-transparent px-4 pb-5 pt-5 text-center sm:px-6 sm:pt-6">
               <div className="pointer-events-none absolute -left-8 top-0 h-24 w-24 rounded-full bg-greenPrimary/15 blur-2xl" />
               <div className="pointer-events-none absolute -right-8 top-6 h-24 w-24 rounded-full bg-yellowPrimary/15 blur-2xl" />
 
@@ -98,7 +100,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
             <div className="flex-1 overflow-y-auto px-4 pb-4 pt-4 sm:px-6 sm:pb-6">
               <div className="grid gap-3">
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-2xl border border-black/5 bg-whiteSecondary p-3">
+                  <div className="rounded-2xl border border-colorPrimary/10 bg-whiteSecondary p-3">
                     <div className="mb-1 flex items-center gap-2 text-greySecondary">
                       <ShoppingBag size={14} className="text-yellow-hover" />
                       <span className="text-[11px] font-semibold">Позиции</span>
@@ -119,7 +121,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                   </div>
                 </div>
 
-                {/* <div className="rounded-2xl border border-black/5 bg-whiteSecondary p-4 shadow">
+                <div className="rounded-2xl border border-colorPrimary/10 bg-whiteSecondary p-4 shadow">
                   <p className="mb-3 text-sm font-bold text-colorPrimary">
                     Данные клиента
                   </p>
@@ -163,16 +165,16 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                       </p>
                     )}
                   </div>
-                </div> */}
+                </div>
 
                 <Accordion
                   type="single"
                   collapsible
-                  defaultValue="order-content"
-                  className="rounded-2xl border border-black/5 bg-whiteSecondary px-4 shadow"
+                  defaultValue=""
+                  className="rounded-2xl border border-colorPrimary/10 px-4 shadow bg-whiteSecondary"
                 >
-                  <AccordionItem value="order-content">
-                    <AccordionTrigger className="py-3 [&>svg]:size-4 [&>svg]:rounded-full [&>svg]:bg-whitePrimary [&>svg]:p-0.5">
+                  <AccordionItem value="order-content" className="border-none">
+                    <AccordionTrigger className="rounded-2xl  py-3 [&>svg]:size-4 [&>svg]:rounded-full [&>svg]:bg-whitePrimary [&>svg]:p-0.5 bg-whiteSecondary">
                       <div>
                         <p className="text-sm font-bold text-colorPrimary">
                           Состав заказа
@@ -184,7 +186,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                       </div>
                     </AccordionTrigger>
 
-                    <AccordionContent className="mt-1">
+                    <AccordionContent className=" pb-0 bg-whiteSecondary">
                       <div className="grid gap-3">
                         {order.items.map((item) => (
                           <article
@@ -215,10 +217,11 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                             </div>
 
                             <div className="grid gap-3">
-                              <div className="rounded-xl border border-black/5 bg-whiteSecondary p-3">
+                              <div className="rounded-xl border border-colorPrimary/10 bg-whiteSecondary p-3">
                                 <div className="mb-2 text-xs font-semibold tracking-[0.08em] text-greySecondary">
                                   Выбранные дни
                                 </div>
+
                                 {item.selectedDays.length > 0 ? (
                                   <div className="flex flex-wrap gap-2">
                                     {item.selectedDays.map((day) => (
@@ -237,7 +240,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                                 )}
                               </div>
 
-                              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-black/5 bg-whiteSecondary p-3">
+                              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-colorPrimary/10 bg-whiteSecondary p-3">
                                 <div className="flex items-center gap-2 text-sm font-semibold text-colorPrimary">
                                   <UtensilsCrossed
                                     size={15}
