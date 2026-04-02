@@ -2,7 +2,7 @@ import { Footer } from "@/components/shared/footer/footer";
 import { Navbar } from "@/components/shared/navbar/navbar";
 
 import { Metadata } from "next";
-import { Toaster } from "react-hot-toast";
+
 const SITE_URL = "https://okey-food.vercel.app";
 
 export const metadata: Metadata = {

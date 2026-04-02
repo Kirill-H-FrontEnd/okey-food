@@ -24,7 +24,6 @@ export default function RootLayout({
         <link rel="icon" href="/okeyfood-logo.svg" />
       </head>
       <body style={font.style} className={` antialiased bg-whitePrimary`}>
-        {/* <Navbar /> */}
         {children}
         <AnalyticsConsentModal />
         <Toaster
@@ -58,7 +57,6 @@ export default function RootLayout({
             },
           }}
         />
-        {/* <Footer /> */}
       </body>
     </html>
   );
