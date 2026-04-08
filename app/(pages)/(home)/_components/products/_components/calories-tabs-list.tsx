@@ -3,11 +3,14 @@
 import * as React from "react";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-type CaloriesTab = { calories: string; countProduct: number };
+type CaloriesTab = {
+  calories: string;
+  countProduct: number;
+};
 
-interface CaloriesTabsListProps {
-  tabs: CaloriesTab[];
-}
+type CaloriesTabsListProps = {
+  tabs: readonly CaloriesTab[];
+};
 
 export const CaloriesTabsList: React.FC<CaloriesTabsListProps> = ({ tabs }) => {
   return (
