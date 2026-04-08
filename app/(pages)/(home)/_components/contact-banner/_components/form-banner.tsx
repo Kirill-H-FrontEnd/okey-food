@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 export const FormBanner: FC = () => {
   const contactResolver: Resolver<ContactBannerFormData> = async (values) => {
     const parsed = contactBannerSchema.safeParse(values);
+
     if (parsed.success) {
       return { values: parsed.data, errors: {} };
     }
@@ -54,6 +55,7 @@ export const FormBanner: FC = () => {
     formState: { errors, isSubmitting },
   } = useForm<ContactBannerFormData>({
     resolver: contactResolver,
+    shouldFocusError: false,
     defaultValues: {
       name: "",
       phone: "",
@@ -62,8 +64,10 @@ export const FormBanner: FC = () => {
   });
 
   const accepted = watch("accepted");
+
   const fieldHasError = (field: keyof ContactBannerFormData) =>
     Boolean(errors[field]);
+
   const withErrorStyles = (field: keyof ContactBannerFormData) =>
     fieldHasError(field)
       ? "border-red-400 focus-visible:border-red-400 focus-visible:ring-red-400"
@@ -72,11 +76,7 @@ export const FormBanner: FC = () => {
   const onSubmitError: SubmitErrorHandler<ContactBannerFormData> = (
     formErrors,
   ) => {
-    const firstMessage =
-      formErrors.name?.message ??
-      formErrors.phone?.message ??
-      formErrors.accepted?.message ??
-      "Проверьте корректность данных";
+    const firstMessage = formErrors.name?.message ?? formErrors.phone?.message;
 
     if (firstMessage) {
       toast.error(firstMessage);
@@ -85,19 +85,19 @@ export const FormBanner: FC = () => {
 
   const onSubmit = handleSubmit((data) => {
     toast.success(
-      `Спасибо ${data.name} ! Мы свяжемся с вами в ближайшее время.`,
+      `Спасибо ${data.name}! Мы свяжемся с вами в ближайшее время.`,
     );
     reset({ name: "", phone: "", accepted: false });
   }, onSubmitError);
 
   return (
-    <form onSubmit={onSubmit} className="max-w-[450px] gap-4 m-auto grid mt-6">
-      <div className="grid md:flex gap-2 text-black">
+    <form onSubmit={onSubmit} className="m-auto mt-6 grid max-w-[450px] gap-4">
+      <div className="grid gap-2 text-black md:flex">
         <Input
           {...register("name")}
           placeholder="Имя"
           aria-invalid={fieldHasError("name")}
-          className={cn("bg-whiteSecondary h-[40px]", withErrorStyles("name"))}
+          className={cn("h-[40px] bg-whiteSecondary", withErrorStyles("name"))}
         />
         <Input
           {...register("phone")}
@@ -105,7 +105,7 @@ export const FormBanner: FC = () => {
           inputMode="tel"
           type="tel"
           aria-invalid={fieldHasError("phone")}
-          className={cn("bg-whiteSecondary h-[40px]", withErrorStyles("phone"))}
+          className={cn("h-[40px] bg-whiteSecondary", withErrorStyles("phone"))}
         />
       </div>
 
@@ -124,11 +124,11 @@ export const FormBanner: FC = () => {
             />
           )}
         />
-        <p className="text-[12px] leading-snug block text-left">
+        <p className="block text-left text-[12px] leading-snug">
           Ознакомьтесь с{" "}
           <Link
-            href={"/privacy"}
-            className="text-yellow-hover hover:opacity-80 md:text-left md:inline-block"
+            href="/privacy"
+            className="text-yellow-hover hover:opacity-80 md:inline-block md:text-left"
           >
             политикой конфиденциальности.
           </Link>
@@ -138,12 +138,13 @@ export const FormBanner: FC = () => {
       <Button
         type="submit"
         disabled={!accepted || isSubmitting}
-        className="bg-yellowPrimary text-colorPrimary font-bold w-full py-6 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-yellowPrimary py-6 font-bold text-colorPrimary disabled:cursor-not-allowed disabled:opacity-50"
         variant="default"
       >
         Связаться с нами
       </Button>
-      <p className="text-whitePrimary text-sm ">
+
+      <p className="text-sm text-whitePrimary">
         Обычно мы перезваниваем в течение 15 минут
       </p>
     </form>
