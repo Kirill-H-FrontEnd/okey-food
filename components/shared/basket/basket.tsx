@@ -86,6 +86,19 @@ const createInitialFormValues = (): Partial<CheckoutFormValues> => ({
   comment: "",
 });
 
+const formatISODate = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const parseISODate = (value: string) => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const parsed = new Date(`${value}T00:00:00`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
 export const Basket: FC = () => {
   const pathname = usePathname();
   const isBasketOpen = useBasketStore((s) => s.isBasketOpen);
@@ -215,10 +228,38 @@ export const Basket: FC = () => {
 
   const handleIncrementDays = (id: string) => {
     const item = items.find((entry) => entry.id === id);
-    if (!item || !item.range) return;
-    const selectable = listSelectableDays(item.range).sort();
-    if (item.selectedDays.length >= selectable.length) return;
-    const next = selectable.find((day) => !item.selectedDays.includes(day));
+    if (!item) return;
+    let next: string | undefined;
+
+    if (item.range) {
+      const selectable = listSelectableDays(item.range).sort();
+      if (item.selectedDays.length >= selectable.length) return;
+      next = selectable.find((day) => !item.selectedDays.includes(day));
+    } else {
+      const parsedDays = item.selectedDays
+        .map(parseISODate)
+        .filter((day): day is Date => day !== null)
+        .sort((a, b) => a.getTime() - b.getTime());
+
+      const baseDate =
+        parsedDays.at(-1) ??
+        (() => {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          return today;
+        })();
+
+      const cursor = new Date(baseDate);
+      do {
+        cursor.setDate(cursor.getDate() + 1);
+      } while (
+        cursor.getDay() === 0 ||
+        item.selectedDays.includes(formatISODate(cursor))
+      );
+
+      next = formatISODate(cursor);
+    }
+
     if (!next) return;
     updateItem(id, (prev) => ({
       ...prev,
