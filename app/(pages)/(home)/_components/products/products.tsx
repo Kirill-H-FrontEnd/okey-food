@@ -11,7 +11,7 @@ import { SelectDaysButtons } from "./_components/SelectDaysButtons";
 import { motion, type Variants, type Transition } from "framer-motion";
 import { OrderSummary } from "./_components/order-summary";
 import { CaloriesTabsList } from "./_components/calories-tabs-list";
-import { listSelectableDays } from "@/lib/delivery-days"; // CHANGED: берем из lib
+import { listSelectableDays } from "@/lib/delivery-days";
 // > Types
 import { TProduct } from "@/types/product-card-type";
 import { useBasketStore } from "@/store/useStore";

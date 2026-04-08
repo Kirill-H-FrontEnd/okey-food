@@ -5,24 +5,23 @@ import { persist, createJSONStorage } from "zustand/middleware"; // ADDED
 export type CartItem = {
   id: string;
   calories: string;
-  selectedDays: string[]; // CHANGED: вместо day
-  range: string | null; // ADDED: выбранный диапазон дат
+  selectedDays: string[];
+  range: string | null;
   pricePerDay: number;
   dishesCount: number;
 };
 
 interface BasketState {
   isBasketOpen: boolean;
-  items: CartItem[]; // ADDED
+  items: CartItem[];
   setIsBasketOpen: (open: boolean) => void;
-  addItem: (item: CartItem) => void; // ADDED
+  addItem: (item: CartItem) => void;
   updateItem: (
-    // ADDED
     id: string,
-    updater: (item: CartItem) => CartItem | null
+    updater: (item: CartItem) => CartItem | null,
   ) => void;
-  removeItem: (id: string) => void; // ADDED
-  clear: () => void; // ADDED
+  removeItem: (id: string) => void;
+  clear: () => void;
 }
 
 // CHANGED: persist + расширенные методы
@@ -36,12 +35,12 @@ export const useBasketStore = create<BasketState>()(
       addItem: (item) =>
         set((state) => {
           const existing = state.items.find(
-            (cartItem) => cartItem.id === item.id
+            (cartItem) => cartItem.id === item.id,
           );
 
           if (existing) {
             const mergedDays = Array.from(
-              new Set([...existing.selectedDays, ...item.selectedDays])
+              new Set([...existing.selectedDays, ...item.selectedDays]),
             ).sort();
 
             return {
@@ -53,7 +52,7 @@ export const useBasketStore = create<BasketState>()(
                       selectedDays: mergedDays,
                       range: item.range ?? cartItem.range,
                     }
-                  : cartItem
+                  : cartItem,
               ),
             };
           }
@@ -75,7 +74,7 @@ export const useBasketStore = create<BasketState>()(
             .map((it) => {
               if (it.id !== id) return it;
               const next = updater(it);
-              if (!next) return null; // удалить элемент
+              if (!next) return null;
               return {
                 ...next,
                 selectedDays: [...next.selectedDays].sort(),
@@ -97,6 +96,6 @@ export const useBasketStore = create<BasketState>()(
         ? { storage: createJSONStorage(() => window.localStorage) }
         : {}),
       partialize: (state) => ({ items: state.items }),
-    }
-  )
+    },
+  ),
 );

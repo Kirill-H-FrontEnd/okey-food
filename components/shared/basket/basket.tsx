@@ -339,7 +339,7 @@ export const Basket: FC = () => {
         <SheetTrigger asChild>
           <Button className="relative group bg-yellowPrimary" variant="default">
             <span className="text-[12px] text-colorPrimary font-bold whitespace-nowrap">
-              <AnimatedAmount value={totalLabel} durationMs={200} />
+              <AnimatedAmount value={totalLabel} durationMs={300} />
             </span>
             <span className="w-[1px] h-[50%] bg-colorPrimary" aria-hidden />
             <div className="grid grid-cols-2-auto gap-2 items-center md:group-hover:opacity-0 transition-opacity text-colorPrimary">
