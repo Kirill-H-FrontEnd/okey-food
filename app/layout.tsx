@@ -1,6 +1,6 @@
 import "simplebar/dist/simplebar.min.css";
 import "./globals.css";
-
+import { Analytics } from "@vercel/analytics/next";
 import { Mulish } from "next/font/google";
 import { AnalyticsConsentModal } from "@/components/ui/analytics-consent-modal";
 import { Toaster } from "react-hot-toast";
@@ -24,6 +24,7 @@ export default function RootLayout({
       <body style={font.style} className={` antialiased bg-whitePrimary`}>
         {children}
         <AnalyticsConsentModal />
+        <Analytics />
         <Toaster
           toastOptions={{
             duration: 3000,

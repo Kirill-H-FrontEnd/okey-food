@@ -1,15 +1,7 @@
 "use client";
 
 import { FC, useEffect, useState } from "react";
-import {
-  addDays,
-  startOfMonth,
-  isBefore,
-  format,
-  isMonday,
-  isSameMonth,
-  set,
-} from "date-fns";
+import { addDays, isBefore, format, set, startOfWeek } from "date-fns";
 import { ru } from "date-fns/locale";
 import {
   Select,
@@ -23,18 +15,16 @@ import {
 
 type TSelectDate = {
   onChange?: (value: string) => void;
-  defaultValue?: string; // CHANGED
+  defaultValue?: string;
 };
 
 export const SelectDate: FC<TSelectDate> = ({ onChange, defaultValue }) => {
-  // CHANGED
   const [deliveryRanges, setDeliveryRanges] = useState<
     { label: string; value: string; disabled: boolean }[]
   >([]);
   const [selectedValue, setSelectedValue] = useState<string>("");
 
   useEffect(() => {
-    // генерим диапазоны
     const today = set(new Date(), {
       hours: 0,
       minutes: 0,
@@ -42,30 +32,14 @@ export const SelectDate: FC<TSelectDate> = ({ onChange, defaultValue }) => {
       milliseconds: 0,
     });
 
-    const startMonth = startOfMonth(today);
-    let firstMonday = startMonth;
-    while (!isMonday(firstMonday)) {
-      firstMonday = addDays(firstMonday, 1);
-    }
+    // Понедельник текущей недели
+    let current = startOfWeek(today, { weekStartsOn: 1 });
 
     const ranges: { label: string; value: string; disabled: boolean }[] = [];
-    let current = firstMonday;
 
     for (let i = 0; i < 4; i++) {
-      const days: Date[] = [];
-      let temp = current;
-
-      while (days.length < 6 && isSameMonth(temp, startMonth)) {
-        if (temp.getDay() !== 0) {
-          days.push(temp);
-        }
-        temp = addDays(temp, 1);
-      }
-
-      if (days.length === 0) break;
-
-      const rangeStart = days[0];
-      const rangeEnd = days[days.length - 1];
+      const rangeStart = current;
+      const rangeEnd = addDays(current, 5); // понедельник–суббота
       const isPast = isBefore(rangeEnd, today);
 
       ranges.push({
@@ -81,7 +55,7 @@ export const SelectDate: FC<TSelectDate> = ({ onChange, defaultValue }) => {
         disabled: isPast,
       });
 
-      current = temp;
+      current = addDays(current, 7);
     }
 
     setDeliveryRanges(ranges);
@@ -112,7 +86,7 @@ export const SelectDate: FC<TSelectDate> = ({ onChange, defaultValue }) => {
       setSelectedValue(nextValue);
       onChange?.(nextValue);
     }
-  }, [defaultValue, deliveryRanges, onChange, selectedValue]); // NEW
+  }, [defaultValue, deliveryRanges, onChange, selectedValue]);
 
   return (
     <Select
