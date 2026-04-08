@@ -18,7 +18,7 @@ export const CheckoutFooter: FC<CheckoutFooterProps> = ({
   onConsentChange,
   onSubmit,
 }) => (
-  <div className="w-full bg-whitePrimary border-t border-colorPrimary/10 px-6 py-4 ">
+  <div className="w-full bg-whitePrimary border-t border-grey-border px-6 py-4 ">
     <div className="grid gap-4">
       <div className="flex items-center gap-2">
         <Switch

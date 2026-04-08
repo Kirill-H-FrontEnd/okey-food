@@ -243,7 +243,7 @@ export const CheckoutForm: FC<CheckoutFormProps> = ({ cityOptions }) => {
                         variant="outline"
                         onBlur={field.onBlur}
                         className={cn(
-                          "w-full shadow-none justify-between font-normal hover:bg-white bg-whiteSecondary h-10",
+                          "w-full shadow-none border border-grey-border justify-between font-normal hover:bg-white bg-whiteSecondary h-10",
                           withErrorStyles("date"),
                           fieldHasError("date") &&
                             "text-red-500 hover:bg-red-50/40 focus-visible:ring-red-400",

@@ -78,9 +78,9 @@ function SheetContent({
         data-slot="sheet-content"
         ref={setContentRef}
         className={cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed  flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 border-0",
           side === "right" &&
-            "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-full md:w-[550px] border-l z-[95] md:z-[300]",
+            "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-full md:w-[550px]  z-[95] md:z-[300]",
           side === "left" &&
             "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm z-[300]",
           side === "top" &&

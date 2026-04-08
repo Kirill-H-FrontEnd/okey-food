@@ -355,7 +355,7 @@ export const Basket: FC = () => {
 
         <SheetContent
           showCloseButton={false}
-          className="shadow-none p-0 overflow-hidden bg-whitePrimary"
+          className="shadow-none p-0 overflow-hidden bg-whitePrimary border-none "
         >
           <LazyMotion features={domAnimation}>
             <div className="flex h-full flex-col pt-[55px] md:pt-0 ">
