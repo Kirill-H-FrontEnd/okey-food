@@ -1,9 +1,9 @@
-import "simplebar/dist/simplebar.min.css";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { Mulish } from "next/font/google";
 import { AnalyticsConsentModal } from "@/components/ui/analytics-consent-modal";
 import { Toaster } from "react-hot-toast";
+import { CustomToaster } from "@/components/ui/custom-toaster";
 
 const font = Mulish({
   subsets: ["latin"],
@@ -25,7 +25,7 @@ export default function RootLayout({
         {children}
         <AnalyticsConsentModal />
         <Analytics />
-        <Toaster
+        {/* <Toaster
           toastOptions={{
             duration: 3000,
             className: " font-medium text-sm ",
@@ -55,7 +55,8 @@ export default function RootLayout({
               },
             },
           }}
-        />
+        /> */}
+        <CustomToaster />
       </body>
     </html>
   );

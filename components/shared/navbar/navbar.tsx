@@ -31,9 +31,9 @@ export const Navbar: FC = ({}) => {
   const DATA_LINKS = [
     { href: "products", label: "Меню", offset: -50 },
     { href: "aboutUs", label: "О нас", offset: -50 },
-
     { href: "faq", label: "FAQ", offset: -50 },
     { href: "map", label: "Доставка", offset: -50 },
+    { href: "contact", label: "Связаться с нами", offset: -50 },
   ];
   return (
     <header

@@ -10,7 +10,7 @@ type TContactBanner = {};
 export const ContactBanner: FC = () => {
   const media = useMediaQuery("(min-width: 768px)");
   return (
-    <section className="py-14 lg:py-20 relative">
+    <section id="contact" className="py-14 lg:py-20 relative">
       <Container>
         <section className="relative overflow-hidden bg-colorPrimary py-14 px-6 rounded-[50px] text-center">
           {/* RIPPLE */}

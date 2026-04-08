@@ -26,9 +26,9 @@ export const MobileMenu: FC<TMobileMenu> = ({
     { title: "Меню", href: "products", offset: -50 },
     { title: "Калькулятор калорий", href: "calculator", offset: -50 },
     { title: "О нас", href: "aboutUs", offset: -50 },
-    { title: "Отзывы", href: "reviews", offset: -50 },
     { title: "Часто задаваемые вопросы", href: "faq", offset: -50 },
     { title: "Доставка", href: "map", offset: -50 },
+    { title: "Связаться с нами", href: "contact", offset: -50 },
   ];
 
   return (
