@@ -10,21 +10,6 @@ html {
   *::after {
     box-sizing: border-box;
   }
-  /* scrollbar-gutter: stable; */
-  /* &::-webkit-scrollbar-thumb {
-      background-color: #fff;
-      border-radius: 0px;
-      border: 0px solid #0d1825;
-      cursor: grab;
-      &:hover {
-        background-color: #0d1825;
-      }
-    }
-
-    &::-webkit-scrollbar {
-      background-color: #000219;
-      width: 0px;
-    } */
 }
 @theme {
   --color-whitePrimary: #f2efe8;
