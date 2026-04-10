@@ -3,15 +3,37 @@ import { useAdminStore } from "@/store/useAdminStore";
 import { TOrder } from "@/types/admin";
 import { Clock, CheckCircle2, Loader2, XCircle, RefreshCw } from "lucide-react";
 import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const STATUS_CONFIG: Record<TOrder["status"], { label: string; icon: React.ElementType; className: string }> = {
-  pending: { label: "Ожидает", icon: Clock, className: "text-amber-600 bg-amber-50" },
-  confirmed: { label: "Подтверждён", icon: Loader2, className: "text-blue-600 bg-blue-50" },
-  delivered: { label: "Доставлен", icon: CheckCircle2, className: "text-green-600 bg-green-50" },
-  cancelled: { label: "Отменён", icon: XCircle, className: "text-red-600 bg-red-50" },
+const STATUS_CONFIG: Record<
+  TOrder["status"],
+  { label: string; icon: React.ElementType; dot: string }
+> = {
+  pending: { label: "Ожидает", icon: Clock, dot: "bg-amber-400" },
+  confirmed: { label: "Подтверждён", icon: Loader2, dot: "bg-blue-400" },
+  delivered: { label: "Доставлен", icon: CheckCircle2, dot: "bg-emerald-400" },
+  cancelled: { label: "Отменён", icon: XCircle, dot: "bg-red-400" },
 };
 
-const STATUS_ORDER: TOrder["status"][] = ["pending", "confirmed", "delivered", "cancelled"];
+const STATUS_COLORS: Record<TOrder["status"], string> = {
+  pending: "text-amber-600",
+  confirmed: "text-blue-600",
+  delivered: "text-emerald-600",
+  cancelled: "text-red-500",
+};
+
+const STATUS_ORDER: TOrder["status"][] = [
+  "pending",
+  "confirmed",
+  "delivered",
+  "cancelled",
+];
 
 export default function OrdersPage() {
   const { orders, loading, fetchOrders, updateOrderStatus } = useAdminStore();
@@ -31,7 +53,7 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-[#302a41]">Заказы</h1>
@@ -51,8 +73,12 @@ export default function OrdersPage() {
 
       {orders.length === 0 && !loading ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          <p className="font-bold text-[#302a41]/30 text-lg mb-1">Заказов пока нет</p>
-          <p className="text-sm text-[#302a41]/30">Заявки с сайта будут появляться здесь</p>
+          <p className="font-bold text-[#302a41]/30 text-lg mb-1">
+            Заказов пока нет
+          </p>
+          <p className="text-sm text-[#302a41]/30">
+            Заявки с сайта будут появляться здесь
+          </p>
         </div>
       ) : (
         <div className="bg-white rounded-2xl shadow-sm border border-black/5 overflow-hidden">
@@ -60,7 +86,15 @@ export default function OrdersPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-[#f2efe8]/60">
-                  {["Клиент", "Телефон", "Рацион", "Дней", "Сумма", "Дата", "Статус"].map((h) => (
+                  {[
+                    "Клиент",
+                    "Телефон",
+                    "Рацион",
+                    "Дней",
+                    "Сумма",
+                    "Дата",
+                    "Статус",
+                  ].map((h) => (
                     <th
                       key={h}
                       className="px-6 py-3 text-left text-xs font-semibold text-[#302a41]/50 uppercase tracking-wider"
@@ -73,39 +107,74 @@ export default function OrdersPage() {
               <tbody className="divide-y divide-black/5">
                 {sorted.map((order) => {
                   const status = STATUS_CONFIG[order.status];
-                  const StatusIcon = status.icon;
                   return (
-                    <tr key={order.id} className="hover:bg-[#f2efe8]/40 transition-colors">
+                    <tr
+                      key={order.id}
+                      className="hover:bg-[#f2efe8]/40 transition-colors"
+                    >
                       <td className="px-6 py-4 font-medium text-[#302a41]">
                         {order.customerName}
                       </td>
                       <td className="px-6 py-4 text-[#302a41]/60">
                         {order.phone || "—"}
                       </td>
-                      <td className="px-6 py-4 text-[#302a41]/70">{order.ration}</td>
-                      <td className="px-6 py-4 text-[#302a41]/70">{order.days || "—"}</td>
+                      <td className="px-6 py-4 text-[#302a41]/70">
+                        {order.ration}
+                      </td>
+                      <td className="px-6 py-4 text-[#302a41]/70">
+                        {order.days || "—"}
+                      </td>
                       <td className="px-6 py-4 font-semibold text-[#302a41]">
                         {order.amount > 0 ? `${order.amount} BYN` : "—"}
                       </td>
-                      <td className="px-6 py-4 text-[#302a41]/50">{order.createdAt}</td>
+                      <td className="px-6 py-4 text-[#302a41]/50">
+                        {order.createdAt}
+                      </td>
                       <td className="px-6 py-4">
-                        <select
-                          value={order.status}
-                          disabled={updatingId === order.id}
-                          onChange={(e) =>
-                            handleStatusChange(order.id, e.target.value as TOrder["status"])
-                          }
-                          className={`text-xs font-semibold px-2.5 py-1 rounded-full border-0 cursor-pointer focus:ring-2 focus:ring-[#c8f135] outline-none ${status.className}`}
-                        >
-                          {STATUS_ORDER.map((s) => (
-                            <option key={s} value={s}>
-                              {STATUS_CONFIG[s].label}
-                            </option>
-                          ))}
-                        </select>
-                        {updatingId === order.id && (
-                          <span className="ml-1 text-[#302a41]/30 text-xs">...</span>
-                        )}
+                        <div className="flex items-center gap-2">
+                          <Select
+                            value={order.status}
+                            onValueChange={(val) =>
+                              handleStatusChange(
+                                order.id,
+                                val as TOrder["status"],
+                              )
+                            }
+                            disabled={updatingId === order.id}
+                          >
+                            <SelectTrigger
+                              className={`h-8 text-xs font-semibold rounded-full border-0 bg-[#302a41]/6 px-3 gap-1.5 focus:ring-1 focus:ring-[#c8f135] w-auto min-w-[130px] ${STATUS_COLORS[order.status]}`}
+                              style={{ backgroundColor: "rgba(48,42,65,0.06)" }}
+                            >
+                              <span
+                                className={`w-1.5 h-1.5 rounded-full shrink-0 ${status.dot}`}
+                              />
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border border-black/10 shadow-xl">
+                              {STATUS_ORDER.map((s) => (
+                                <SelectItem
+                                  key={s}
+                                  value={s}
+                                  className={`text-xs font-semibold rounded-lg cursor-pointer ${STATUS_COLORS[s]}`}
+                                >
+                                  <span className="flex items-center gap-2">
+                                    <span
+                                      className={`w-1.5 h-1.5 rounded-full ${STATUS_CONFIG[s].dot}`}
+                                    />
+                                    {STATUS_CONFIG[s].label}
+                                  </span>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {updatingId === order.id && (
+                            <Loader2
+                              size={13}
+                              className="animate-spin text-[#302a41]/30"
+                            />
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );

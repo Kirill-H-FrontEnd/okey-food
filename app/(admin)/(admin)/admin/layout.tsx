@@ -1,5 +1,6 @@
 import { AdminSidebar } from "@/components/admin/sidebar";
 import { AdminDataProvider } from "@/components/admin/admin-data-provider";
+import { AdminMobileNav } from "@/components/admin/admin-mobile-nav";
 
 export default function AdminLayout({
   children,
@@ -8,11 +9,12 @@ export default function AdminLayout({
 }) {
   return (
     <AdminDataProvider>
-      <div className="flex min-h-screen bg-[#f2efe8]">
+      <div className="flex h-screen overflow-hidden bg-[#f2efe8]">
         <AdminSidebar />
-        <main className="flex-1 overflow-auto">
-          {children}
-        </main>
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+          <AdminMobileNav />
+          <main className="flex-1 overflow-y-auto">{children}</main>
+        </div>
       </div>
     </AdminDataProvider>
   );

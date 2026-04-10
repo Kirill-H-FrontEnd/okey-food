@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useAdminStore } from "@/store/useAdminStore";
-import { TRation, TRationCategory, TRationDish, TRationMeal } from "@/types/admin";
+import { TRation, TRationDish, TRationMeal } from "@/types/admin";
 import {
   Plus,
   Pencil,
@@ -10,7 +10,6 @@ import {
   Eye,
   EyeOff,
   X,
-  ImageIcon,
   Save,
   Utensils,
   ArrowLeft,
@@ -19,17 +18,9 @@ import {
   Droplets,
   Wheat,
   Scale,
+  ImagePlus,
+  Upload,
 } from "lucide-react";
-import Image from "next/image";
-
-const CATEGORIES: TRationCategory[] = [
-  "Похудение",
-  "Набор массы",
-  "Поддержание",
-  "Спортивное питание",
-  "Вегетарианское",
-];
-
 const MEALS: TRationMeal[] = [
   "Завтрак",
   "Второй завтрак",
@@ -44,8 +35,6 @@ type RationFormData = {
   description: string;
   calories: string;
   pricePerDay: string;
-  image: string;
-  category: TRationCategory;
   isActive: boolean;
 };
 
@@ -66,8 +55,6 @@ const EMPTY_RATION_FORM: RationFormData = {
   description: "",
   calories: "",
   pricePerDay: "",
-  image: "",
-  category: "Похудение",
   isActive: true,
 };
 
@@ -84,13 +71,98 @@ const EMPTY_DISH_FORM: DishFormData = {
 };
 
 const MEAL_COLORS: Record<TRationMeal, string> = {
-  "Завтрак": "bg-amber-100 text-amber-700",
+  Завтрак: "bg-amber-100 text-amber-700",
   "Второй завтрак": "bg-orange-100 text-orange-700",
-  "Обед": "bg-emerald-100 text-emerald-700",
-  "Полдник": "bg-sky-100 text-sky-700",
-  "Ужин": "bg-violet-100 text-violet-700",
-  "Перекус": "bg-rose-100 text-rose-700",
+  Обед: "bg-emerald-100 text-emerald-700",
+  Полдник: "bg-sky-100 text-sky-700",
+  Ужин: "bg-violet-100 text-violet-700",
+  Перекус: "bg-rose-100 text-rose-700",
 };
+
+function DishImageUpload({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (base64: string) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      if (typeof ev.target?.result === "string") {
+        onChange(ev.target.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div className="col-span-2">
+      <label className="block text-sm font-semibold text-[#302a41] mb-1.5">
+        Изображение блюда
+      </label>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFile}
+        className="hidden"
+      />
+      {value ? (
+        <div className="relative h-36 rounded-xl overflow-hidden bg-[#f2efe8] group">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={value}
+            alt="Превью"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="opacity-0 group-hover:opacity-100 flex items-center gap-2 bg-white text-[#302a41] text-xs font-bold px-3 py-2 rounded-lg shadow-md transition-opacity"
+            >
+              <Upload size={13} />
+              Заменить
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="absolute top-2 right-2 w-6 h-6 bg-black/50 hover:bg-red-500 text-white rounded-full flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
+          >
+            <X size={12} />
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          className="w-full h-36 border-2 border-dashed border-[#302a41]/15 hover:border-[#c8f135] hover:bg-[#c8f135]/5 rounded-xl flex flex-col items-center justify-center gap-2 transition-all group"
+        >
+          <div className="w-10 h-10 rounded-xl bg-[#302a41]/5 group-hover:bg-[#c8f135]/20 flex items-center justify-center transition-colors">
+            <ImagePlus
+              size={20}
+              className="text-[#302a41]/30 group-hover:text-[#302a41]"
+            />
+          </div>
+          <div className="text-center">
+            <p className="text-sm font-semibold text-[#302a41]/40 group-hover:text-[#302a41] transition-colors">
+              Загрузить фото
+            </p>
+            <p className="text-xs text-[#302a41]/30">
+              JPG, PNG, WebP — до 5 МБ
+            </p>
+          </div>
+        </button>
+      )}
+    </div>
+  );
+}
 
 export default function RationsPage() {
   const {
@@ -106,23 +178,26 @@ export default function RationsPage() {
 
   const [isRationFormOpen, setIsRationFormOpen] = useState(false);
   const [editingRationId, setEditingRationId] = useState<string | null>(null);
-  const [rationForm, setRationForm] = useState<RationFormData>(EMPTY_RATION_FORM);
+  const [rationForm, setRationForm] =
+    useState<RationFormData>(EMPTY_RATION_FORM);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
-  const [imagePreviewError, setImagePreviewError] = useState(false);
 
-  const [dishPanelRationId, setDishPanelRationId] = useState<string | null>(null);
+  const [dishPanelRationId, setDishPanelRationId] = useState<string | null>(
+    null,
+  );
   const [isDishFormOpen, setIsDishFormOpen] = useState(false);
   const [editingDishId, setEditingDishId] = useState<string | null>(null);
   const [dishForm, setDishForm] = useState<DishFormData>(EMPTY_DISH_FORM);
-  const [dishDeleteConfirmId, setDishDeleteConfirmId] = useState<string | null>(null);
-  const [dishImagePreviewError, setDishImagePreviewError] = useState(false);
+  const [dishDeleteConfirmId, setDishDeleteConfirmId] = useState<string | null>(
+    null,
+  );
 
-  const dishPanelRation = rations.find((r) => r.id === dishPanelRationId) ?? null;
+  const dishPanelRation =
+    rations.find((r) => r.id === dishPanelRationId) ?? null;
 
   const openAddRation = () => {
     setEditingRationId(null);
     setRationForm(EMPTY_RATION_FORM);
-    setImagePreviewError(false);
     setIsRationFormOpen(true);
   };
 
@@ -133,11 +208,8 @@ export default function RationsPage() {
       description: ration.description,
       calories: ration.calories,
       pricePerDay: String(ration.pricePerDay),
-      image: ration.image,
-      category: ration.category,
       isActive: ration.isActive,
     });
-    setImagePreviewError(false);
     setIsRationFormOpen(true);
   };
 
@@ -154,8 +226,8 @@ export default function RationsPage() {
       description: rationForm.description,
       calories: rationForm.calories,
       pricePerDay: Number(rationForm.pricePerDay),
-      image: rationForm.image,
-      category: rationForm.category,
+      image: "",
+      category: "Поддержание" as const,
       isActive: rationForm.isActive,
       dishes: editingRationId
         ? (rations.find((r) => r.id === editingRationId)?.dishes ?? [])
@@ -170,20 +242,19 @@ export default function RationsPage() {
   };
 
   const handleRationChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type } = e.target;
     setRationForm((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+      [name]:
+        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
-    if (name === "image") setImagePreviewError(false);
   };
 
   const openAddDish = () => {
     setEditingDishId(null);
     setDishForm(EMPTY_DISH_FORM);
-    setDishImagePreviewError(false);
     setIsDishFormOpen(true);
   };
 
@@ -200,7 +271,6 @@ export default function RationsPage() {
       image: dish.image,
       description: dish.description,
     });
-    setDishImagePreviewError(false);
     setIsDishFormOpen(true);
   };
 
@@ -233,11 +303,12 @@ export default function RationsPage() {
   };
 
   const handleDishChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const { name, value } = e.target;
     setDishForm((prev) => ({ ...prev, [name]: value }));
-    if (name === "image") setDishImagePreviewError(false);
   };
 
   const groupedDishes = (dishes: TRationDish[]) => {
@@ -252,10 +323,13 @@ export default function RationsPage() {
   if (dishPanelRation) {
     const groups = groupedDishes(dishPanelRation.dishes);
     return (
-      <div className="p-8">
+      <div className="p-4 md:p-8">
         <div className="flex items-center gap-4 mb-8">
           <button
-            onClick={() => { setDishPanelRationId(null); setIsDishFormOpen(false); }}
+            onClick={() => {
+              setDishPanelRationId(null);
+              setIsDishFormOpen(false);
+            }}
             className="flex items-center gap-2 text-sm font-semibold text-[#302a41]/50 hover:text-[#302a41] transition-colors"
           >
             <ArrowLeft size={16} />
@@ -288,7 +362,9 @@ export default function RationsPage() {
             <div className="w-16 h-16 rounded-2xl bg-[#302a41]/5 flex items-center justify-center mb-4">
               <Utensils size={28} className="text-[#302a41]/20" />
             </div>
-            <p className="font-bold text-[#302a41]/30 text-lg mb-1">Блюда не добавлены</p>
+            <p className="font-bold text-[#302a41]/30 text-lg mb-1">
+              Блюда не добавлены
+            </p>
             <p className="text-sm text-[#302a41]/30 mb-6">
               Добавьте блюда, чтобы они отображались в рационе на сайте
             </p>
@@ -305,11 +381,14 @@ export default function RationsPage() {
             {MEALS.filter((m) => groups[m]?.length).map((meal) => (
               <div key={meal}>
                 <div className="flex items-center gap-3 mb-3">
-                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${MEAL_COLORS[meal]}`}>
+                  <span
+                    className={`text-xs font-bold px-3 py-1 rounded-full ${MEAL_COLORS[meal]}`}
+                  >
                     {meal}
                   </span>
                   <span className="text-xs text-[#302a41]/30">
-                    {groups[meal]!.length} блюд{groups[meal]!.length === 1 ? "о" : "а"}
+                    {groups[meal]!.length} блюд
+                    {groups[meal]!.length === 1 ? "о" : "а"}
                   </span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -320,13 +399,10 @@ export default function RationsPage() {
                     >
                       <div className="relative h-36 bg-[#f2efe8]">
                         {dish.image ? (
-                          <Image
+                          <img
                             src={dish.image}
                             alt={dish.name}
-                            fill
-                            sizes="(max-width: 768px) 100vw, 33vw"
-                            className="object-cover"
-                            onError={() => {}}
+                            className="w-full h-full object-cover"
                           />
                         ) : (
                           <div className="absolute inset-0 flex items-center justify-center">
@@ -353,16 +429,16 @@ export default function RationsPage() {
                             {dish.weight}г
                           </span>
                           <span className="flex items-center gap-1">
-                            <Beef size={11} className="text-red-400" />
-                            Б{dish.proteins}
+                            <Beef size={11} className="text-red-400" />Б
+                            {dish.proteins}
                           </span>
                           <span className="flex items-center gap-1">
-                            <Droplets size={11} className="text-yellow-400" />
-                            Ж{dish.fats}
+                            <Droplets size={11} className="text-yellow-400" />Ж
+                            {dish.fats}
                           </span>
                           <span className="flex items-center gap-1">
-                            <Wheat size={11} className="text-amber-500" />
-                            У{dish.carbs}
+                            <Wheat size={11} className="text-amber-500" />У
+                            {dish.carbs}
                           </span>
                         </div>
                         <div className="flex gap-2 pt-1">
@@ -440,7 +516,9 @@ export default function RationsPage() {
                       className="w-full border border-black/10 rounded-xl px-4 py-2.5 text-sm text-[#302a41] focus:outline-none focus:ring-2 focus:ring-[#c8f135] focus:border-transparent transition bg-white"
                     >
                       {MEALS.map((m) => (
-                        <option key={m} value={m}>{m}</option>
+                        <option key={m} value={m}>
+                          {m}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -523,36 +601,12 @@ export default function RationsPage() {
                     />
                   </div>
 
-                  <div className="col-span-2">
-                    <label className="block text-sm font-semibold text-[#302a41] mb-1.5">
-                      URL изображения
-                    </label>
-                    <input
-                      type="text"
-                      name="image"
-                      value={dishForm.image}
-                      onChange={handleDishChange}
-                      placeholder="https://..."
-                      className="w-full border border-black/10 rounded-xl px-4 py-2.5 text-sm text-[#302a41] placeholder:text-[#302a41]/30 focus:outline-none focus:ring-2 focus:ring-[#c8f135] focus:border-transparent transition"
-                    />
-                    {dishForm.image && !dishImagePreviewError && (
-                      <div className="mt-3 relative h-32 rounded-xl overflow-hidden bg-[#f2efe8]">
-                        <Image
-                          src={dishForm.image}
-                          alt="Preview"
-                          fill
-                          sizes="672px"
-                          className="object-cover"
-                          onError={() => setDishImagePreviewError(true)}
-                        />
-                      </div>
-                    )}
-                    {dishForm.image && dishImagePreviewError && (
-                      <p className="mt-2 text-xs text-red-500">
-                        Не удалось загрузить изображение по указанному URL
-                      </p>
-                    )}
-                  </div>
+                  <DishImageUpload
+                    value={dishForm.image}
+                    onChange={(base64) =>
+                      setDishForm((prev) => ({ ...prev, image: base64 }))
+                    }
+                  />
 
                   <div className="col-span-2">
                     <label className="block text-sm font-semibold text-[#302a41] mb-1.5">
@@ -603,7 +657,9 @@ export default function RationsPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-[#302a41]">Удалить блюдо?</h3>
-                  <p className="text-sm text-[#302a41]/50">Это действие нельзя отменить</p>
+                  <p className="text-sm text-[#302a41]/50">
+                    Это действие нельзя отменить
+                  </p>
                 </div>
               </div>
               <div className="flex gap-3">
@@ -615,7 +671,8 @@ export default function RationsPage() {
                 </button>
                 <button
                   onClick={() => {
-                    if (dishPanelRationId) deleteDish(dishPanelRationId, dishDeleteConfirmId);
+                    if (dishPanelRationId)
+                      deleteDish(dishPanelRationId, dishDeleteConfirmId);
                     setDishDeleteConfirmId(null);
                   }}
                   className="flex-1 py-2.5 rounded-xl bg-red-500 text-white text-sm font-bold hover:bg-red-600 transition-colors"
@@ -631,7 +688,7 @@ export default function RationsPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-[#302a41]">Рационы</h1>
@@ -654,46 +711,28 @@ export default function RationsPage() {
             key={ration.id}
             className="bg-white rounded-2xl shadow-sm border border-black/5 overflow-hidden flex flex-col"
           >
-            <div className="relative h-44 bg-[#f2efe8]">
-              {ration.image ? (
-                <Image
-                  src={ration.image}
-                  alt={ration.name}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                  className="object-cover"
-                  onError={() => {}}
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <ImageIcon className="w-12 h-12 text-[#302a41]/20" />
+            <div className="p-5 flex-1 flex flex-col">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1 min-w-0 pr-2">
+                  <h3 className="text-lg font-bold text-[#302a41] leading-tight">
+                    {ration.name}
+                  </h3>
                 </div>
-              )}
-              <div className="absolute top-3 right-3 flex gap-2">
                 <span
-                  className={`text-xs font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm ${
+                  className={`shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${
                     ration.isActive
-                      ? "bg-emerald-500/90 text-white"
-                      : "bg-black/30 text-white"
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "bg-gray-100 text-gray-500"
                   }`}
                 >
                   {ration.isActive ? "Активен" : "Скрыт"}
                 </span>
               </div>
-            </div>
 
-            <div className="p-5 flex-1 flex flex-col">
-              <div className="mb-1">
-                <span className="text-xs font-bold text-[#302a41]/40 uppercase tracking-wider">
-                  {ration.category}
-                </span>
-              </div>
-              <h3 className="text-lg font-bold text-[#302a41] leading-tight mb-2">
-                {ration.name}
-              </h3>
               <p className="text-sm text-[#302a41]/60 line-clamp-2 mb-4 flex-1">
                 {ration.description}
               </p>
+
               <div className="flex items-center justify-between text-sm mb-4">
                 <div className="text-center">
                   <p className="font-bold text-[#302a41]">{ration.calories}</p>
@@ -730,9 +769,13 @@ export default function RationsPage() {
                   }`}
                 >
                   {ration.isActive ? (
-                    <><EyeOff size={14} /> Скрыть</>
+                    <>
+                      <EyeOff size={14} /> Скрыть
+                    </>
                   ) : (
-                    <><Eye size={14} /> Показать</>
+                    <>
+                      <Eye size={14} /> Показать
+                    </>
                   )}
                 </button>
                 <button
@@ -754,10 +797,13 @@ export default function RationsPage() {
 
         <button
           onClick={openAddRation}
-          className="border-2 border-dashed border-[#302a41]/20 rounded-2xl flex flex-col items-center justify-center gap-3 p-8 hover:border-[#c8f135] hover:bg-[#c8f135]/5 transition-all group min-h-[300px]"
+          className="border-2 border-dashed border-[#302a41]/20 rounded-2xl flex flex-col items-center justify-center gap-3 p-8 hover:border-[#c8f135] hover:bg-[#c8f135]/5 transition-all group min-h-[220px]"
         >
           <div className="w-12 h-12 rounded-xl bg-[#302a41]/5 group-hover:bg-[#c8f135]/20 flex items-center justify-center transition-colors">
-            <Plus size={22} className="text-[#302a41]/40 group-hover:text-[#302a41]" />
+            <Plus
+              size={22}
+              className="text-[#302a41]/40 group-hover:text-[#302a41]"
+            />
           </div>
           <span className="text-sm font-semibold text-[#302a41]/40 group-hover:text-[#302a41] transition-colors">
             Добавить рацион
@@ -771,7 +817,7 @@ export default function RationsPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={closeRationForm}
           />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between px-6 py-5 border-b border-black/5 sticky top-0 bg-white z-10">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 bg-[#c8f135] rounded-xl flex items-center justify-center">
@@ -838,53 +884,6 @@ export default function RationsPage() {
                     step="0.5"
                     className="w-full border border-black/10 rounded-xl px-4 py-2.5 text-sm text-[#302a41] placeholder:text-[#302a41]/30 focus:outline-none focus:ring-2 focus:ring-[#c8f135] focus:border-transparent transition"
                   />
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-semibold text-[#302a41] mb-1.5">
-                    Категория
-                  </label>
-                  <select
-                    name="category"
-                    value={rationForm.category}
-                    onChange={handleRationChange}
-                    className="w-full border border-black/10 rounded-xl px-4 py-2.5 text-sm text-[#302a41] focus:outline-none focus:ring-2 focus:ring-[#c8f135] focus:border-transparent transition bg-white"
-                  >
-                    {CATEGORIES.map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-semibold text-[#302a41] mb-1.5">
-                    URL изображения
-                  </label>
-                  <input
-                    type="text"
-                    name="image"
-                    value={rationForm.image}
-                    onChange={handleRationChange}
-                    placeholder="https://... или /images/..."
-                    className="w-full border border-black/10 rounded-xl px-4 py-2.5 text-sm text-[#302a41] placeholder:text-[#302a41]/30 focus:outline-none focus:ring-2 focus:ring-[#c8f135] focus:border-transparent transition"
-                  />
-                  {rationForm.image && !imagePreviewError && (
-                    <div className="mt-3 relative h-36 rounded-xl overflow-hidden bg-[#f2efe8]">
-                      <Image
-                        src={rationForm.image}
-                        alt="Preview"
-                        fill
-                        sizes="672px"
-                        className="object-cover"
-                        onError={() => setImagePreviewError(true)}
-                      />
-                    </div>
-                  )}
-                  {rationForm.image && imagePreviewError && (
-                    <p className="mt-2 text-xs text-red-500">
-                      Не удалось загрузить изображение по указанному URL
-                    </p>
-                  )}
                 </div>
 
                 <div className="col-span-2">

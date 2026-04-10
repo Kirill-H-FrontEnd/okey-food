@@ -10,8 +10,10 @@ import {
   CheckCircle2,
   Loader2,
   XCircle,
+  Hash,
 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 const STATUS_CONFIG = {
   pending: {
@@ -36,10 +38,36 @@ const STATUS_CONFIG = {
   },
 };
 
+function OrderIdCell({ id }: { id: string }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="relative inline-flex items-center gap-1">
+      <button
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        onFocus={() => setShow(true)}
+        onBlur={() => setShow(false)}
+        className="flex items-center gap-1.5 text-xs bg-[#302a41]/5 hover:bg-[#302a41]/10 px-2 py-1.5 rounded-lg font-mono text-[#302a41]/60 transition-colors"
+      >
+        <Hash size={10} />
+        {id.slice(0, 8)}
+      </button>
+      {show && (
+        <div className="absolute bottom-full left-0 mb-1.5 z-20 bg-[#302a41] text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap font-mono shadow-xl pointer-events-none">
+          {id}
+          <div className="absolute top-full left-3 border-4 border-transparent border-t-[#302a41]" />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
   const { rations, orders, loading } = useAdminStore();
 
-  const totalRevenue = orders.reduce((acc, o) => acc + o.amount, 0);
+  const deliveredRevenue = orders
+    .filter((o) => o.status === "delivered")
+    .reduce((acc, o) => acc + o.amount, 0);
   const activeRations = rations.filter((r) => r.isActive).length;
   const uniqueCustomers = new Set(orders.map((o) => o.customerName)).size;
 
@@ -55,12 +83,12 @@ export default function AdminDashboard() {
     },
     {
       label: "Выручка (BYN)",
-      value: totalRevenue,
+      value: deliveredRevenue,
       suffix: " BYN",
       icon: TrendingUp,
       color: "bg-emerald-500",
       lightColor: "bg-emerald-50 text-emerald-600",
-      change: "+8%",
+      change: "выполненные",
     },
     {
       label: "Клиентов",
@@ -82,15 +110,12 @@ export default function AdminDashboard() {
     },
   ];
 
-  const recentOrders = [...orders]
-    .sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    )
-    .slice(0, 5);
+  const recentOrders = [...orders].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8 flex flex-col" style={{ minHeight: "100%" }}>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-[#302a41]">Дашборд</h1>
         <p className="text-[#302a41]/50 text-sm mt-1">
@@ -129,9 +154,10 @@ export default function AdminDashboard() {
         })}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-        <div className="xl:col-span-2 bg-white rounded-2xl shadow-sm border border-black/5 overflow-hidden">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-black/5">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 flex-1 min-h-0">
+        {/* Recent orders */}
+        <div className="xl:col-span-2 bg-white rounded-2xl shadow-sm border border-black/5 flex flex-col min-h-0 overflow-hidden">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-black/5 shrink-0">
             <h2 className="font-bold text-[#302a41]">Последние заказы</h2>
             <Link
               href="/admin/orders"
@@ -140,66 +166,73 @@ export default function AdminDashboard() {
               Все заказы <ArrowUpRight size={13} />
             </Link>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-[#f2efe8]/60">
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#302a41]/50 uppercase tracking-wider">
-                    Заказ
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#302a41]/50 uppercase tracking-wider">
-                    Клиент
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#302a41]/50 uppercase tracking-wider">
-                    Рацион
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#302a41]/50 uppercase tracking-wider">
-                    Сумма
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-[#302a41]/50 uppercase tracking-wider">
-                    Статус
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-black/5">
-                {recentOrders.map((order) => {
-                  const status = STATUS_CONFIG[order.status];
-                  const StatusIcon = status.icon;
-                  return (
-                    <tr
-                      key={order.id}
-                      className="hover:bg-[#f2efe8]/40 transition-colors"
-                    >
-                      <td className="px-6 py-4 font-medium text-[#302a41]">
-                        {order.id}
-                      </td>
-                      <td className="px-6 py-4 text-[#302a41]/70">
-                        {order.customerName}
-                      </td>
-                      <td className="px-6 py-4 text-[#302a41]/70">
-                        {order.ration}
-                      </td>
-                      <td className="px-6 py-4 font-semibold text-[#302a41]">
-                        {order.amount} BYN
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${status.className}`}
-                        >
-                          <StatusIcon size={11} />
-                          {status.label}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          <div className="flex-1 overflow-y-auto">
+            {recentOrders.length === 0 && !loading ? (
+              <div className="flex items-center justify-center h-full py-16 text-[#302a41]/30 text-sm font-medium">
+                Заказов пока нет
+              </div>
+            ) : (
+              <table className="w-full text-sm">
+                <thead className="sticky top-0">
+                  <tr className="bg-[#f2efe8]/80">
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-[#302a41]/50 uppercase tracking-wider">
+                      Заказ
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-[#302a41]/50 uppercase tracking-wider">
+                      Клиент
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-[#302a41]/50 uppercase tracking-wider hidden md:table-cell">
+                      Рацион
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-[#302a41]/50 uppercase tracking-wider">
+                      Сумма
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-[#302a41]/50 uppercase tracking-wider">
+                      Статус
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-black/5">
+                  {recentOrders.map((order) => {
+                    const status = STATUS_CONFIG[order.status];
+                    const StatusIcon = status.icon;
+                    return (
+                      <tr
+                        key={order.id}
+                        className="hover:bg-[#f2efe8]/40 transition-colors"
+                      >
+                        <td className="px-6 py-4">
+                          <OrderIdCell id={order.id} />
+                        </td>
+                        <td className="px-6 py-4 font-medium text-[#302a41]">
+                          {order.customerName}
+                        </td>
+                        <td className="px-6 py-4 text-[#302a41]/70 hidden md:table-cell">
+                          {order.ration}
+                        </td>
+                        <td className="px-6 py-4 font-semibold text-[#302a41]">
+                          {order.amount} BYN
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${status.className}`}
+                          >
+                            <StatusIcon size={11} />
+                            {status.label}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-black/5">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-black/5">
+        {/* Rations */}
+        <div className="bg-white rounded-2xl shadow-sm border border-black/5 flex flex-col min-h-0 overflow-hidden">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-black/5 shrink-0">
             <h2 className="font-bold text-[#302a41]">Рационы</h2>
             <Link
               href="/admin/rations"
@@ -208,34 +241,42 @@ export default function AdminDashboard() {
               Управление <ArrowUpRight size={13} />
             </Link>
           </div>
-          <div className="p-4 space-y-3">
-            {rations.map((ration) => (
-              <div
-                key={ration.id}
-                className="flex items-center gap-3 p-3 rounded-xl bg-[#f2efe8]/60"
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-[#302a41] truncate">
-                    {ration.name}
-                  </p>
-                  <p className="text-xs text-[#302a41]/50">{ration.category}</p>
-                </div>
-                <div className="text-right shrink-0">
-                  <p className="text-sm font-bold text-[#302a41]">
-                    {ration.pricePerDay} BYN
-                  </p>
-                  <span
-                    className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                      ration.isActive
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "bg-gray-100 text-gray-500"
-                    }`}
-                  >
-                    {ration.isActive ? "Активен" : "Скрыт"}
-                  </span>
-                </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {rations.length === 0 && !loading ? (
+              <div className="flex items-center justify-center h-full py-8 text-[#302a41]/30 text-sm font-medium text-center">
+                Рационов пока нет
               </div>
-            ))}
+            ) : (
+              rations.map((ration) => (
+                <div
+                  key={ration.id}
+                  className="flex items-center gap-3 p-3 rounded-xl bg-[#f2efe8]/60"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-[#302a41] truncate">
+                      {ration.name}
+                    </p>
+                    <p className="text-xs text-[#302a41]/50">
+                      {ration.calories} ккал · {ration.dishes.length} блюд
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-sm font-bold text-[#302a41]">
+                      {ration.pricePerDay} BYN
+                    </p>
+                    <span
+                      className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                        ration.isActive
+                          ? "bg-emerald-100 text-emerald-700"
+                          : "bg-gray-100 text-gray-500"
+                      }`}
+                    >
+                      {ration.isActive ? "Активен" : "Скрыт"}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
