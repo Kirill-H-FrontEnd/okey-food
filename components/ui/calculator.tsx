@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import React from "react";
 import { HyperText } from "@/components/magicui/hyper-text";
 import { useBasketStore } from "@/store/useStore";
+import { useAdminStore } from "@/store/useAdminStore";
+import toast from "react-hot-toast";
 
 type Gender = "male" | "female";
 type Goal = "loss" | "tone" | "gain";
@@ -100,6 +102,11 @@ export default function CalorieCalculator() {
 
   const addItem = useBasketStore((state) => state.addItem);
   const setIsBasketOpen = useBasketStore((state) => state.setIsBasketOpen);
+  const allRations = useAdminStore((state) => state.rations);
+  const activeRations = useMemo(
+    () => allRations.filter((r) => r.isActive),
+    [allRations],
+  );
 
   const validParams = useMemo(
     () =>
@@ -141,21 +148,45 @@ export default function CalorieCalculator() {
     };
   }, [gender, goal, activity, weight, height, age, validParams]);
 
+  const isRationAvailable = useMemo(() => {
+    if (!recommendation || activeRations.length === 0) return true;
+    return activeRations.some(
+      (r) => String(r.calories) === String(recommendation.plan.cal),
+    );
+  }, [recommendation, activeRations]);
+
   const handleAddToCart = useCallback(() => {
     if (!recommendation) return;
     const { plan } = recommendation;
-    const today = formatTodayISO();
 
+    const matchedRation = activeRations.find(
+      (r) => String(r.calories) === String(plan.cal),
+    );
+
+    if (!matchedRation) {
+      const available = activeRations
+        .map((r) => `${r.calories} ккал`)
+        .join(", ");
+      toast.error(
+        available
+          ? `Рациона на ${plan.cal} ккал сейчас нет. Доступны: ${available}`
+          : "Рационов пока нет. Загляните позже!",
+        { duration: 5000 },
+      );
+      return;
+    }
+
+    const today = formatTodayISO();
     addItem({
       id: `calculator-${plan.cal}`,
       calories: String(plan.cal),
       selectedDays: [today],
       range: null,
-      pricePerDay: plan.price,
-      dishesCount: plan.dishes,
+      pricePerDay: matchedRation.pricePerDay,
+      dishesCount: matchedRation.dishes?.length || plan.dishes,
     });
     setIsBasketOpen(true);
-  }, [recommendation, addItem, setIsBasketOpen]);
+  }, [recommendation, activeRations, addItem, setIsBasketOpen]);
 
   // правильные склонения «блюдо/блюда/блюд»
   function dishesWord(n: number) {
@@ -350,6 +381,13 @@ export default function CalorieCalculator() {
                   </p>
                   <p>• от {recommendation.plan.price} BYN / день</p>
                 </div>
+
+                {!isRationAvailable && (
+                  <div className="mt-3 flex items-center gap-2 rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-700 font-semibold">
+                    <span>⚠</span>
+                    <span>Этот рацион сейчас недоступен</span>
+                  </div>
+                )}
               </>
             ) : (
               <div className="flex flex-col items-center justify-center py-4">
