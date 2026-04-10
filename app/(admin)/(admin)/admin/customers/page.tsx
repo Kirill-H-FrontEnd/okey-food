@@ -7,7 +7,9 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-import { Phone, Users } from "lucide-react";
+import { Phone } from "lucide-react";
+import { TbRefresh } from "react-icons/tb";
+import { FaUsers } from "react-icons/fa";
 import { FaRegClock } from "react-icons/fa6";
 import { LuShoppingCart } from "react-icons/lu";
 import { IoWalletOutline } from "react-icons/io5";
@@ -40,7 +42,7 @@ function formatDate(iso: string) {
 }
 
 export default function CustomersPage() {
-  const { orders } = useAdminStore();
+  const { orders, loading, fetchOrders, updateOrderStatus } = useAdminStore();
 
   const customers = useMemo(() => {
     const map = new Map<
@@ -91,17 +93,22 @@ export default function CustomersPage() {
 
   return (
     <div className="p-4 lg:p-8">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-colorPrimary">Клиенты</h1>
-          <p className="mt-0.5 text-sm text-greySecondary">
-            Всего клиентов: {customers.length}
-          </p>
+          <button
+            onClick={fetchOrders}
+            disabled={loading}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-grey-border/50 hover:border-grey-border text-sm font-semibold text-colorPrimary/60 hover:text-colorPrimary cursor-pointer  transition-colors mt-2"
+          >
+            <TbRefresh size={14} className={loading ? "animate-spin" : ""} />
+            Обновить
+          </button>
         </div>
 
         {customers.length > 0 && (
           <div className="flex items-center gap-1.5 rounded-xl bg-colortext-colorPrimary/5 px-3 py-2">
-            <Users size={15} className="text-colorPrimary/50" />
+            <FaUsers size={15} className="text-colorPrimary/50" />
             <span className="text-sm font-semibold text-colorPrimary">
               {customers.length}
             </span>
@@ -112,7 +119,7 @@ export default function CustomersPage() {
       {customers.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl text-colorPrimary/5">
-            <Users size={24} className="text-colorPrimary/25" />
+            <FaUsers size={24} className="text-colorPrimary/25" />
           </div>
           <p className="mb-1 text-lg font-bold text-colorPrimary/30">
             Клиентов пока нет

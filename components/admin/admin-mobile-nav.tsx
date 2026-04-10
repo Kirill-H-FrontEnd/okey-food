@@ -45,7 +45,7 @@ export function AdminMobileNav() {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-whitePrimary/10 backdrop-blur-sm border-b border-colorPrimary/10 shrink-0 z-[1000]">
+      <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-whiteSecondary border-b border-colorPrimary/10 shrink-0 z-[1000]">
         <div className="flex items-center gap-3">
           <div className="w-[40px] h-[40px]   flex items-center justify-center ">
             <Image
@@ -83,7 +83,7 @@ export function AdminMobileNav() {
         {/* Drawer header */}
 
         {/* Nav items */}
-        <nav className="mt-16 flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
+        <nav className="mt-18 flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);
@@ -91,7 +91,7 @@ export function AdminMobileNav() {
               <SheetClose asChild key={item.href}>
                 <Link
                   href={item.href}
-                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-colors font-semibold ${
+                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm  transition-colors font-semibold ${
                     active
                       ? "bg-yellowPrimary text-colorPrimary"
                       : "text-whiteSecondary hover:text-white hover:bg-white/10"

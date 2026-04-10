@@ -1,7 +1,8 @@
 "use client";
 import { useAdminStore } from "@/store/useAdminStore";
 import { TOrder } from "@/types/admin";
-import { Clock, CheckCircle2, Loader2, XCircle, RefreshCw } from "lucide-react";
+import { Clock, CheckCircle2, Loader2, XCircle } from "lucide-react";
+import { TbRefresh } from "react-icons/tb";
 import { useState } from "react";
 import {
   Select,
@@ -64,9 +65,9 @@ export default function OrdersPage() {
         <button
           onClick={fetchOrders}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-black/10 text-sm font-semibold text-[#302a41]/60 hover:text-[#302a41] hover:border-black/20 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-grey-border/50 hover:border-grey-border text-sm font-semibold text-colorPrimary/60 hover:text-colorPrimary cursor-pointer  transition-colors mt-2"
         >
-          <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+          <TbRefresh size={14} className={loading ? "animate-spin" : ""} />
           Обновить
         </button>
       </div>
