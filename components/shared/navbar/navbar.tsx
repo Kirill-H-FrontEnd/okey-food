@@ -43,6 +43,7 @@ export const Navbar: FC = ({}) => {
           : "bg-whitePrimary"
       } $ w-full sticky  top-0 left-0 py-2 md:py-1.5 z-100 transition-[background-color, box-shadow] duration-300`}
     >
+      admin
       <Container>
         <section className="w-full flex justify-between items-center">
           <div className="flex gap-6 items-center">
