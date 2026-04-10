@@ -2,6 +2,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { PiChefHat } from "react-icons/pi";
+import { TbLayoutDashboardFilled } from "react-icons/tb";
+import { IoReceiptSharp, IoSettingsSharp } from "react-icons/io5";
+import { FaUsers } from "react-icons/fa";
+import { IoExitOutline } from "react-icons/io5";
+import { LuExternalLink } from "react-icons/lu";
+import { MdOutlineRestaurantMenu } from "react-icons/md";
+import { ChevronLeft } from "lucide-react";
 import {
   ChefHat,
   LayoutDashboard,
@@ -19,12 +27,11 @@ import { BurgerMenu } from "@/components/ui/burger-menu/burger-menu";
 import { Button } from "../ui/button";
 
 const NAV_ITEMS = [
-  { label: "Дашборд", href: "/admin", icon: LayoutDashboard },
-  { label: "Рационы", href: "/admin/rations", icon: ChefHat },
-  { label: "Меню", href: "/admin/menu", icon: UtensilsCrossed },
-  { label: "Заказы", href: "/admin/orders", icon: ShoppingCart },
-  { label: "Клиенты", href: "/admin/customers", icon: Users },
-  { label: "Настройки", href: "/admin/settings", icon: Settings },
+  { label: "Дашборд", href: "/admin", icon: TbLayoutDashboardFilled },
+  { label: "Рационы", href: "/admin/rations", icon: MdOutlineRestaurantMenu },
+  { label: "Заказы", href: "/admin/orders", icon: IoReceiptSharp },
+  { label: "Клиенты", href: "/admin/customers", icon: FaUsers },
+  { label: "Настройки", href: "/admin/settings", icon: IoSettingsSharp },
 ];
 
 export function AdminMobileNav() {
@@ -122,7 +129,7 @@ export function AdminMobileNav() {
               target="_blank"
               className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-whiteSecondary "
             >
-              <ExternalLink size={17} className="shrink-0" />
+              <LuExternalLink size={15} className="shrink-0" />
               Открыть сайт
             </Link>
           </SheetClose>
@@ -130,7 +137,7 @@ export function AdminMobileNav() {
             variant={"default"}
             className="w-full justify-start bg-transparent text-whiteSecondary"
           >
-            <LogOut size={17} className="shrink-0" />
+            <IoExitOutline size={17} className="shrink-0" />
             Выйти
           </Button>
         </div>

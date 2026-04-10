@@ -2,23 +2,21 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutDashboard,
-  ChefHat,
-  ReceiptText,
-  Users,
-  Settings,
-  ExternalLink,
-  LogOut,
-  ChevronLeft,
-} from "lucide-react";
+import { PiChefHat } from "react-icons/pi";
+import { TbLayoutDashboardFilled } from "react-icons/tb";
+import { IoReceiptSharp, IoSettingsSharp } from "react-icons/io5";
+import { FaUsers } from "react-icons/fa";
+import { IoExitOutline } from "react-icons/io5";
+import { LuExternalLink } from "react-icons/lu";
+import { MdOutlineRestaurantMenu } from "react-icons/md";
+import { ChevronLeft } from "lucide-react";
 
 const NAV_ITEMS = [
-  { label: "Дашборд", href: "/admin", icon: LayoutDashboard },
-  { label: "Рационы", href: "/admin/rations", icon: ChefHat },
-  { label: "Заказы", href: "/admin/orders", icon: ReceiptText },
-  { label: "Клиенты", href: "/admin/customers", icon: Users },
-  { label: "Настройки", href: "/admin/settings", icon: Settings },
+  { label: "Дашборд", href: "/admin", icon: TbLayoutDashboardFilled },
+  { label: "Рационы", href: "/admin/rations", icon: MdOutlineRestaurantMenu },
+  { label: "Заказы", href: "/admin/orders", icon: IoReceiptSharp },
+  { label: "Клиенты", href: "/admin/customers", icon: FaUsers },
+  { label: "Настройки", href: "/admin/settings", icon: IoSettingsSharp },
 ];
 
 export function AdminSidebar() {
@@ -33,13 +31,13 @@ export function AdminSidebar() {
   return (
     <aside
       className={`${
-        collapsed ? "w-[64px]" : "w-60"
+        collapsed ? "w-[64px]" : "w-70"
       } hidden lg:flex relative h-full bg-colorPrimary flex-col shrink-0 transition-all duration-300 shadow-md shadow-colorPrimary/50`}
     >
       {/* Logo */}
       <div className="flex items-center px-4 py-[22px] border-b border-white/10">
         <div className="w-8 h-8 bg-yellowPrimary rounded-xl flex items-center justify-center shrink-0">
-          <ChefHat className="w-4 h-4 text-colorPrimary" />
+          <PiChefHat className="w-5 h-5 text-colorPrimary" />
         </div>
         <div
           className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${
@@ -108,7 +106,7 @@ export function AdminSidebar() {
           className="flex items-center py-2.5 rounded-xl text-sm font-medium text-greySecondary hover:text-white hover:bg-white/10 transition-colors"
         >
           <span className="w-[48px] flex items-center justify-center shrink-0">
-            <ExternalLink size={17} />
+            <LuExternalLink size={16} />
           </span>
           <span
             className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${
@@ -123,7 +121,7 @@ export function AdminSidebar() {
           className="w-full flex items-center py-2.5 rounded-xl text-sm font-medium text-greySecondary hover:text-red-400 hover:bg-red-500/10 transition-colors"
         >
           <span className="w-[48px] flex items-center justify-center shrink-0">
-            <LogOut size={17} />
+            <IoExitOutline size={17} />
           </span>
           <span
             className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${
