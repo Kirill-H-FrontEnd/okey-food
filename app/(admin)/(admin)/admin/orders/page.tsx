@@ -3,6 +3,7 @@ import { useAdminStore } from "@/store/useAdminStore";
 import { TOrder } from "@/types/admin";
 import { Clock, CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { TbRefresh } from "react-icons/tb";
+import { IoReceiptSharp } from "react-icons/io5";
 import { useState } from "react";
 import {
   Select,
@@ -57,7 +58,10 @@ export default function OrdersPage() {
     <div className="p-4 md:p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-[#302a41]">Заказы</h1>
+          <h1 className="text-2xl font-bold text-[#302a41] flex items-center gap-2">
+            <IoReceiptSharp className="text-greySecondary" />
+            <span>Заказы</span>
+          </h1>
           <p className="text-[#302a41]/50 text-sm mt-1">
             Всего заказов: {orders.length}
           </p>

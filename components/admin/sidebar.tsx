@@ -3,16 +3,15 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PiChefHat } from "react-icons/pi";
-import { TbLayoutDashboardFilled } from "react-icons/tb";
 import { IoReceiptSharp, IoSettingsSharp } from "react-icons/io5";
 import { FaUsers } from "react-icons/fa";
 import { IoExitOutline } from "react-icons/io5";
 import { LuExternalLink } from "react-icons/lu";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
 import { ChevronLeft } from "lucide-react";
-
+import { FiTrendingUp } from "react-icons/fi";
 const NAV_ITEMS = [
-  { label: "Дашборд", href: "/admin", icon: TbLayoutDashboardFilled },
+  { label: "Статистика", href: "/admin", icon: FiTrendingUp },
   { label: "Рационы", href: "/admin/rations", icon: MdOutlineRestaurantMenu },
   { label: "Заказы", href: "/admin/orders", icon: IoReceiptSharp },
   { label: "Клиенты", href: "/admin/customers", icon: FaUsers },
@@ -74,7 +73,7 @@ export function AdminSidebar() {
               key={item.href}
               href={item.href}
               title={collapsed ? item.label : undefined}
-              className={`flex items-center py-2.5 rounded-xl text-sm font-medium transition-colors ${
+              className={`flex items-center py-2.5 rounded-md text-sm font-medium transition-colors ${
                 active
                   ? "bg-yellowPrimary text-colorPrimary"
                   : "text-whiteSecondary  hover:bg-white/10"
@@ -103,7 +102,7 @@ export function AdminSidebar() {
           href="/"
           target="_blank"
           title={collapsed ? "Открыть сайт" : undefined}
-          className="flex items-center py-2.5 rounded-xl text-sm font-medium text-greySecondary hover:text-white hover:bg-white/10 transition-colors"
+          className="flex items-center py-2.5 rounded-md text-sm font-medium text-greySecondary hover:text-white hover:bg-white/10 transition-colors"
         >
           <span className="w-[48px] flex items-center justify-center shrink-0">
             <LuExternalLink size={16} />
@@ -118,7 +117,7 @@ export function AdminSidebar() {
         </Link>
         <button
           title={collapsed ? "Выйти" : undefined}
-          className="w-full flex items-center py-2.5 rounded-xl text-sm font-medium text-greySecondary hover:text-red-400 hover:bg-red-500/10 transition-colors"
+          className="w-full flex items-center py-2.5 rounded-md text-sm font-medium text-greySecondary hover:text-red-400 hover:bg-red-500/10 transition-colors"
         >
           <span className="w-[48px] flex items-center justify-center shrink-0">
             <IoExitOutline size={17} />

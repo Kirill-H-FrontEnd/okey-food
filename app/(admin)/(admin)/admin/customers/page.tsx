@@ -95,7 +95,10 @@ export default function CustomersPage() {
     <div className="p-4 lg:p-8">
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-colorPrimary">Клиенты</h1>
+          <h1 className="text-2xl font-bold text-colorPrimary flex items-center gap-2">
+            <FaUsers className="text-greySecondary" />
+            <span>Клиенты</span>
+          </h1>
           <button
             onClick={fetchOrders}
             disabled={loading}
@@ -164,7 +167,7 @@ export default function CustomersPage() {
                         <LuShoppingCart size={16} />
                         {c.orderCount}
                       </span>
-                      <span className="flex items-center gap-1 rounded-lg bg-yellowPrimary/50 px-2.5 py-1 text-xs font-semibold text-colorPrimary">
+                      <span className="flex items-center gap-1 rounded-lg bg-green-300/50 px-2.5 py-1 text-xs font-semibold text-colorPrimary">
                         <IoWalletOutline size={11} />
                         {c.totalSpent} BYN
                       </span>
