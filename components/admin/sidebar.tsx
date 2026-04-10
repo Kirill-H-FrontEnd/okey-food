@@ -51,7 +51,7 @@ export function AdminSidebar() {
           <p className="text-whiteSecondary font-bold text-sm leading-tight">
             Okey Food
           </p>
-          <p className="text-white/40 text-xs">Админ панель</p>
+          <p className="text-greySecondary text-xs">Админ панель</p>
         </div>
 
         <button
@@ -105,7 +105,7 @@ export function AdminSidebar() {
           href="/"
           target="_blank"
           title={collapsed ? "Открыть сайт" : undefined}
-          className="flex items-center py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+          className="flex items-center py-2.5 rounded-xl text-sm font-medium text-greySecondary hover:text-white hover:bg-white/10 transition-colors"
         >
           <span className="w-[48px] flex items-center justify-center shrink-0">
             <ExternalLink size={17} />
@@ -120,7 +120,7 @@ export function AdminSidebar() {
         </Link>
         <button
           title={collapsed ? "Выйти" : undefined}
-          className="w-full flex items-center py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+          className="w-full flex items-center py-2.5 rounded-xl text-sm font-medium text-greySecondary hover:text-red-400 hover:bg-red-500/10 transition-colors"
         >
           <span className="w-[48px] flex items-center justify-center shrink-0">
             <LogOut size={17} />

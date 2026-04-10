@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Sheet, SheetContent, SheetClose } from "@/components/ui/sheet";
 import { BurgerMenu } from "@/components/ui/burger-menu/burger-menu";
+import { Button } from "../ui/button";
 
 const NAV_ITEMS = [
   { label: "Дашборд", href: "/admin", icon: LayoutDashboard },
@@ -36,17 +37,16 @@ export function AdminMobileNav() {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      {/* Top bar — visible only on mobile */}
-      <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-[#302a41] border-b border-white/10 shrink-0">
+      <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-whitePrimary/10 backdrop-blur-sm border-b border-colorPrimary/10 shrink-0 z-[1000]">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-[#c8f135] rounded-xl flex items-center justify-center">
-            <ChefHat className="w-4 h-4 text-[#302a41]" />
+          <div className="w-8 h-8 bg-yellowPrimary rounded-xl flex items-center justify-center">
+            <ChefHat className="w-4 h-4 text-colorPrimary" />
           </div>
           <div>
-            <p className="text-white font-bold text-sm leading-tight">
+            <p className="text-colorPrimary font-bold text-sm leading-tight">
               Okey Food
             </p>
-            <p className="text-white/40 text-xs">Админ панель</p>
+            <p className="text-greySecondary 40 text-xs">Админ панель</p>
           </div>
         </div>
 
@@ -56,16 +56,16 @@ export function AdminMobileNav() {
       {/* Slide-out drawer */}
       <SheetContent
         side="left"
-        className="bg-[#302a41] border-0 p-0 w-72 flex flex-col gap-0"
+        className="bg-colorPrimary border-0 p-0 w-72 flex flex-col gap-0"
       >
         {/* Drawer header */}
-        <div className="flex items-center justify-between px-4 py-[22px] border-b border-white/10">
+        {/* <div className="flex items-center justify-between px-4 py-[22px] border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#c8f135] rounded-xl flex items-center justify-center shrink-0">
-              <ChefHat className="w-4 h-4 text-[#302a41]" />
+            <div className="w-8 h-8 bg-yellowPrimary rounded-xl flex items-center justify-center shrink-0">
+              <ChefHat className="w-4 h-4 text-colorPrimary" />
             </div>
             <div>
-              <p className="text-white font-bold text-sm leading-tight">
+              <p className="text-whiteSecondary font-bold text-sm leading-tight">
                 Okey Food
               </p>
               <p className="text-white/40 text-xs">Админ панель</p>
@@ -74,10 +74,10 @@ export function AdminMobileNav() {
           <SheetClose className="w-8 h-8 flex items-center justify-center rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-colors outline-none focus:outline-none focus-visible:outline-none">
             <X size={18} />
           </SheetClose>
-        </div>
+        </div> */}
 
         {/* Nav items */}
-        <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
+        <nav className="mt-16 flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);
@@ -85,10 +85,10 @@ export function AdminMobileNav() {
               <SheetClose asChild key={item.href}>
                 <Link
                   href={item.href}
-                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-colors font-semibold ${
                     active
-                      ? "bg-[#c8f135] text-[#302a41]"
-                      : "text-white/60 hover:text-white hover:bg-white/10"
+                      ? "bg-yellowPrimary text-colorPrimary"
+                      : "text-whiteSecondary hover:text-white hover:bg-white/10"
                   }`}
                 >
                   <Icon size={17} className="shrink-0" />
@@ -100,21 +100,24 @@ export function AdminMobileNav() {
         </nav>
 
         {/* Bottom links */}
-        <div className="px-2 py-3 border-t border-white/10 space-y-0.5">
+        <div className="px-2 py-2 border-t border-white/10 space-y-0.5">
           <SheetClose asChild>
             <Link
               href="/"
               target="_blank"
-              className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+              className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-whiteSecondary "
             >
               <ExternalLink size={17} className="shrink-0" />
               Открыть сайт
             </Link>
           </SheetClose>
-          <button className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-colors">
+          <Button
+            variant={"default"}
+            className="w-full justify-start bg-transparent text-whiteSecondary"
+          >
             <LogOut size={17} className="shrink-0" />
             Выйти
-          </button>
+          </Button>
         </div>
       </SheetContent>
     </Sheet>
