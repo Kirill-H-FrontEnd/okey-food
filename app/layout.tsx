@@ -2,7 +2,6 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { Mulish } from "next/font/google";
 import { AnalyticsConsentModal } from "@/components/ui/analytics-consent-modal";
-import { Toaster } from "react-hot-toast";
 import { CustomToaster } from "@/components/ui/custom-toaster";
 
 const font = Mulish({
@@ -25,37 +24,7 @@ export default function RootLayout({
         {children}
         <AnalyticsConsentModal />
         <Analytics />
-        {/* <Toaster
-          toastOptions={{
-            duration: 3000,
-            className: " font-medium text-sm ",
-            style: {
-              borderRadius: "8px",
-              padding: "6px 12px",
-            },
-            success: {
-              iconTheme: {
-                primary: "#00C950",
-                secondary: "#fff",
-              },
-              style: {
-                background: "",
-                color: "#00C950",
-              },
-            },
 
-            error: {
-              iconTheme: {
-                primary: "#FB2C36",
-                secondary: "#fff",
-              },
-              style: {
-                background: "#fff",
-                color: "#FF6467",
-              },
-            },
-          }}
-        /> */}
         <CustomToaster />
       </body>
     </html>
