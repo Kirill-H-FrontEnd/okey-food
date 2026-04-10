@@ -145,7 +145,7 @@ export default function CustomersPage() {
               <AccordionItem
                 key={c.name}
                 value={c.name}
-                className="overflow-hidden rounded-2xl border border-black/5 bg-whiteSecondary  shadow-sm"
+                className="overflow-hidden rounded-lg border border-greySecondary/50 bg-whiteSecondary  "
               >
                 <AccordionTrigger className="bg-whiteSecondary py-4 hover:bg-whiteSecondary px-4">
                   <div className="flex min-w-0 flex-1 items-center gap-3">

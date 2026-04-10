@@ -22,7 +22,7 @@ function AccordionItem({
     <AccordionPrimitive.Item
       data-slot="accordion-item"
       className={cn(
-        "border-none transition-all data-[state=open]:bg-whitePrimary",
+        " transition-all data-[state=open]:bg-whitePrimary",
         className,
       )}
       {...props}
