@@ -1,6 +1,7 @@
 "use client";
 
 import { FC } from "react";
+import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -11,12 +12,14 @@ type CheckoutFooterProps = {
   isConsentGiven: boolean;
   onConsentChange: (value: boolean) => void;
   onSubmit: () => void;
+  isSubmitting?: boolean;
 };
 
 export const CheckoutFooter: FC<CheckoutFooterProps> = ({
   isConsentGiven,
   onConsentChange,
   onSubmit,
+  isSubmitting = false,
 }) => (
   <div className="w-full bg-whitePrimary border-t border-grey-border px-6 py-4 ">
     <div className="grid gap-4">
@@ -25,6 +28,7 @@ export const CheckoutFooter: FC<CheckoutFooterProps> = ({
           id="consent-switch"
           checked={isConsentGiven}
           onCheckedChange={onConsentChange}
+          disabled={isSubmitting}
         />
         <label
           htmlFor="consent-switch"
@@ -40,16 +44,23 @@ export const CheckoutFooter: FC<CheckoutFooterProps> = ({
       <Button
         type="button"
         variant="default"
-        disabled={!isConsentGiven}
+        disabled={!isConsentGiven || isSubmitting}
         className={cn(
           "w-full py-6 font-bold transition-colors",
-          isConsentGiven
+          isConsentGiven && !isSubmitting
             ? "bg-yellowPrimary text-colorPrimary"
             : "bg-greyPrimary text-greySecondary disabled:cursor-not-allowed disabled:opacity-100",
         )}
         onClick={onSubmit}
       >
-        Оформить заказ
+        {isSubmitting ? (
+          <span className="flex items-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Оформляем заказ...
+          </span>
+        ) : (
+          "Оформить заказ"
+        )}
       </Button>
     </div>
   </div>
