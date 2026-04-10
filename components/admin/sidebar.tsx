@@ -4,21 +4,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  UtensilsCrossed,
-  ShoppingCart,
+  ChefHat,
+  ReceiptText,
   Users,
   Settings,
-  ChefHat,
-  LogOut,
   ExternalLink,
+  LogOut,
   ChevronLeft,
 } from "lucide-react";
 
 const NAV_ITEMS = [
   { label: "Дашборд", href: "/admin", icon: LayoutDashboard },
   { label: "Рационы", href: "/admin/rations", icon: ChefHat },
-  { label: "Меню", href: "/admin/menu", icon: UtensilsCrossed },
-  { label: "Заказы", href: "/admin/orders", icon: ShoppingCart },
+  { label: "Заказы", href: "/admin/orders", icon: ReceiptText },
   { label: "Клиенты", href: "/admin/customers", icon: Users },
   { label: "Настройки", href: "/admin/settings", icon: Settings },
 ];
@@ -36,12 +34,12 @@ export function AdminSidebar() {
     <aside
       className={`${
         collapsed ? "w-[64px]" : "w-60"
-      } hidden lg:flex relative h-full bg-[#302a41] flex-col shrink-0 transition-all duration-300`}
+      } hidden lg:flex relative h-full bg-colorPrimary flex-col shrink-0 transition-all duration-300 shadow-md shadow-colorPrimary/50`}
     >
       {/* Logo */}
       <div className="flex items-center px-4 py-[22px] border-b border-white/10">
-        <div className="w-8 h-8 bg-[#c8f135] rounded-xl flex items-center justify-center shrink-0">
-          <ChefHat className="w-4 h-4 text-[#302a41]" />
+        <div className="w-8 h-8 bg-yellowPrimary rounded-xl flex items-center justify-center shrink-0">
+          <ChefHat className="w-4 h-4 text-colorPrimary" />
         </div>
         <div
           className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${
@@ -50,17 +48,16 @@ export function AdminSidebar() {
               : "ml-3 max-w-[140px] opacity-100"
           }`}
         >
-          <p className="text-white font-bold text-sm leading-tight">
+          <p className="text-whiteSecondary font-bold text-sm leading-tight">
             Okey Food
           </p>
           <p className="text-white/40 text-xs">Админ панель</p>
         </div>
 
-        {/* Collapse button — inside logo row, pushed right */}
         <button
           onClick={() => setCollapsed(!collapsed)}
           title={collapsed ? "Развернуть" : "Свернуть"}
-          className={`absolute -right-3 top-[26px] z-50 w-6 h-6 bg-[#302a41] border border-white/15 rounded-full flex items-center justify-center text-white/50 hover:text-white shadow-md transition-colors`}
+          className="absolute -right-3 top-[26px] z-50 w-6 h-6 bg-colorPrimary border border-white/20 rounded-full flex items-center justify-center text-white/50 hover:text-yellow-hover shadow-md transition-colors cursor-pointer"
         >
           <ChevronLeft
             size={12}
@@ -79,18 +76,20 @@ export function AdminSidebar() {
               key={item.href}
               href={item.href}
               title={collapsed ? item.label : undefined}
-              className={`flex items-center px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+              className={`flex items-center py-2.5 rounded-xl text-sm font-medium transition-colors ${
                 active
-                  ? "bg-[#c8f135] text-[#302a41]"
-                  : "text-white/60 hover:text-white hover:bg-white/10"
+                  ? "bg-yellowPrimary text-colorPrimary"
+                  : "text-whiteSecondary  hover:bg-white/10"
               }`}
             >
-              <Icon size={17} className="shrink-0" />
+              <span className="w-[45px] flex items-center justify-center shrink-0">
+                <Icon size={17} />
+              </span>
               <span
-                className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${
+                className={`overflow-hidden whitespace-nowrap transition-all duration-300 font-semibold ${
                   collapsed
-                    ? "max-w-0 opacity-0 ml-0"
-                    : "ml-3 max-w-[140px] opacity-100"
+                    ? "max-w-0 opacity-0"
+                    : "max-w-[140px] opacity-100 pr-3"
                 }`}
               >
                 {item.label}
@@ -106,14 +105,14 @@ export function AdminSidebar() {
           href="/"
           target="_blank"
           title={collapsed ? "Открыть сайт" : undefined}
-          className="flex items-center px-3 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+          className="flex items-center py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 transition-colors"
         >
-          <ExternalLink size={17} className="shrink-0" />
+          <span className="w-[48px] flex items-center justify-center shrink-0">
+            <ExternalLink size={17} />
+          </span>
           <span
             className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${
-              collapsed
-                ? "max-w-0 opacity-0 ml-0"
-                : "ml-3 max-w-[140px] opacity-100"
+              collapsed ? "max-w-0 opacity-0" : "max-w-[140px] opacity-100 pr-3"
             }`}
           >
             Открыть сайт
@@ -121,14 +120,14 @@ export function AdminSidebar() {
         </Link>
         <button
           title={collapsed ? "Выйти" : undefined}
-          className="w-full flex items-center px-3 py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+          className="w-full flex items-center py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-colors"
         >
-          <LogOut size={17} className="shrink-0" />
+          <span className="w-[48px] flex items-center justify-center shrink-0">
+            <LogOut size={17} />
+          </span>
           <span
             className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${
-              collapsed
-                ? "max-w-0 opacity-0 ml-0"
-                : "ml-3 max-w-[140px] opacity-100"
+              collapsed ? "max-w-0 opacity-0" : "max-w-[140px] opacity-100 pr-3"
             }`}
           >
             Выйти
