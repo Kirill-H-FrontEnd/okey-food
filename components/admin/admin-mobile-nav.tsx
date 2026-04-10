@@ -13,6 +13,7 @@ import {
   ExternalLink,
   X,
 } from "lucide-react";
+import Image from "next/image";
 import { Sheet, SheetContent, SheetClose } from "@/components/ui/sheet";
 import { BurgerMenu } from "@/components/ui/burger-menu/burger-menu";
 import { Button } from "../ui/button";
@@ -39,8 +40,14 @@ export function AdminMobileNav() {
     <Sheet open={open} onOpenChange={setOpen}>
       <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-whitePrimary/10 backdrop-blur-sm border-b border-colorPrimary/10 shrink-0 z-[1000]">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-yellowPrimary rounded-xl flex items-center justify-center">
-            <ChefHat className="w-4 h-4 text-colorPrimary" />
+          <div className="w-9 h-9   flex items-center justify-center ">
+            <Image
+              src="/logo.png"
+              alt="Okey Food"
+              width={42}
+              height={42}
+              className="rounded-sm"
+            />
           </div>
           <div>
             <p className="text-colorPrimary font-bold text-sm leading-tight">
