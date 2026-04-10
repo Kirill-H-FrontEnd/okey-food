@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     locale: "ru_RU",
     images: [
       {
-        url: `${SITE_URL}/logo.png`,
+        url: `${SITE_URL}/okey-food-logo.png`,
         width: 1200,
         height: 630,
         alt: "OkeyFood — политика конфиденциальности",
@@ -38,16 +38,16 @@ export const metadata: Metadata = {
     title: "Политика конфиденциальности | OkeyFood",
     description:
       "Какие данные мы собираем при заказе и обращениях, как используем cookies и аналитику, и как вы можете управлять своими данными.",
-    images: [`${SITE_URL}/logo.png`],
+    images: [`${SITE_URL}/okey-food-logo.png`],
   },
   robots: {
     index: true,
     follow: true,
   },
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/okey-food-logo.png",
+    shortcut: "/okey-food-logo.png",
+    apple: "/okey-food-logo.png",
   },
 };
 

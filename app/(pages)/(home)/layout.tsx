@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     locale: "ru_RU",
     images: [
       {
-        url: `${SITE_URL}/logo.png`,
+        url: `${SITE_URL}/okey-food-logo.png`,
         width: 1200,
         height: 630,
         alt: "OkeyFood — доставка здорового питания",
@@ -45,9 +45,9 @@ export const metadata: Metadata = {
     follow: true,
   },
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/okey-food-logo.png",
+    shortcut: "/okey-food-logo.png",
+    apple: "/okey-food-logo.png",
   },
   verification: {
     google: "",

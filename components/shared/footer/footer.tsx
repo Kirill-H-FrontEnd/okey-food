@@ -30,7 +30,7 @@ export const Footer: FC = ({}) => {
         <section className="py-20 grid grid-cols-1 justify-center lg:grid-cols-[auto_1fr]  gap-5 lg:gap-20 ">
           <div className="flex flex-col justify-center md:justify-start text-center md:text-left">
             <div className="grid justify-center md:justify-start">
-              <Logo url="/logo.PNG" />
+              <Logo url="/okey-food-logo.png" />
             </div>
             <p className="text-whitePrimary font-semibold mt-2">
               Доставка рационов питания

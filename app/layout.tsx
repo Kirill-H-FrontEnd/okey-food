@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="canonical" href={`https://okey-food.vercel.app`} />
-        <link rel="icon" href="/logo.png" />
+        <link rel="icon" href="/okey-food-logo.png" />
       </head>
       <body style={font.style} className={` antialiased bg-whitePrimary`}>
         <RationsProvider>{children}</RationsProvider>

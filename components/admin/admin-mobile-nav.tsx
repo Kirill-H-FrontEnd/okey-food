@@ -42,7 +42,7 @@ export function AdminMobileNav() {
         <div className="flex items-center gap-3">
           <div className="w-9 h-9   flex items-center justify-center ">
             <Image
-              src="/logo.png"
+              src="/okey-food-logo.png"
               alt="Okey Food"
               width={42}
               height={42}
