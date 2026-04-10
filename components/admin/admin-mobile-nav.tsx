@@ -40,13 +40,21 @@ export function AdminMobileNav() {
     <Sheet open={open} onOpenChange={setOpen}>
       <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-whitePrimary/10 backdrop-blur-sm border-b border-colorPrimary/10 shrink-0 z-[1000]">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9   flex items-center justify-center ">
+          <div className="w-[40px] h-[40px]   flex items-center justify-center ">
             <Image
-              src="/okey-food-logo.png"
-              alt="Okey Food"
-              width={42}
-              height={42}
+              src={"/okey-food-logo.png"}
+              alt="OkeyFood логотип"
+              width={50}
+              height={50}
+              priority
               className="rounded-sm"
+              sizes="(max-width: 768px) 40px, 50px"
+              style={{
+                objectFit: "contain",
+                width: "100%",
+                height: "100%",
+                display: "block",
+              }}
             />
           </div>
           <div>
