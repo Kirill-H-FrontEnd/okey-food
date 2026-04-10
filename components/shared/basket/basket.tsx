@@ -31,6 +31,7 @@ import {
   type CheckoutFormData,
 } from "@/schemas/checkout-schema";
 import { useBasketStore } from "@/store/useStore";
+import { useAdminStore } from "@/store/useAdminStore";
 import { BasketItem } from "./_components/basket-item";
 import { BasketEmpty } from "./_components/basket-empty";
 import { BasketFooter } from "./_components/basket-footer";
@@ -106,6 +107,8 @@ export const Basket: FC = () => {
   const items = useBasketStore((s) => s.items);
   const updateItem = useBasketStore((s) => s.updateItem);
   const removeItem = useBasketStore((s) => s.removeItem);
+  const addOrder = useAdminStore((s) => s.addOrder);
+  const rations = useAdminStore((s) => s.rations);
 
   const prefersReducedMotion = useReducedMotion();
 
@@ -322,7 +325,26 @@ export const Basket: FC = () => {
     setSuccessOrder(null);
   };
 
-  const handleSubmit = form.handleSubmit((data) => {
+  const handleSubmit = form.handleSubmit(async (data) => {
+    try {
+      for (const item of sortedItems) {
+        const rationName =
+          rations.find((r) => r.calories === item.calories)?.name ??
+          `Рацион ${item.calories} ккал`;
+        await addOrder({
+          customerName: `${data.firstName} ${data.lastName}`.trim(),
+          phone: data.phone,
+          ration: rationName,
+          days: item.selectedDays.length,
+          amount: item.pricePerDay * item.selectedDays.length,
+          status: "pending",
+          notes: data.comment ?? "",
+        });
+      }
+    } catch {
+      toast.error("Не удалось сохранить заказ. Попробуйте ещё раз.");
+      return;
+    }
     setSuccessOrder({
       customer: {
         firstName: data.firstName,

@@ -1,3 +1,4 @@
+"use client";
 import { FC } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -16,8 +17,15 @@ import {
   type ContactBannerFormData,
 } from "@/schemas/contact-banner-schema";
 import { cn } from "@/lib/utils";
+import { useBasketStore } from "@/store/useStore";
+import { useAdminStore } from "@/store/useAdminStore";
 
 export const FormBanner: FC = () => {
+  const basketItems = useBasketStore((state) => state.items);
+  const clearBasket = useBasketStore((state) => state.clear);
+  const addOrder = useAdminStore((state) => state.addOrder);
+  const rations = useAdminStore((state) => state.rations);
+
   const contactResolver: Resolver<ContactBannerFormData> = async (values) => {
     const parsed = contactBannerSchema.safeParse(values);
 
@@ -77,17 +85,47 @@ export const FormBanner: FC = () => {
     formErrors,
   ) => {
     const firstMessage = formErrors.name?.message ?? formErrors.phone?.message;
-
     if (firstMessage) {
       toast.error(firstMessage);
     }
   };
 
-  const onSubmit = handleSubmit((data) => {
-    toast.success(
-      `Спасибо ${data.name}! Мы свяжемся с вами в ближайшее время.`,
-    );
-    reset({ name: "", phone: "", accepted: false });
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      if (basketItems.length > 0) {
+        for (const item of basketItems) {
+          const rationName =
+            rations.find((r) => r.calories === item.calories)?.name ??
+            `Рацион ${item.calories} ккал`;
+          await addOrder({
+            customerName: data.name,
+            phone: data.phone,
+            ration: rationName,
+            days: item.selectedDays.length,
+            amount: item.pricePerDay * item.selectedDays.length,
+            status: "pending",
+            notes: "",
+          });
+        }
+        clearBasket();
+      } else {
+        await addOrder({
+          customerName: data.name,
+          phone: data.phone,
+          ration: "Консультация",
+          days: 0,
+          amount: 0,
+          status: "pending",
+          notes: "",
+        });
+      }
+      toast.success(
+        `Спасибо ${data.name}! Мы свяжемся с вами в ближайшее время.`,
+      );
+      reset({ name: "", phone: "", accepted: false });
+    } catch {
+      toast.error("Ошибка при отправке заявки. Попробуйте ещё раз.");
+    }
   }, onSubmitError);
 
   return (
@@ -141,7 +179,7 @@ export const FormBanner: FC = () => {
         className="w-full bg-yellowPrimary py-6 font-bold text-colorPrimary disabled:cursor-not-allowed disabled:opacity-50"
         variant="default"
       >
-        Связаться с нами
+        {isSubmitting ? "Отправка..." : "Связаться с нами"}
       </Button>
 
       <p className="text-sm text-whitePrimary">
