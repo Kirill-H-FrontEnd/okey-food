@@ -9,11 +9,11 @@ export default function AdminLayout({
 }) {
   return (
     <AdminDataProvider>
-      <div className="flex h-screen overflow-hidden bg-[#f2efe8]">
+      <div className="flex h-dvh overflow-hidden bg-[#f2efe8]">
         <AdminSidebar />
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           <AdminMobileNav />
-          <main className="flex-1 overflow-y-auto">{children}</main>
+          <main className="flex-1 overflow-y-auto min-h-0">{children}</main>
         </div>
       </div>
     </AdminDataProvider>
