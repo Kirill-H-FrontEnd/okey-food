@@ -27,7 +27,7 @@ import { BurgerMenu } from "@/components/ui/burger-menu/burger-menu";
 import { Button } from "../ui/button";
 
 const NAV_ITEMS = [
-  { label: "Дашборд", href: "/admin", icon: TbLayoutDashboardFilled },
+  { label: "Статистика", href: "/admin", icon: TbLayoutDashboardFilled },
   { label: "Рационы", href: "/admin/rations", icon: MdOutlineRestaurantMenu },
   { label: "Заказы", href: "/admin/orders", icon: IoReceiptSharp },
   { label: "Клиенты", href: "/admin/customers", icon: FaUsers },
