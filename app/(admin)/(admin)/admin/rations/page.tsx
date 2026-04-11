@@ -512,7 +512,7 @@ export default function RationsPage() {
           open={isDishFormOpen}
           onOpenChange={(open) => !open && closeDishForm()}
         >
-          <DialogContent className="max-w-2xl overflow-hidden border-none bg-whiteSecondary p-0">
+          <DialogContent className="max-w-full sm:max-w-2xl h-full sm:h-[650px] overflow-hidden border-none bg-whiteSecondary p-0 rounded-none sm:rounded-lg">
             <DialogHeader className="sticky top-0 z-10 border-b border-black/5 bg-white px-6 py-5 text-left">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-yellowPrimary">
@@ -526,9 +526,6 @@ export default function RationsPage() {
                   <DialogTitle className="text-lg font-bold text-colorPrimary">
                     {editingDishId ? "Редактировать блюдо" : "Добавить блюдо"}
                   </DialogTitle>
-                  <DialogDescription className="sr-only">
-                    Форма добавления или редактирования блюда
-                  </DialogDescription>
                 </div>
               </div>
             </DialogHeader>
@@ -571,7 +568,7 @@ export default function RationsPage() {
                       <SelectValue placeholder="Выберите приём пищи" />
                     </SelectTrigger>
 
-                    <SelectContent>
+                    <SelectContent className="border border-black/10 bg-white text-colorPrimary shadow-xl z-[9999]">
                       {MEALS.map((m) => (
                         <SelectItem key={m} value={m}>
                           {m}
@@ -891,7 +888,7 @@ export default function RationsPage() {
         open={isRationFormOpen}
         onOpenChange={(open) => !open && closeRationForm()}
       >
-        <DialogContent className="max-w-lg overflow-hidden border-none bg-white p-0">
+        <DialogContent className="max-w-full h-full sm:h-[600px] sm:max-w-lg rounded-none sm:rounded-lg overflow-hidden border-none bg-white p-0">
           <DialogHeader className="sticky top-0 z-10 border-b border-black/5 bg-white px-6 py-5 text-left">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-yellowPrimary">
@@ -1029,7 +1026,7 @@ export default function RationsPage() {
         open={!!deleteConfirmId}
         onOpenChange={(open) => !open && setDeleteConfirmId(null)}
       >
-        <DialogContent className="max-w-sm rounded-2xl border-none bg-white p-6">
+        <DialogContent className="max-w-sm rounded-md border-none bg-white p-6">
           <DialogHeader className="text-left">
             <div className="mb-1 flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-50">
