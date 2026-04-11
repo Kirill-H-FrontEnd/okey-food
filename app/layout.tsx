@@ -26,7 +26,6 @@ export default function RootLayout({
         <RationsProvider>{children}</RationsProvider>
         <AnalyticsConsentModal />
         <Analytics />
-
         <CustomToaster />
       </body>
     </html>

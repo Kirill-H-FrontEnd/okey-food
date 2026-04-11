@@ -7,7 +7,7 @@ export default function SettingsPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-colorPrimary flex items-center gap-2">
           {" "}
-          <IoSettingsSharp className=" text-greySecondary " />
+          <IoSettingsSharp className=" text-yellow-hover " />
           <span>Настройки</span>
         </h1>
         <p className="text-greySecondary text-sm mt-1">Настройки сайта</p>

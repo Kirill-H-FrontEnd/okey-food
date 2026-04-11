@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 const STATUS_CONFIG: Record<
   TOrder["status"],
@@ -56,28 +57,34 @@ export default function OrdersPage() {
 
   return (
     <div className="p-4 md:p-8">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-start justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-[#302a41] flex items-center gap-2">
-            <IoReceiptSharp className="text-greySecondary" />
+            <IoReceiptSharp className="text-yellow-hover" />
             <span>Заказы</span>
           </h1>
-          <p className="text-[#302a41]/50 text-sm mt-1">
-            Всего заказов: {orders.length}
-          </p>
-        </div>
-        <button
+          {orders.length > 0 && (
+            <div className="flex items-center gap-1.5 rounded-xl text-greySecondary  py-2">
+              <p>Всего заказов:</p>
+              <span className="text-sm font-semibold text-yellow-hover">
+                {orders.length}
+              </span>
+            </div>
+          )}
+        </div>{" "}
+        <Button
           onClick={fetchOrders}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-grey-border/50 hover:border-grey-border text-sm font-semibold text-colorPrimary/60 hover:text-colorPrimary cursor-pointer  transition-colors mt-2"
+          className="flex items-center gap-2 px-4 py-2 rounded-md bg-white border border-grey-border/50 hover:border-grey-border text-sm font-semibold text-colorPrimary/60 hover:text-colorPrimary cursor-pointer  transition-colors "
         >
           <TbRefresh size={14} className={loading ? "animate-spin" : ""} />
           Обновить
-        </button>
+        </Button>
       </div>
 
       {orders.length === 0 && !loading ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
+          <IoReceiptSharp size={24} className="text-colorPrimary/25" />
           <p className="font-bold text-[#302a41]/30 text-lg mb-1">
             Заказов пока нет
           </p>
@@ -86,11 +93,11 @@ export default function OrdersPage() {
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl shadow-sm border border-black/5 overflow-hidden">
+        <div className="bg-white rounded-lg border border-greySecondary/50 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-[#f2efe8]/60">
+                <tr className="bg-whitePrimary border-b border-greySecondary/50 ">
                   {[
                     "Клиент",
                     "Телефон",
@@ -102,7 +109,7 @@ export default function OrdersPage() {
                   ].map((h) => (
                     <th
                       key={h}
-                      className="px-6 py-3 text-left text-xs font-semibold text-[#302a41]/50 uppercase tracking-wider"
+                      className="px-6 py-4 text-left text-xs font-semibold text-greySecondary uppercase tracking-wider"
                     >
                       {h}
                     </th>
@@ -115,9 +122,9 @@ export default function OrdersPage() {
                   return (
                     <tr
                       key={order.id}
-                      className="hover:bg-[#f2efe8]/40 transition-colors"
+                      className="bg-whiteSecondary transition-colors"
                     >
-                      <td className="px-6 py-4 font-medium text-[#302a41]">
+                      <td className="max-w-[100px] truncate whitespace-nowrap px-6 py-3 font-medium text-colorPrimary">
                         {order.customerName}
                       </td>
                       <td className="px-6 py-4 text-[#302a41]/60">
@@ -148,20 +155,17 @@ export default function OrdersPage() {
                             disabled={updatingId === order.id}
                           >
                             <SelectTrigger
-                              className={`h-8 text-xs font-semibold rounded-full border-0 bg-[#302a41]/6 px-3 gap-1.5 focus:ring-1 focus:ring-[#c8f135] w-auto min-w-[130px] ${STATUS_COLORS[order.status]}`}
+                              className={`h-8 text-xs font-semibold rounded-md shadow border border-greySecondary/50  px-3    w-auto min-w-[130px] cursor-pointer ${STATUS_COLORS[order.status]}`}
                               style={{ backgroundColor: "rgba(48,42,65,0.06)" }}
                             >
-                              <span
-                                className={`w-1.5 h-1.5 rounded-full shrink-0 ${status.dot}`}
-                              />
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="rounded-xl border border-black/10 shadow-xl">
+                            <SelectContent className="rounded-md border border-greySecondary/40 shadow-xl bg-whiteSecondary">
                               {STATUS_ORDER.map((s) => (
                                 <SelectItem
                                   key={s}
                                   value={s}
-                                  className={`text-xs font-semibold rounded-lg cursor-pointer ${STATUS_COLORS[s]}`}
+                                  className={`hover:bg-whitePrimary text-xs font-semibold rounded-sm cursor-pointer ${STATUS_COLORS[s]}`}
                                 >
                                   <span className="flex items-center gap-2">
                                     <span

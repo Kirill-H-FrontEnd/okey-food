@@ -759,7 +759,7 @@ export default function RationsPage() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold text-colorPrimary">
-            <MdOutlineRestaurantMenu className="text-greySecondary" />
+            <MdOutlineRestaurantMenu className="text-yellow-hover" />
             <span>Рационы</span>
           </h1>
           <p className="mt-1 text-sm text-colorPrimary/50">
@@ -876,14 +876,12 @@ export default function RationsPage() {
           onClick={openAddRation}
           className="group flex min-h-[220px] cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-greySecondary/50 bg-whiteSecondary p-8 transition-all hover:border-yellowPrimary"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl transition-colors">
-            <Plus
-              size={22}
-              className="text-colorPrimary/40 group-hover:text-colorPrimary"
-            />
-          </div>
+          <Plus
+            size={22}
+            className="text-colorPrimary group-hover:text-yellow-hover transition-colors"
+          />
 
-          <span className="text-sm font-semibold text-colorPrimary/40 transition-colors group-hover:text-colorPrimary">
+          <span className="text-sm font-semibold text-colorPrimary transition-colors group-hover:text-yellow-hover">
             Добавить рацион
           </span>
         </button>

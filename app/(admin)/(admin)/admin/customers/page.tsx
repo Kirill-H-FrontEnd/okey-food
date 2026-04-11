@@ -13,6 +13,7 @@ import { FaUsers } from "react-icons/fa";
 import { FaRegClock } from "react-icons/fa6";
 import { LuShoppingCart } from "react-icons/lu";
 import { IoWalletOutline } from "react-icons/io5";
+import { Button } from "@/components/ui/button";
 const STATUS_LABEL: Record<string, string> = {
   pending: "Ожидает",
   confirmed: "Подтверждён",
@@ -96,38 +97,36 @@ export default function CustomersPage() {
       <div className="mb-6 flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-colorPrimary flex items-center gap-2">
-            <FaUsers className="text-greySecondary" />
+            <FaUsers className="text-yellow-hover" />
             <span>Клиенты</span>
           </h1>
-          <button
-            onClick={fetchOrders}
-            disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-grey-border/50 hover:border-grey-border text-sm font-semibold text-colorPrimary/60 hover:text-colorPrimary cursor-pointer  transition-colors mt-2"
-          >
-            <TbRefresh size={14} className={loading ? "animate-spin" : ""} />
-            Обновить
-          </button>
+          {customers.length > 0 && (
+            <div className="flex items-center gap-1.5 rounded-xl text-greySecondary  py-2">
+              <p>Всего клиентов:</p>
+              <span className="text-sm font-semibold text-yellow-hover">
+                {customers.length}
+              </span>
+            </div>
+          )}
         </div>
 
-        {customers.length > 0 && (
-          <div className="flex items-center gap-1.5 rounded-xl bg-colortext-colorPrimary/5 px-3 py-2">
-            <FaUsers size={15} className="text-colorPrimary/50" />
-            <span className="text-sm font-semibold text-colorPrimary">
-              {customers.length}
-            </span>
-          </div>
-        )}
+        <Button
+          onClick={fetchOrders}
+          disabled={loading}
+          className="flex items-center gap-2 px-4 py-2 rounded-md bg-white border border-grey-border/50 hover:border-grey-border text-sm font-semibold text-colorPrimary/60 hover:text-colorPrimary cursor-pointer  transition-colors"
+        >
+          <TbRefresh size={14} className={loading ? "animate-spin" : ""} />
+          Обновить
+        </Button>
       </div>
 
       {customers.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl text-colorPrimary/5">
-            <FaUsers size={24} className="text-colorPrimary/25" />
-          </div>
-          <p className="mb-1 text-lg font-bold text-colorPrimary/30">
+          <FaUsers size={24} className="text-colorPrimary/25" />
+          <p className="font-bold text-[#302a41]/30 text-lg mb-1">
             Клиентов пока нет
           </p>
-          <p className="text-sm text-colorPrimary/30">
+          <p className="text-sm text-[#302a41]/30">
             Клиенты появятся после первых заказов с сайта
           </p>
         </div>
@@ -147,9 +146,9 @@ export default function CustomersPage() {
                 value={c.name}
                 className="overflow-hidden rounded-lg border border-greySecondary/50 bg-whiteSecondary  "
               >
-                <AccordionTrigger className="bg-whiteSecondary py-4 hover:bg-whiteSecondary px-4">
+                <AccordionTrigger className="bg-whiteSecondary py-4  px-4">
                   <div className="flex min-w-0 flex-1 items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-colorPrimary/15 text-sm font-bold shadow">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-colorPrimary/15 text-sm font-bold shadow">
                       {initials}
                     </div>
 
@@ -163,10 +162,6 @@ export default function CustomersPage() {
                     </div>
 
                     <div className="mr-2 hidden shrink-0 items-center gap-2 sm:flex">
-                      <span className="flex items-center gap-1 rounded-lg bg-colortext-colorPrimary/5 px-2.5 py-1 text-xs font-medium text-colorPrimary">
-                        <LuShoppingCart size={16} />
-                        {c.orderCount}
-                      </span>
                       <span className="flex items-center gap-1 rounded-lg bg-green-300/50 px-2.5 py-1 text-xs font-semibold text-colorPrimary">
                         <IoWalletOutline size={11} />
                         {c.totalSpent} BYN
@@ -183,7 +178,7 @@ export default function CustomersPage() {
                           <p className="text-[10px] uppercase tracking-wide text-greySecondary">
                             Заказов
                           </p>
-                          <p className="text-sm flex gap-2 items-center font-bold text-colorPrimary">
+                          <p className="text-sm flex gap-2 items-center font-bold text-colorPrimary mt-1">
                             <LuShoppingCart
                               size={16}
                               className="shrink-0 text-yellow-hover"
@@ -198,7 +193,7 @@ export default function CustomersPage() {
                           <p className="text-[10px] uppercase tracking-wide text-greySecondary">
                             Потрачено
                           </p>
-                          <p className="text-sm flex items-center gap-2 font-bold text-colorPrimary">
+                          <p className="text-sm flex items-center gap-2 font-bold text-colorPrimary mt-1">
                             <IoWalletOutline
                               size={16}
                               className="shrink-0 text-yellow-hover"
@@ -213,7 +208,7 @@ export default function CustomersPage() {
                           <p className="text-[10px] uppercase tracking-wide text-greySecondary">
                             Последний заказ
                           </p>
-                          <p className="text-sm font-bold flex gap-2 items-center text-colorPrimary">
+                          <p className="text-sm font-bold flex gap-2 items-center text-colorPrimary mt-1">
                             <FaRegClock
                               size={16}
                               className="shrink-0 text-yellow-hover"
