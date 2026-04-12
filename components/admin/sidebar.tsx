@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PiChefHat } from "react-icons/pi";
+import { LogoutButton } from "@/components/admin/logout-button";
 import { IoReceiptSharp, IoSettingsSharp } from "react-icons/io5";
 import { FaUsers } from "react-icons/fa";
 import { IoExitOutline } from "react-icons/io5";
@@ -115,21 +116,7 @@ export function AdminSidebar() {
             Открыть сайт
           </span>
         </Link>
-        <button
-          title={collapsed ? "Выйти" : undefined}
-          className="w-full flex items-center py-2.5 rounded-md text-sm font-medium text-greySecondary hover:text-red-400 hover:bg-red-500/10 transition-colors"
-        >
-          <span className="w-[48px] flex items-center justify-center shrink-0">
-            <IoExitOutline size={17} />
-          </span>
-          <span
-            className={`overflow-hidden whitespace-nowrap transition-all duration-300 ${
-              collapsed ? "max-w-0 opacity-0" : "max-w-[140px] opacity-100 pr-3"
-            }`}
-          >
-            Выйти
-          </span>
-        </button>
+        <LogoutButton collapsed={collapsed} />
       </div>
     </aside>
   );

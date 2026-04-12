@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LogoutButton } from "@/components/admin/logout-button";
 import { IoReceiptSharp, IoSettingsSharp } from "react-icons/io5";
 import { FaUsers } from "react-icons/fa";
 import { IoExitOutline } from "react-icons/io5";
@@ -104,13 +105,7 @@ export function AdminMobileNav() {
               Открыть сайт
             </Link>
           </SheetClose>
-          <Button
-            variant={"default"}
-            className="w-full justify-start bg-transparent text-whiteSecondary"
-          >
-            <IoExitOutline size={17} className="shrink-0" />
-            Выйти
-          </Button>
+          <LogoutButton variant="mobile" />
         </div>
       </SheetContent>
     </Sheet>
