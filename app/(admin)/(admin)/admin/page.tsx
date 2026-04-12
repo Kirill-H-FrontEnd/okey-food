@@ -26,6 +26,7 @@ import { motion, Variants } from "framer-motion";
 import { IoReceiptSharp } from "react-icons/io5";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
 import { Loader } from "@/components/ui/loader";
+import { NumberTicker } from "@/components/ui/number-ticker";
 
 const STATUS_CONFIG = {
   pending: {
@@ -146,15 +147,10 @@ export default function AdminDashboard() {
                 {stat.label}
               </p>
               <p className="text-colorPrimary text-2xl font-bold flex items-center gap-1 mt-2">
-                <HyperText
-                  key={stat.value}
-                  duration={800}
-                  startOnView={false}
-                  animateOnHover={false}
-                  className=" "
-                >
-                  {String(stat.value)}
-                </HyperText>
+                <NumberTicker
+                  value={stat.value}
+                  className="text-colorPrimary"
+                />
                 <span> {stat.suffix}</span>
               </p>
             </div>
