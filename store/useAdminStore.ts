@@ -30,7 +30,7 @@ interface AdminState {
 export const useAdminStore = create<AdminState>()((set, get) => ({
   rations: [],
   orders: [],
-  loading: false,
+  loading: true,
 
   fetchRations: async () => {
     set({ loading: true });

@@ -2,32 +2,19 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { PiChefHat } from "react-icons/pi";
-import { TbLayoutDashboardFilled } from "react-icons/tb";
 import { IoReceiptSharp, IoSettingsSharp } from "react-icons/io5";
 import { FaUsers } from "react-icons/fa";
 import { IoExitOutline } from "react-icons/io5";
 import { LuExternalLink } from "react-icons/lu";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
-import { ChevronLeft } from "lucide-react";
-import {
-  ChefHat,
-  LayoutDashboard,
-  UtensilsCrossed,
-  ShoppingCart,
-  Users,
-  Settings,
-  LogOut,
-  ExternalLink,
-  X,
-} from "lucide-react";
+import { FiTrendingUp } from "react-icons/fi";
 import Image from "next/image";
 import { Sheet, SheetContent, SheetClose } from "@/components/ui/sheet";
 import { BurgerMenu } from "@/components/ui/burger-menu/burger-menu";
 import { Button } from "../ui/button";
 
 const NAV_ITEMS = [
-  { label: "Статистика", href: "/admin", icon: TbLayoutDashboardFilled },
+  { label: "Статистика", href: "/admin", icon: FiTrendingUp },
   { label: "Рационы", href: "/admin/rations", icon: MdOutlineRestaurantMenu },
   { label: "Заказы", href: "/admin/orders", icon: IoReceiptSharp },
   { label: "Клиенты", href: "/admin/customers", icon: FaUsers },

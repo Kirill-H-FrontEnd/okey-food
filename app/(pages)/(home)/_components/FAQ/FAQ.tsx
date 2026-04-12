@@ -41,9 +41,9 @@ export const FAQ: FC = ({}) => {
                 <AccordionItem
                   key={index}
                   value={`item-${index}`}
-                  className="border border-whitePrimary rounded-lg"
+                  className="rounded-lg"
                 >
-                  <AccordionTrigger className="text-whitePrimary px-4 md:px-6 text-base py-3 lg:text-[18px] font-semibold bg-whitePrimary/10 data-[state=open]:bg-whitePrimary data-[state=open]:md:hover:bg-whitePrimary md:hover:bg-whitePrimary/20 transition-all data-[state=open]:text-colorPrimary">
+                  <AccordionTrigger className="text-whitePrimary px-4 md:px-6 text-base py-3 lg:text-[18px] font-semibold bg-whitePrimary/10 data-[state=open]:bg-whitePrimary data-[state=open]:md:hover:bg-whitePrimary md:hover:bg-whiteSecondary md:hover:text-colorPrimary transition-all data-[state=open]:text-colorPrimary">
                     {item.title}
                   </AccordionTrigger>
                   <AccordionContent className="text-colorPrimary font-normal px-4 md:px-8">

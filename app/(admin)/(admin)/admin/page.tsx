@@ -2,7 +2,6 @@
 import { useAdminStore } from "@/store/useAdminStore";
 import { HyperText } from "@/components/magicui/hyper-text";
 import {
-  ShoppingCart,
   ArrowUpRight,
   Clock,
   CheckCircle2,
@@ -10,6 +9,13 @@ import {
   XCircle,
   Hash,
 } from "lucide-react";
+import {
+  HiOutlineHashtag,
+  HiOutlineUser,
+  HiOutlineClipboardDocumentList,
+  HiOutlineBanknotes,
+  HiOutlineCheckCircle,
+} from "react-icons/hi2";
 import { BsCashStack } from "react-icons/bs";
 import { RiLuggageCartLine } from "react-icons/ri";
 import { FiTrendingUp } from "react-icons/fi";
@@ -19,6 +25,7 @@ import Link from "next/link";
 import { motion, Variants } from "framer-motion";
 import { IoReceiptSharp } from "react-icons/io5";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
+import { Loader } from "@/components/ui/loader";
 
 const STATUS_CONFIG = {
   pending: {
@@ -155,10 +162,10 @@ export default function AdminDashboard() {
         })}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 flex-1 min-h-0 ">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 flex-1 min-h-0">
         {/* Recent orders */}
-        <div className="xl:col-span-2 bg-whiteSecondary rounded-2xl border border-greySecondary/40 flex flex-col min-h-0 overflow-hidden shadow shadow-colorPrimary/10">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-greySecondary/40 shrink-0">
+        <div className="xl:col-span-2  rounded-2xl border border-greySecondary/40 flex flex-col min-h-0 overflow-hidden shadow shadow-colorPrimary/10">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-greySecondary/40 shrink-0 bg-whiteSecondary">
             <h2 className="font-bold text-colorPrimary">Последние заказы</h2>
             <Link
               href="/admin/orders"
@@ -168,31 +175,58 @@ export default function AdminDashboard() {
             </Link>
           </div>
 
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto bg-whiteSecondary">
             <table className="w-full table-fixed text-sm ">
-              <thead className="sticky top-0 z-10 bg-whitePrimary">
+              <thead className="sticky top-0 z-10 ">
                 <tr className="border-b border-greySecondary/40">
-                  <th className="bg-whitePrimary px-6 py-3 text-left text-xs font-semibold text-greySecondary uppercase tracking-wider hidden md:table-cell">
-                    Заказ
+                  <th className="bg-colorPrimary px-6 py-3 text-left text-xs font-semibold text-greySecondary uppercase tracking-wider hidden md:table-cell">
+                    <div className="flex items-center gap-2">
+                      <HiOutlineHashtag className="size-3 shrink-0" />
+                      <span>Заказ</span>
+                    </div>
                   </th>
-                  <th className="bg-whitePrimary px-6 py-3 text-left text-xs font-semibold text-greySecondary uppercase tracking-wider">
-                    Клиент
+
+                  <th className="bg-colorPrimary px-6 py-3 text-left text-xs font-semibold text-greySecondary uppercase tracking-wider">
+                    <div className="flex items-center gap-2">
+                      <HiOutlineUser className="size-3 shrink-0" />
+                      <span>Клиент</span>
+                    </div>
                   </th>
-                  <th className="bg-whitePrimary px-6 py-3 text-left text-xs font-semibold text-greySecondary uppercase tracking-wider hidden md:table-cell">
-                    Рацион
+
+                  <th className="bg-colorPrimary px-6 py-3 text-left text-xs font-semibold text-greySecondary uppercase tracking-wider hidden md:table-cell">
+                    <div className="flex items-center gap-2">
+                      <HiOutlineClipboardDocumentList className="size-3 shrink-0" />
+                      <span>Рацион</span>
+                    </div>
                   </th>
-                  <th className="bg-whitePrimary px-6 py-3 text-left text-xs font-semibold text-greySecondary uppercase tracking-wider">
-                    Сумма
+
+                  <th className="bg-colorPrimary px-6 py-3 text-left text-xs font-semibold text-greySecondary uppercase tracking-wider">
+                    <div className="flex items-center gap-2">
+                      <HiOutlineBanknotes className="size-3 shrink-0" />
+                      <span>Сумма</span>
+                    </div>
                   </th>
-                  <th className="bg-whitePrimary px-6 py-3 text-left text-xs font-semibold text-greySecondary uppercase tracking-wider">
-                    Статус
+
+                  <th className="bg-colorPrimary px-6 py-3 text-left text-xs font-semibold text-greySecondary uppercase tracking-wider">
+                    <div className="flex items-center gap-2">
+                      <HiOutlineCheckCircle className="size-3 shrink-0" />
+                      <span>Статус</span>
+                    </div>
                   </th>
                 </tr>
               </thead>
 
               <tbody>
-                {!loading && recentOrders.length === 0 ? (
-                  <tr>
+                {loading ? (
+                  <tr className="bg-whiteSecondary">
+                    <td colSpan={5} className="px-6 py-0">
+                      <div className="min-h-[260px] w-full flex items-center justify-center">
+                        <Loader size="medium" />
+                      </div>
+                    </td>
+                  </tr>
+                ) : recentOrders.length === 0 ? (
+                  <tr className="bg-whiteSecondary">
                     <td colSpan={5} className="px-6 py-0">
                       <div className="min-h-[260px] w-full flex flex-col items-center justify-center text-center">
                         <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-whitePrimary border border-greySecondary/30">
@@ -225,11 +259,10 @@ export default function AdminDashboard() {
                         initial="hidden"
                         animate="show"
                         variants={rowVariants}
-                        className="transition-colors"
+                        className="transition-colors bg-whiteSecondary"
                       >
                         <td className="px-6 py-3 text-greySecondary hidden md:table-cell">
                           <div className="flex items-center gap-1">
-                            <Hash size={10} />
                             <span>{order.id.slice(0, 8)}</span>
                           </div>
                         </td>
@@ -275,7 +308,11 @@ export default function AdminDashboard() {
             </Link>
           </div>
           <div className="flex-1 overflow-y-auto p-4">
-            {rations.length === 0 && !loading ? (
+            {loading ? (
+              <div className="min-h-full flex items-center justify-center">
+                <Loader size="medium" />
+              </div>
+            ) : rations.length === 0 ? (
               <div className="min-h-full flex items-center justify-center">
                 <div className="w-full max-w-[260px] flex flex-col items-center justify-center text-center py-10">
                   <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-whitePrimary border border-greySecondary/30">
@@ -304,7 +341,7 @@ export default function AdminDashboard() {
                     animate="show"
                     variants={rowVariants}
                     key={ration.id}
-                    className="flex items-center gap-3 p-3 rounded-sm bg-whitePrimary border border-greySecondary/30"
+                    className="flex items-center gap-3 p-3 rounded-sm bg-colorPrimary/10 border border-greySecondary/30"
                   >
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-colorPrimary truncate">

@@ -3,8 +3,8 @@
 import React, { FC } from "react";
 import { motion, type Transition, type Variants } from "framer-motion";
 import { Link as ScrollLink } from "react-scroll";
-import { ChefHat } from "lucide-react";
 
+import { MdOutlineRestaurantMenu } from "react-icons/md";
 import { ProductCard } from "@/components/ui/product-card";
 import { Container } from "@/components/ui/container";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -342,9 +342,9 @@ export const Products: FC = () => {
         </article>
 
         {activeRations.length === 0 ? (
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 py-20 rounded-2xl border border-dashed border-colorPrimary/20 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-colorPrimary/5 flex items-center justify-center">
-              <ChefHat className="w-8 h-8 text-colorPrimary/30" />
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 py-20 rounded-2xl border border-dashed border-greySecondary/50 bg-whiteSecondary text-center px-4">
+            <div className="w-16 h-16 rounded-2xl bg-colorPrimary/10 flex items-center justify-center">
+              <MdOutlineRestaurantMenu className="w-8 h-8 text-colorPrimary" />
             </div>
             <div>
               <p className="text-colorPrimary font-bold text-lg">
