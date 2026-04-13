@@ -67,7 +67,7 @@ export default function AdminDashboard() {
       suffix: "",
       icon: RiLuggageCartLine,
 
-      lightColor: "bg-blue-50 text-blue-600",
+      lightColor: " text-blue-600",
       change: "+12%",
     },
     {
@@ -76,7 +76,7 @@ export default function AdminDashboard() {
       suffix: " BYN",
       icon: BsCashStack,
 
-      lightColor: "bg-emerald-50 text-emerald-600",
+      lightColor: " text-emerald-600",
       change: "выполненные",
     },
     {
@@ -85,7 +85,7 @@ export default function AdminDashboard() {
       suffix: "",
       icon: FaUsers,
 
-      lightColor: "bg-violet-50 text-violet-600",
+      lightColor: " text-violet-600",
       change: "+5%",
     },
     {
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
       value: activeRations,
       suffix: "",
       icon: PiChefHat,
-      lightColor: "bg-lime-50 text-lime-700",
+      lightColor: " text-lime-700",
       change: `${rations.length} всего`,
     },
   ];
