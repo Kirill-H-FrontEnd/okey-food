@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { LogoutButton } from "@/components/admin/logout-button";
 import { IoReceiptSharp, IoSettingsSharp } from "react-icons/io5";
 import { FaUsers } from "react-icons/fa";
-import { IoExitOutline } from "react-icons/io5";
 import { LuExternalLink } from "react-icons/lu";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
 import { FiTrendingUp } from "react-icons/fi";
@@ -33,9 +32,9 @@ export function AdminMobileNav() {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-whiteSecondary border-b border-colorPrimary/10 shrink-0 z-[1000]">
+      <header className="lg:hidden flex items-center justify-between px-4 py-2 bg-whiteSecondary border-b border-colorPrimary/10 shrink-0 z-[1000]">
         <div className="flex items-center gap-3">
-          <div className="w-[40px] h-[40px]   flex items-center justify-center ">
+          <div className="w-[35px] h-[35px]   flex items-center justify-center ">
             <Image
               src={"/okey-food-logo.png"}
               alt="OkeyFood логотип"
@@ -71,7 +70,7 @@ export function AdminMobileNav() {
         {/* Drawer header */}
 
         {/* Nav items */}
-        <nav className="mt-18 flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
+        <nav className="mt-14 flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);

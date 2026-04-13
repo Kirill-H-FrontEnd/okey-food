@@ -17,9 +17,13 @@ export function LogoutButton({
   if (variant === "mobile") {
     return (
       <button
+        style={{
+          outline: "none",
+          WebkitTapHighlightColor: "transparent",
+        }}
         onClick={() => startTransition(() => signOut())}
         disabled={isPending}
-        className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+        className="w-full flex items-center gap-3 px-3 py-3 rounded-sm cursor-pointer text-sm font-medium text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
       >
         <LogOut size={17} className="shrink-0" />
         {isPending ? "Выход..." : "Выйти"}
@@ -32,7 +36,7 @@ export function LogoutButton({
       onClick={() => startTransition(() => signOut())}
       disabled={isPending}
       title={collapsed ? "Выйти" : undefined}
-      className="w-full flex items-center py-2.5 rounded-xl text-sm font-medium text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+      className="w-full flex items-center py-2.5 rounded-sm cursor-pointer text-sm font-medium text-white/60 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
     >
       <span className="w-[48px] flex items-center justify-center shrink-0">
         <LogOut size={17} />

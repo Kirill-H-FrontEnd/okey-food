@@ -6,7 +6,6 @@ import { PiChefHat } from "react-icons/pi";
 import { LogoutButton } from "@/components/admin/logout-button";
 import { IoReceiptSharp, IoSettingsSharp } from "react-icons/io5";
 import { FaUsers } from "react-icons/fa";
-import { IoExitOutline } from "react-icons/io5";
 import { LuExternalLink } from "react-icons/lu";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
 import { ChevronLeft } from "lucide-react";

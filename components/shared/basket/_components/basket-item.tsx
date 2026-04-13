@@ -46,7 +46,7 @@ export const BasketItem: FC<BasketItemProps> = ({
         layout: { duration: 0.22, ease: [0.22, 1, 0.36, 1] },
         duration: 0.2,
       }}
-      className="group relative flex flex-col gap-3 rounded-2xl border border-grey-border bg-whiteSecondary p-3 transition-colors hover:border-greenPrimary/25 sm:p-4"
+      className="group relative flex flex-col gap-3 rounded-2xl border border-greySecondary/50 bg-whiteSecondary p-3 transition-colors hover:border-greenPrimary/25 sm:p-4"
       aria-label={`Тариф ${item.calories}`}
     >
       <div className="flex w-full items-start justify-between gap-3">

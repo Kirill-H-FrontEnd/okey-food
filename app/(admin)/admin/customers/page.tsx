@@ -122,11 +122,14 @@ export default function CustomersPage() {
 
       {customers.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          <FaUsers size={24} className="text-colorPrimary/25" />
-          <p className="font-bold text-[#302a41]/30 text-lg mb-1">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-whitePrimary border border-greySecondary/30">
+            <FaUsers size={24} className="text-colorPrimary/25" />
+          </div>
+
+          <p className="font-bold text-colorPrimary/30 text-lg mb-1">
             Клиентов пока нет
           </p>
-          <p className="text-sm text-[#302a41]/30">
+          <p className="text-sm text-colorPrimary/30">
             Клиенты появятся после первых заказов с сайта
           </p>
         </div>

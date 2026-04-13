@@ -67,7 +67,7 @@ export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
   }, [items]);
 
   return (
-    <section className="relative overflow-hidden rounded-[28px] border border-grey-border bg-whiteSecondary p-4 text-colorPrimary sm:p-5">
+    <section className="relative overflow-hidden rounded-[28px] border border-greySecondary/50 bg-whiteSecondary p-4 text-colorPrimary sm:p-5">
       <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-yellow-hover/10 blur-2xl" />
       <div className="pointer-events-none absolute -left-8 bottom-0 h-24 w-24 rounded-full bg-colorPrimary/10 blur-2xl" />
 

@@ -84,7 +84,10 @@ export default function OrdersPage() {
 
       {orders.length === 0 && !loading ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          <IoReceiptSharp size={24} className="text-colorPrimary/25" />
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-whitePrimary border border-greySecondary/30">
+            <IoReceiptSharp size={24} className="text-colorPrimary/25" />
+          </div>
+
           <p className="font-bold text-[#302a41]/30 text-lg mb-1">
             Заказов пока нет
           </p>

@@ -175,7 +175,7 @@ export default function AdminDashboard() {
             <table className="w-full table-fixed text-sm ">
               <thead className="sticky top-0 z-10 ">
                 <tr className="border-b border-greySecondary/40">
-                  <th className="bg-colorPrimary px-6 py-3 text-left text-xs font-semibold text-greySecondary uppercase tracking-wider hidden md:table-cell">
+                  <th className="bg-colorPrimary px-6 py-3 text-left text-xs font-semibold text-greySecondary  uppercase tracking-wider hidden md:table-cell">
                     <div className="flex items-center gap-2">
                       <HiOutlineHashtag className="size-3 shrink-0" />
                       <span>Заказ</span>
@@ -225,7 +225,7 @@ export default function AdminDashboard() {
                   <tr className="bg-whiteSecondary">
                     <td colSpan={5} className="px-6 py-0">
                       <div className="min-h-[260px] w-full flex flex-col items-center justify-center text-center">
-                        <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-whitePrimary border border-greySecondary/30">
+                        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-whitePrimary border border-greySecondary/30">
                           <IoReceiptSharp
                             size={24}
                             className="text-colorPrimary/25"
@@ -311,7 +311,7 @@ export default function AdminDashboard() {
             ) : rations.length === 0 ? (
               <div className="min-h-full flex items-center justify-center">
                 <div className="w-full max-w-[260px] flex flex-col items-center justify-center text-center py-10">
-                  <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-whitePrimary border border-greySecondary/30">
+                  <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-whitePrimary border border-greySecondary/30">
                     <MdOutlineRestaurantMenu
                       size={24}
                       className="text-colorPrimary/25"
