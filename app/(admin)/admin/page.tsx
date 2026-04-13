@@ -164,46 +164,50 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between px-6 py-4 border-b border-greySecondary/40 shrink-0 bg-whiteSecondary">
             <h2 className="font-bold text-colorPrimary">Последние заказы</h2>
             <Link
+              style={{
+                outline: "none",
+                WebkitTapHighlightColor: "transparent",
+              }}
               href="/admin/orders"
-              className="text-xs font-semibold text-greySecondary hover:text-yellow-hover transition-colors flex items-center gap-1"
+              className="text-xs font-semibold text-greySecondary ring-0 hover:text-yellow-hover transition-colors flex items-center gap-1"
             >
               Все заказы <ArrowUpRight size={13} />
             </Link>
           </div>
 
           <div className="flex-1 overflow-y-auto bg-whiteSecondary">
-            <table className="w-full table-fixed text-sm ">
-              <thead className="sticky top-0 z-10 ">
+            <table className="w-full border-collapse table-auto text-sm md:table-fixed">
+              <thead>
                 <tr className="border-b border-greySecondary/40">
-                  <th className="bg-colorPrimary px-6 py-3 text-left text-xs font-semibold text-greySecondary  uppercase tracking-wider hidden md:table-cell">
+                  <th className="sticky top-0 z-20 hidden bg-colorPrimary px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-greySecondary md:table-cell">
                     <div className="flex items-center gap-2">
                       <HiOutlineHashtag className="size-3 shrink-0" />
                       <span>Заказ</span>
                     </div>
                   </th>
 
-                  <th className="bg-colorPrimary px-6 py-3 text-left text-xs font-semibold text-greySecondary uppercase tracking-wider">
+                  <th className="sticky top-0 z-20 bg-colorPrimary px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-greySecondary">
                     <div className="flex items-center gap-2">
                       <HiOutlineUser className="size-3 shrink-0" />
                       <span>Клиент</span>
                     </div>
                   </th>
 
-                  <th className="bg-colorPrimary px-6 py-3 text-left text-xs font-semibold text-greySecondary uppercase tracking-wider hidden md:table-cell">
+                  <th className="sticky top-0 z-20 hidden bg-colorPrimary px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-greySecondary md:table-cell">
                     <div className="flex items-center gap-2">
                       <HiOutlineClipboardDocumentList className="size-3 shrink-0" />
                       <span>Рацион</span>
                     </div>
                   </th>
 
-                  <th className="bg-colorPrimary px-6 py-3 text-left text-xs font-semibold text-greySecondary uppercase tracking-wider">
+                  <th className="sticky top-0 z-20 bg-colorPrimary px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-greySecondary">
                     <div className="flex items-center gap-2">
                       <HiOutlineBanknotes className="size-3 shrink-0" />
                       <span>Сумма</span>
                     </div>
                   </th>
 
-                  <th className="bg-colorPrimary px-6 py-3 text-left text-xs font-semibold text-greySecondary uppercase tracking-wider">
+                  <th className="sticky top-0 z-20 bg-colorPrimary px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-greySecondary">
                     <div className="flex items-center gap-2">
                       <HiOutlineCheckCircle className="size-3 shrink-0" />
                       <span>Статус</span>
@@ -216,7 +220,7 @@ export default function AdminDashboard() {
                 {loading ? (
                   <tr className="bg-whiteSecondary">
                     <td colSpan={5} className="px-6 py-0">
-                      <div className="min-h-[260px] w-full flex items-center justify-center">
+                      <div className="flex min-h-[260px] w-full items-center justify-center">
                         <Loader size="medium" />
                       </div>
                     </td>
@@ -224,8 +228,8 @@ export default function AdminDashboard() {
                 ) : recentOrders.length === 0 ? (
                   <tr className="bg-whiteSecondary">
                     <td colSpan={5} className="px-6 py-0">
-                      <div className="min-h-[260px] w-full flex flex-col items-center justify-center text-center">
-                        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-whitePrimary border border-greySecondary/30">
+                      <div className="flex min-h-[260px] w-full flex-col items-center justify-center text-center">
+                        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-greySecondary/30 bg-whitePrimary">
                           <IoReceiptSharp
                             size={24}
                             className="text-colorPrimary/25"
@@ -236,7 +240,7 @@ export default function AdminDashboard() {
                           Заказов пока нет
                         </p>
 
-                        <p className="mt-1 text-xs text-greySecondary max-w-[220px]">
+                        <p className="mt-1 max-w-[220px] text-xs text-greySecondary">
                           Здесь будут отображаться последние заказы после
                           появления первых покупок
                         </p>
@@ -255,32 +259,34 @@ export default function AdminDashboard() {
                         initial="hidden"
                         animate="show"
                         variants={rowVariants}
-                        className="transition-colors bg-whiteSecondary"
+                        className="bg-whiteSecondary transition-colors"
                       >
-                        <td className="px-6 py-3 text-greySecondary hidden md:table-cell">
+                        <td className="hidden px-6 py-3 text-greySecondary md:table-cell">
                           <div className="flex items-center gap-1">
                             <span>{order.id.slice(0, 8)}</span>
                           </div>
                         </td>
 
-                        <td className="max-w-[100px] truncate whitespace-nowrap px-6 py-3 font-medium text-colorPrimary">
-                          {order.customerName}
+                        <td className="px-6 py-3 font-medium text-colorPrimary md:max-w-[100px] md:truncate md:whitespace-nowrap">
+                          <span className="block truncate">
+                            {order.customerName}
+                          </span>
                         </td>
 
-                        <td className="px-6 py-3 text-greySecondary hidden md:table-cell">
+                        <td className="hidden px-6 py-3 text-greySecondary md:table-cell">
                           {order.ration}
                         </td>
 
-                        <td className="px-6 py-3 font-semibold text-colorPrimary">
+                        <td className="whitespace-nowrap px-6 py-3 font-semibold text-colorPrimary">
                           {order.amount} BYN
                         </td>
 
-                        <td className="px-3 py-3">
+                        <td className="px-6 py-3">
                           <span
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${status.className}`}
+                            className={`inline-flex max-w-full items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${status.className}`}
                           >
-                            <StatusIcon size={11} />
-                            {status.label}
+                            <StatusIcon size={11} className="shrink-0" />
+                            <span className="truncate">{status.label}</span>
                           </span>
                         </td>
                       </motion.tr>
@@ -297,8 +303,12 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between px-6 py-4 border-b border-greySecondary/40 shrink-0">
             <h2 className="font-bold text-colorPrimary">Рационы</h2>
             <Link
+              style={{
+                outline: "none",
+                WebkitTapHighlightColor: "transparent",
+              }}
               href="/admin/rations"
-              className="text-xs font-semibold text-greySecondary hover:text-yellow-hover  transition-colors flex items-center gap-1"
+              className="text-xs font-semibold text-greySecondary hover:text-yellow-hover  transition-colors flex items-center gap-1 ring-0"
             >
               Управление <ArrowUpRight size={13} />
             </Link>
