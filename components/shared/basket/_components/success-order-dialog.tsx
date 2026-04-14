@@ -2,15 +2,7 @@
 
 import { FC, useMemo } from "react";
 import Image from "next/image";
-import {
-  CalendarDays,
-  CheckCircle2,
-  ShoppingBag,
-  BadgeInfo,
-  UtensilsCrossed,
-  User,
-  Phone,
-} from "lucide-react";
+import { CalendarDays, ShoppingBag, UtensilsCrossed } from "lucide-react";
 
 import {
   Accordion,
@@ -26,11 +18,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { daysWord, formatDeliveryDate } from "../utils";
+import { daysWord } from "../utils";
 
 import type { SuccessOrderSnapshot } from "../types";
-import { FaTelegram } from "react-icons/fa6";
-import { RiTelegram2Line } from "react-icons/ri";
 
 type SuccessOrderDialogProps = {
   order: SuccessOrderSnapshot | null;
@@ -58,6 +48,7 @@ const formatAddress = (order: SuccessOrderSnapshot) => {
     gomel: "Гомель",
     vitebsk: "Витебск",
   };
+
   const parts = [
     CITY_LABELS[order.customer.city] ?? order.customer.city,
     order.customer.street,
@@ -91,35 +82,41 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
     <Dialog open={Boolean(order)} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
         showCloseButton={false}
-        className="w-[calc(100%-16px)] max-w-[520px] rounded-[24px] border border-black/10 bg-whitePrimary p-0 overflow-hidden"
+        className="w-[calc(100%-16px)] max-w-[520px] overflow-hidden rounded-[24px] border border-black/10 bg-whitePrimary p-0"
       >
         {order && summary && (
           <div className="flex max-h-[85vh] flex-col">
-            <div className="relative overflow-hidden  bg-gradient-to-b from-greenPrimary/15 via-yellowPrimary/10 to-transparent px-4 pb-5 pt-5 text-center sm:px-6 sm:pt-6">
+            <div className="relative overflow-hidden bg-gradient-to-b from-greenPrimary/15 via-yellowPrimary/10 to-transparent px-4 pb-5 pt-5 text-center sm:px-6 sm:pb-6 sm:pt-6">
               <div className="pointer-events-none absolute -left-8 top-0 h-24 w-24 rounded-full bg-greenPrimary/15 blur-2xl" />
               <div className="pointer-events-none absolute -right-8 top-6 h-24 w-24 rounded-full bg-yellowPrimary/15 blur-2xl" />
 
-              <Image
-                width={120}
-                height={120}
-                alt="Заказ успешно оформлен"
-                src="/images/illustrations/success_order.png"
-                className="mx-auto mb-2 h-auto w-auto object-contain"
-                priority
-              />
+              <div className="relative z-[1] flex min-h-[140px] flex-col items-center justify-start">
+                <div className="mb-2 flex h-[120px] w-[120px] shrink-0 items-center justify-center">
+                  <Image
+                    src="/images/illustrations/success_order.png"
+                    alt="Заказ успешно оформлен"
+                    width={120}
+                    height={120}
+                    priority
+                    sizes="120px"
+                    className="block h-[140px] w-[140px] select-none object-contain"
+                  />
+                </div>
 
-              <DialogHeader className="items-center text-center">
-                <DialogTitle className="text-xl font-extrabold text-colorPrimary sm:text-2xl">
-                  Заказ успешно оформлен
-                </DialogTitle>
-                <DialogDescription className="max-w-[340px] text-sm leading-5 text-greySecondary text-center">
-                  После подтверждения заказа менеджером мы свяжемся с вами для
-                  уточнения деталей доставки.
-                </DialogDescription>
-              </DialogHeader>
+                <DialogHeader className="grid items-center justify-center text-center">
+                  <DialogTitle className="text-xl font-extrabold text-colorPrimary sm:text-2xl">
+                    Заказ успешно оформлен
+                  </DialogTitle>
+
+                  <DialogDescription className="mx-auto max-w-[340px] text-center text-sm leading-5 text-greySecondary">
+                    После подтверждения заказа менеджером мы свяжемся с вами для
+                    уточнения деталей доставки.
+                  </DialogDescription>
+                </DialogHeader>
+              </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-4 pb-4 pt-4 sm:px-6 sm:pb-6">
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 pt-4 sm:px-6 sm:pb-6">
               <div className="grid gap-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-2xl border border-colorPrimary/10 bg-whiteSecondary p-3">
@@ -143,70 +140,14 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                   </div>
                 </div>
 
-                {/* <div className="rounded-2xl border border-colorPrimary/10 bg-whiteSecondary p-4 shadow">
-                  <p className="mb-3 text-sm font-bold text-colorPrimary">
-                    Данные клиента
-                  </p>
-
-                  <div className="grid gap-2.5 text-sm text-colorPrimary">
-                    <div className="flex items-start gap-2">
-                      <User
-                        size={15}
-                        className="mt-0.5 shrink-0 text-yellow-hover"
-                      />
-                      <p className="min-w-0 break-words">
-                        {order.customer.firstName} {order.customer.lastName}
-                      </p>
-                    </div>
-
-                    <div className="flex items-start gap-2">
-                      <Phone
-                        size={15}
-                        className="mt-0.5 shrink-0 text-yellow-hover"
-                      />
-                      <p className="min-w-0 break-words">
-                        {order.customer.phone}
-                      </p>
-                    </div>
-                    {order.customer.social && (
-                      <div className="flex items-start gap-2">
-                        <RiTelegram2Line
-                          size={15}
-                          className="text-yellow-hover"
-                        />
-                        <p className="min-w-0 break-words">
-                          {order.customer.social}
-                        </p>
-                      </div>
-                    )}
-                    {order.customer.date && (
-                      <div className="flex items-start gap-2">
-                        <CalendarDays
-                          size={15}
-                          className="mt-0.5 shrink-0 text-yellow-hover"
-                        />
-                        <p className="min-w-0 break-words">
-                          {formatDeliveryDate(order.customer.date)}
-                        </p>
-                      </div>
-                    )}
-
-                    {summary.address && (
-                      <p className="rounded-xl bg-whitePrimary px-3 py-2 text-xs leading-5 text-greySecondary break-words">
-                        {summary.address}
-                      </p>
-                    )}
-                  </div>
-                </div> */}
-
                 <Accordion
                   type="single"
                   collapsible
                   defaultValue=""
-                  className="rounded-2xl border border-colorPrimary/10 px-4 shadow bg-whiteSecondary"
+                  className="rounded-2xl border border-colorPrimary/10 bg-whiteSecondary px-4 shadow"
                 >
                   <AccordionItem value="order-content" className="border-none">
-                    <AccordionTrigger className="  py-3  bg-whiteSecondary">
+                    <AccordionTrigger className="bg-whiteSecondary py-3">
                       <div>
                         <p className="text-sm font-bold text-colorPrimary">
                           Состав заказа
@@ -218,7 +159,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                       </div>
                     </AccordionTrigger>
 
-                    <AccordionContent className=" pb-0 bg-whiteSecondary">
+                    <AccordionContent className="bg-whiteSecondary pb-0">
                       <div className="grid gap-3">
                         {order.items.map((item) => (
                           <article
@@ -294,19 +235,6 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
-
-                {/* <div className="rounded-2xl border border-colorPrimary/10 bg-colorPrimary/10 p-3">
-                  <div className="flex items-start gap-2 text-xs leading-5 text-colorPrimary">
-                    <BadgeInfo
-                      size={20}
-                      className="mt-0.5 shrink-0 text-yellow-hover"
-                    />
-                    <p className="font-semibold">
-                      После подтверждения заказа менеджером мы свяжемся с вами
-                      для уточнения деталей доставки.
-                    </p>
-                  </div>
-                </div> */}
               </div>
             </div>
 

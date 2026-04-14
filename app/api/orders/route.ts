@@ -7,7 +7,8 @@ export async function GET() {
     .select("*")
     .order("created_at", { ascending: false });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error)
+    return NextResponse.json({ error: error.message }, { status: 500 });
 
   const orders = (data ?? []).map((o) => ({
     id: o.id,
@@ -18,7 +19,7 @@ export async function GET() {
     amount: o.amount,
     status: o.status,
     notes: o.notes ?? "",
-    createdAt: o.created_at?.split("T")[0] ?? "",
+    createdAt: o.created_at ?? "",
   }));
 
   return NextResponse.json(orders);
@@ -26,6 +27,23 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
+
+  let notesString: string;
+  if (body.notes && typeof body.notes === "string") {
+    notesString = body.notes;
+  } else {
+    notesString = JSON.stringify({
+      comment: body.comment ?? "",
+      social: body.social ?? "",
+      city: body.city ?? "",
+      street: body.street ?? "",
+      house: body.house ?? "",
+      apartment: body.apartment ?? "",
+      floor: body.floor ?? "",
+      intercom: body.intercom ?? "",
+      deliverySlots: body.deliverySlots ?? [],
+    });
+  }
 
   const { data, error } = await supabase
     .from("orders")
@@ -36,12 +54,13 @@ export async function POST(req: NextRequest) {
       days: body.days,
       amount: body.amount,
       status: body.status ?? "pending",
-      notes: body.notes ?? "",
+      notes: notesString,
     })
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error)
+    return NextResponse.json({ error: error.message }, { status: 500 });
 
   return NextResponse.json({
     id: data.id,
@@ -52,6 +71,6 @@ export async function POST(req: NextRequest) {
     amount: data.amount,
     status: data.status,
     notes: data.notes ?? "",
-    createdAt: data.created_at?.split("T")[0] ?? "",
+    createdAt: data.created_at ?? "",
   });
 }

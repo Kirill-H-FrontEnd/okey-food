@@ -57,7 +57,12 @@ import {
 
 import DishImageUpload from "@/components/ui/image-upload";
 
-import { dishSchema, type DishFormValues, MEALS } from "@/schemas/dish-schema";
+import {
+  dishSchema,
+  type DishFormValues,
+  MEALS,
+  WEEKS,
+} from "@/schemas/dish-schema";
 import { rationSchema, type RationFormValues } from "@/schemas/ration-schema";
 
 const MEAL_COLORS: Record<TRationMeal, string> = {
@@ -80,6 +85,7 @@ const defaultRationValues: RationFormValues = {
 const defaultDishValues: DishFormValues = {
   name: "",
   meal: "Завтрак",
+  week: 1,
   calories: "",
   proteins: "",
   fats: "",
@@ -168,6 +174,7 @@ export default function RationsPage() {
   const [dishDeleteConfirmId, setDishDeleteConfirmId] = useState<string | null>(
     null,
   );
+  const [selectedWeek, setSelectedWeek] = useState<1 | 2 | 3 | 4>(1);
 
   const editingRation = useMemo(
     () => rations.find((ration) => ration.id === editingRationId) ?? null,
@@ -340,6 +347,7 @@ export default function RationsPage() {
       resetDish({
         name: editingDish.name,
         meal: editingDish.meal,
+        week: editingDish.week ?? 1,
         calories: String(editingDish.calories ?? ""),
         proteins: String(editingDish.proteins ?? ""),
         fats: String(editingDish.fats ?? ""),
@@ -351,8 +359,8 @@ export default function RationsPage() {
       return;
     }
 
-    resetDish(defaultDishValues);
-  }, [editingDish, isDishFormOpen, resetDish]);
+    resetDish({ ...defaultDishValues, week: selectedWeek });
+  }, [editingDish, isDishFormOpen, resetDish, selectedWeek]);
 
   const openAddRation = () => {
     setEditingRationId(null);
@@ -372,6 +380,7 @@ export default function RationsPage() {
 
   const openAddDish = () => {
     setEditingDishId(null);
+    dishForm.setValue("week", selectedWeek);
     setIsDishFormOpen(true);
   };
 
@@ -467,6 +476,7 @@ export default function RationsPage() {
     const data = {
       name: values.name.trim(),
       meal: values.meal as TRationMeal,
+      week: (values.week ?? selectedWeek) as 1 | 2 | 3 | 4,
       calories: Number(values.calories),
       proteins: Number(values.proteins),
       fats: Number(values.fats),
@@ -487,10 +497,11 @@ export default function RationsPage() {
     closeDishForm();
   };
 
-  const groupedDishes = (dishes: TRationDish[]) => {
+  const groupedDishes = (dishes: TRationDish[], week: 1 | 2 | 3 | 4) => {
     const groups: Partial<Record<TRationMeal, TRationDish[]>> = {};
+    const filtered = dishes.filter((d) => (d.week ?? 1) === week);
 
-    for (const dish of dishes) {
+    for (const dish of filtered) {
       if (!groups[dish.meal]) {
         groups[dish.meal] = [];
       }
@@ -498,6 +509,15 @@ export default function RationsPage() {
     }
 
     return groups;
+  };
+
+  const dishCountByWeek = (dishes: TRationDish[]) => {
+    const counts: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0 };
+    for (const d of dishes) {
+      const w = d.week ?? 1;
+      counts[w] = (counts[w] ?? 0) + 1;
+    }
+    return counts;
   };
 
   const rationDescriptionLength = watchRation("description")?.length ?? 0;
@@ -520,7 +540,9 @@ export default function RationsPage() {
       : undefined;
 
   if (dishPanelRation) {
-    const groups = groupedDishes(dishPanelRation.dishes);
+    const groups = groupedDishes(dishPanelRation.dishes, selectedWeek);
+    const weekCounts = dishCountByWeek(dishPanelRation.dishes);
+    const currentWeekDishCount = weekCounts[selectedWeek] ?? 0;
 
     return (
       <div className="p-4 md:p-8">
@@ -544,7 +566,7 @@ export default function RationsPage() {
           </h1>
 
           <span className="text-sm font-medium text-colorPrimary/40">
-            {dishPanelRation.dishes.length} блюд
+            {dishPanelRation.dishes.length} блюд всего
           </span>
         </div>
 
@@ -562,7 +584,36 @@ export default function RationsPage() {
           </Button>
         </div>
 
-        {dishPanelRation.dishes.length === 0 ? (
+        {/* Week tabs */}
+        <div className="mb-6 flex gap-2 flex-wrap">
+          {WEEKS.map((w) => (
+            <Button
+              key={w}
+              type="button"
+              onClick={() => setSelectedWeek(w)}
+              className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition-all border ${
+                selectedWeek === w
+                  ? "bg-yellowPrimary border-yellowPrimary text-colorPrimary shadow-sm"
+                  : "bg-whiteSecondary border-greySecondary/40 text-greySecondary hover:border-yellow-hover/50 hover:text-colorPrimary"
+              }`}
+            >
+              Неделя {w}
+              {weekCounts[w] > 0 && (
+                <span
+                  className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none ${
+                    selectedWeek === w
+                      ? "bg-colorPrimary/15 text-colorPrimary"
+                      : "bg-greySecondary/20 text-colorPrimary/50"
+                  }`}
+                >
+                  {weekCounts[w]}
+                </span>
+              )}
+            </Button>
+          ))}
+        </div>
+
+        {currentWeekDishCount === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-greySecondary/30 bg-whitePrimary">
               <MdOutlineRestaurantMenu
@@ -572,10 +623,10 @@ export default function RationsPage() {
             </div>
 
             <p className="mb-1 text-lg font-bold text-[#302a41]/30">
-              Блюда не добавлены
+              Блюда для недели {selectedWeek} не добавлены
             </p>
             <p className="text-sm text-[#302a41]/30">
-              Добавьте блюда, чтобы они отображались в рационе на сайте
+              Нажмите «Добавить блюдо», чтобы заполнить меню для этой недели
             </p>
           </div>
         ) : (
@@ -599,9 +650,9 @@ export default function RationsPage() {
                   {groups[meal]!.map((dish) => (
                     <div
                       key={dish.id}
-                      className="flex flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm"
+                      className="flex flex-col overflow-hidden rounded-2xl border border-greySecondary/40 bg-white shadow-sm shadow-colorPrimary/10"
                     >
-                      <div className="relative h-36 bg-[#f2efe8]">
+                      <div className="relative h-36 bg-whitePrimary">
                         {dish.image ? (
                           <img
                             src={dish.image}
@@ -610,7 +661,7 @@ export default function RationsPage() {
                           />
                         ) : (
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <Utensils className="h-10 w-10 text-colorPrimary/15" />
+                            <MdOutlineRestaurantMenu className="h-10 w-10 text-colorPrimary/15" />
                           </div>
                         )}
                       </div>
@@ -626,7 +677,7 @@ export default function RationsPage() {
                           </p>
                         )}
 
-                        <div className="mt-auto flex items-center gap-3 border-t border-black/5 pt-2 text-xs text-colorPrimary/60">
+                        <div className="mt-auto flex items-center gap-3 border-t border-greySecondary/30 pt-2 text-xs text-colorPrimary/70 font-semibold">
                           <span className="flex items-center gap-1">
                             <Flame size={11} className="text-orange-400" />
                             {dish.calories} ккал
@@ -650,20 +701,20 @@ export default function RationsPage() {
                         </div>
 
                         <div className="flex gap-2 pt-1">
-                          <button
+                          <Button
                             onClick={() => openEditDish(dish)}
                             className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-blue-50 py-1.5 text-xs font-semibold text-blue-600 transition-colors hover:bg-blue-100"
                           >
                             <Pencil size={12} />
                             Изменить
-                          </button>
+                          </Button>
 
-                          <button
+                          <Button
                             onClick={() => setDishDeleteConfirmId(dish.id)}
                             className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-500 transition-colors hover:bg-red-100"
                           >
                             <Trash2 size={13} />
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -738,7 +789,7 @@ export default function RationsPage() {
                             id="dish-meal"
                             aria-invalid={dishFieldHasError("meal")}
                             className={cn(
-                              "h-11 w-full min-w-0 rounded-xl border border-black/10 bg-white px-4 text-sm text-colorPrimary shadow-none outline-none ring-0 data-[placeholder]:text-colorPrimary/30 focus:outline-none focus:ring-0",
+                              " w-full min-w-0 rounded-[6px] border border-greySecondary/50 bg-white px-4 text-sm text-colorPrimary shadow-none outline-none ring-0 data-[placeholder]:text-colorPrimary/30 focus:outline-none focus:ring-0",
                               withDishErrorStyles("meal"),
                             )}
                           >
@@ -757,6 +808,32 @@ export default function RationsPage() {
                             ))}
                           </SelectContent>
                         </Select>
+                      )}
+                    />
+                  </div>
+
+                  <div className="col-span-2 grid gap-2">
+                    <Label>Неделя меню</Label>
+                    <Controller
+                      control={dishControl}
+                      name="week"
+                      render={({ field }) => (
+                        <div className="flex gap-2">
+                          {WEEKS.map((w) => (
+                            <button
+                              key={w}
+                              type="button"
+                              onClick={() => field.onChange(w)}
+                              className={`flex-1 rounded-xl border py-2 text-sm font-semibold transition-all ${
+                                field.value === w
+                                  ? "border-yellowPrimary bg-yellowPrimary text-colorPrimary"
+                                  : "border-greySecondary/50 cursor-pointer bg-white text-colorPrimary/50 hover:border-yellow-hover/40 hover:text-colorPrimary"
+                              }`}
+                            >
+                              {w}
+                            </button>
+                          ))}
+                        </div>
                       )}
                     />
                   </div>

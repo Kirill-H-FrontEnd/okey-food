@@ -13,7 +13,10 @@ import { SelectDaysButtons } from "./_components/SelectDaysButtons";
 import { OrderSummary } from "./_components/order-summary";
 import { CaloriesTabsList } from "./_components/calories-tabs-list";
 
-import { listSelectableDays } from "@/lib/delivery-days";
+import {
+  listSelectableDays,
+  getWeekNumberFromRange,
+} from "@/lib/delivery-days";
 import { genProductsForDiet } from "./lib/products-config";
 import { useBasketStore } from "@/store/useStore";
 import { useAdminStore } from "@/store/useAdminStore";
@@ -29,15 +32,6 @@ export const Products: FC = () => {
     [allRations],
   );
 
-  const rationTabs = React.useMemo(
-    () =>
-      activeRations.map((r) => ({
-        calories: r.calories,
-        countProduct: r.dishes?.length || DEFAULT_DISHES_COUNT,
-      })),
-    [activeRations],
-  );
-
   const priceByCalMap = React.useMemo(
     () =>
       Object.fromEntries(activeRations.map((r) => [r.calories, r.pricePerDay])),
@@ -45,8 +39,31 @@ export const Products: FC = () => {
   );
 
   const [selectedRange, setSelectedRange] = React.useState<string | null>(null);
+
+  const currentWeek = React.useMemo(() => {
+    if (!selectedRange) return 1 as const;
+    return getWeekNumberFromRange(selectedRange);
+  }, [selectedRange]);
+
+  const rationTabs = React.useMemo(
+    () =>
+      activeRations.map((r) => {
+        const allDishes = r.dishes ?? [];
+        const weekDishes = allDishes.filter(
+          (d) => !d.week || d.week === currentWeek,
+        );
+        const countForWeek =
+          weekDishes.length > 0 ? weekDishes.length : allDishes.length;
+        return {
+          calories: r.calories,
+          countProduct: countForWeek || DEFAULT_DISHES_COUNT,
+        };
+      }),
+    [activeRations, currentWeek],
+  );
+
   const [activeCal, setActiveCal] = React.useState<string>(
-    () => rationTabs[0]?.calories ?? "",
+    () => activeRations[0]?.calories ?? "",
   );
   const [activeDay, setActiveDay] = React.useState<string | null>(null);
 
@@ -143,9 +160,16 @@ export const Products: FC = () => {
     const map: Record<string, TProduct[]> = {};
     const seedDay = activeDay || "default";
     for (const tab of rationTabs) {
-      const realDishes = realDishesByCal[tab.calories];
-      if (realDishes && realDishes.length > 0) {
-        map[tab.calories] = realDishes.map((d) => ({
+      const allDishes = realDishesByCal[tab.calories] ?? [];
+
+      const weekDishes = allDishes.filter(
+        (d) => !d.week || d.week === currentWeek,
+      );
+
+      const dishesToShow = weekDishes.length > 0 ? weekDishes : allDishes;
+
+      if (dishesToShow.length > 0) {
+        map[tab.calories] = dishesToShow.map((d) => ({
           id: d.id,
           name: d.name,
           image: d.image || "/product.png",
@@ -167,7 +191,7 @@ export const Products: FC = () => {
       }
     }
     return map;
-  }, [activeDay, rationTabs, realDishesByCal]);
+  }, [activeDay, rationTabs, realDishesByCal, currentWeek]);
 
   const createCartItem = React.useCallback(
     (days: string[], range: string | null) => ({

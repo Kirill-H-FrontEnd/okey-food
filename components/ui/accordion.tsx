@@ -21,10 +21,7 @@ function AccordionItem({
   return (
     <AccordionPrimitive.Item
       data-slot="accordion-item"
-      className={cn(
-        " transition-all data-[state=open]:bg-whitePrimary",
-        className,
-      )}
+      className={cn("transition-all", className)}
       {...props}
     />
   );

@@ -119,8 +119,7 @@ export const ProductCard: FC<TProductCardProps> = ({ product }) => {
               </p>
               <div className="mt-4 mb-6 text-colorPrimary/80 leading-relaxed">
                 <span className="text-colorPrimary font-bold">Состав:</span>{" "}
-                {product.description} куриная грудка, йогуртовый соус, кинза,
-                томат, огурец, паприка сладкая, соевый соус.
+                {product.description}
               </div>
             </div>
 

@@ -51,11 +51,34 @@ const STATUS_CONFIG = {
   },
 };
 
+type DayStatus = "pending" | "confirmed" | "delivered" | "cancelled";
+type NotesShape = {
+  deliverySlots?: Array<{ days: string[] }>;
+  dayStatuses?: Record<string, DayStatus>;
+};
+
+function deriveOrderStatus(order: { status: string; notes: string }): string {
+  try {
+    const n: NotesShape = JSON.parse(order.notes);
+    const allDays = n.deliverySlots?.flatMap((s) => s.days) ?? [];
+    if (allDays.length === 0) return order.status;
+    const dayStatuses = n.dayStatuses ?? {};
+    const statuses = allDays.map((d) => dayStatuses[d] ?? "pending");
+    if (statuses.every((s) => s === "delivered")) return "delivered";
+    if (statuses.every((s) => s === "cancelled")) return "cancelled";
+    if (statuses.some((s) => s === "confirmed" || s === "delivered"))
+      return "confirmed";
+    return "pending";
+  } catch {
+    return order.status;
+  }
+}
+
 export default function AdminDashboard() {
   const { rations, orders, loading } = useAdminStore();
 
   const deliveredRevenue = orders
-    .filter((o) => o.status === "delivered")
+    .filter((o) => deriveOrderStatus(o) === "delivered")
     .reduce((acc, o) => acc + o.amount, 0);
   const activeRations = rations.filter((r) => r.isActive).length;
   const uniqueCustomers = new Set(orders.map((o) => o.customerName)).size;
@@ -98,9 +121,12 @@ export default function AdminDashboard() {
     },
   ];
 
-  const recentOrders = [...orders].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
+  const recentOrders = [...orders]
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
+    .slice(0, 5);
   const rowVariants: Variants = {
     hidden: {
       opacity: 0,
@@ -339,7 +365,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {rations.map((ration, i) => (
                   <motion.div
                     custom={i}
@@ -347,26 +373,36 @@ export default function AdminDashboard() {
                     animate="show"
                     variants={rowVariants}
                     key={ration.id}
-                    className="flex items-center gap-3 p-3 rounded-sm bg-colorPrimary/10 border border-greySecondary/30"
+                    className="group relative flex items-center gap-3 rounded-md border border-greySecondary/30 bg-colorPrimary/10 p-3 transition-shadow hover:shadow-sm hover:shadow-colorPrimary/10"
                   >
+                    {/* Icon */}
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-colorPrimary text-yellowPrimary text-xs font-bold">
+                      {ration.calories}
+                    </div>
+
+                    {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-colorPrimary truncate">
+                      <p className="text-sm font-bold text-colorPrimary truncate leading-tight">
                         {ration.name}
                       </p>
-                      <p className="text-xs text-greySecondary">
+                      <p className="text-[11px] text-greySecondary mt-0.5">
                         {ration.calories} ккал · {ration.dishes.length} блюд
                       </p>
                     </div>
 
-                    <div className="text-right shrink-0">
+                    {/* Price + status */}
+                    <div className="shrink-0 text-right space-y-1">
                       <p className="text-sm font-bold text-colorPrimary">
-                        {ration.pricePerDay} BYN
+                        {ration.pricePerDay}{" "}
+                        <span className="text-[10px] font-normal text-greySecondary">
+                          BYN/д
+                        </span>
                       </p>
                       <span
-                        className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                        className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
                           ration.isActive
-                            ? "bg-emerald-100 text-emerald-700"
-                            : "bg-gray-100 text-gray-500"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : "bg-gray-50 text-gray-400 border-gray-200"
                         }`}
                       >
                         {ration.isActive ? "Активен" : "Скрыт"}

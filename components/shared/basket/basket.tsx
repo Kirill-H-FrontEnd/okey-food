@@ -39,65 +39,70 @@ import { BasketHeader } from "./_components/basket-header";
 import { CheckoutFooter } from "./_components/checkout-footer";
 import { CheckoutForm } from "./_components/checkout-form";
 import { CheckoutSummary } from "./_components/checkout-summary";
+import { DeliverySlotsPicker } from "./_components/delivery-slots-picker";
 import { SuccessOrderDialog } from "./_components/success-order-dialog";
 import { listSelectableDays } from "@/lib/delivery-days";
 
-import type { CheckoutFormField, CityOption } from "./types";
-import type { SuccessOrderSnapshot } from "./types";
+import type {
+  CheckoutFormField,
+  CityOption,
+  DeliverySlotItem,
+  SuccessOrderSnapshot,
+} from "./types";
 
-const CITIES: CityOption[] = [{ value: "minsk", label: "Минск" }];
+const CITIES: CityOption[] = [{ value: "Минск", label: "Минск" }];
 
 const FIELD_ID_MAP: Record<CheckoutFormField, string> = {
   firstName: "checkout-first-name",
-  lastName: "checkout-last-name",
   phone: "checkout-phone",
   social: "checkout-social",
   city: "checkout-city",
   street: "checkout-street",
   house: "checkout-house",
   apartment: "checkout-apartment",
-  date: "checkout-date",
+  floor: "checkout-floor",
+  intercom: "checkout-intercom",
   comment: "checkout-comment",
 };
 
 const FIELD_ORDER: CheckoutFormField[] = [
   "firstName",
-  "lastName",
   "phone",
   "social",
   "city",
   "street",
   "house",
   "apartment",
-  "date",
+  "floor",
+  "intercom",
   "comment",
 ];
 
 type CheckoutFormValues = CheckoutFormData;
 const createInitialFormValues = (): Partial<CheckoutFormValues> => ({
   firstName: "",
-  lastName: "",
   phone: "",
   social: "",
-  city: "",
+  city: "Минск",
   street: "",
   house: "",
   apartment: "",
-  date: undefined,
+  floor: "",
+  intercom: "",
   comment: "",
 });
+
+const parseISODate = (value: string) => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const parsed = new Date(`${value}T00:00:00`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
 
 const formatISODate = (date: Date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
-};
-
-const parseISODate = (value: string) => {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
-  const parsed = new Date(`${value}T00:00:00`);
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
 };
 
 export const Basket: FC = () => {
@@ -114,6 +119,7 @@ export const Basket: FC = () => {
 
   const [isCheckout, setIsCheckout] = useState(false);
   const [isConsentGiven, setIsConsentGiven] = useState(false);
+  const [deliverySlots, setDeliverySlots] = useState<DeliverySlotItem[]>([]);
   const [successOrder, setSuccessOrder] = useState<SuccessOrderSnapshot | null>(
     null,
   );
@@ -174,8 +180,6 @@ export const Basket: FC = () => {
     shouldFocusError: false,
   });
 
-  const deliveryDate = form.watch("date");
-
   const handleCloseBasket = useCallback(() => {
     setIsBasketOpen(false);
   }, [setIsBasketOpen]);
@@ -207,6 +211,7 @@ export const Basket: FC = () => {
     form.reset(createInitialFormValues());
     form.clearErrors();
     setIsConsentGiven(false);
+    setDeliverySlots([]);
   }, [form]);
 
   useEffect(() => {
@@ -331,14 +336,29 @@ export const Basket: FC = () => {
         const rationName =
           rations.find((r) => r.calories === item.calories)?.name ??
           `Рацион ${item.calories} ккал`;
+
+        const slotForItem = deliverySlots.find(
+          (s) => s.rationCalories === item.calories,
+        );
+
         await addOrder({
-          customerName: `${data.firstName} ${data.lastName}`.trim(),
+          customerName: data.firstName.trim(),
           phone: data.phone,
           ration: rationName,
           days: item.selectedDays.length,
           amount: item.pricePerDay * item.selectedDays.length,
           status: "pending",
-          notes: data.comment ?? "",
+          notes: JSON.stringify({
+            comment: data.comment ?? "",
+            social: data.social ?? "",
+            city: data.city,
+            street: data.street,
+            house: data.house,
+            apartment: data.apartment,
+            floor: data.floor,
+            intercom: data.intercom ?? "",
+            deliverySlots: slotForItem ? [slotForItem] : deliverySlots,
+          }),
         });
       }
     } catch {
@@ -348,16 +368,17 @@ export const Basket: FC = () => {
     setSuccessOrder({
       customer: {
         firstName: data.firstName,
-        lastName: data.lastName,
         phone: data.phone,
         city: data.city ?? "",
         social: data.social ?? "",
         street: data.street ?? "",
         house: data.house ?? "",
         apartment: data.apartment ?? "",
-        date: data.date ?? undefined,
+        floor: data.floor ?? "",
+        intercom: data.intercom ?? "",
       },
       items: sortedItems,
+      deliverySlots,
       totalPrice,
     });
     setIsBasketOpen(false);
@@ -365,6 +386,7 @@ export const Basket: FC = () => {
     setIsConsentGiven(false);
     form.reset(createInitialFormValues());
     form.clearErrors();
+    setDeliverySlots([]);
     useBasketStore.getState().clear();
   }, handleSubmitError);
 
@@ -479,18 +501,22 @@ export const Basket: FC = () => {
                         : "transform",
                     }}
                   >
-                    <div className="mb-5">
-                      <div className="w-full space-y-6 text-whiteSecondary">
-                        <FormProvider {...form}>
-                          <CheckoutForm cityOptions={CITIES} />
-                        </FormProvider>
+                    <div className="mb-5 space-y-6">
+                      <FormProvider {...form}>
+                        <CheckoutForm cityOptions={CITIES} />
+                      </FormProvider>
 
-                        <CheckoutSummary
-                          items={sortedItems}
-                          totalLabel={totalLabel}
-                          deliveryDate={deliveryDate}
-                        />
-                      </div>
+                      <DeliverySlotsPicker
+                        items={sortedItems}
+                        rations={rations}
+                        slots={deliverySlots}
+                        onSlotsChange={setDeliverySlots}
+                      />
+
+                      <CheckoutSummary
+                        items={sortedItems}
+                        totalLabel={totalLabel}
+                      />
                     </div>
                   </m.section>
                 )}
@@ -510,6 +536,7 @@ export const Basket: FC = () => {
                     isConsentGiven={isConsentGiven}
                     onConsentChange={setIsConsentGiven}
                     onSubmit={handleSubmit}
+                    isSubmitting={form.formState.isSubmitting}
                   />
                 )}
               </AnimatePresence>

@@ -25,6 +25,7 @@ interface AdminState {
 
   addOrder: (order: Omit<TOrder, "id" | "createdAt">) => Promise<void>;
   updateOrderStatus: (id: string, status: TOrder["status"]) => Promise<void>;
+  updateOrderNotes: (id: string, notes: string) => Promise<void>;
 }
 
 export const useAdminStore = create<AdminState>()((set, get) => ({
@@ -140,6 +141,18 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
     if (!res.ok) throw new Error("Failed to update order status");
     set((state) => ({
       orders: state.orders.map((o) => (o.id === id ? { ...o, status } : o)),
+    }));
+  },
+
+  updateOrderNotes: async (id, notes) => {
+    const res = await fetch(`/api/orders/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ notes }),
+    });
+    if (!res.ok) throw new Error("Failed to update order notes");
+    set((state) => ({
+      orders: state.orders.map((o) => (o.id === id ? { ...o, notes } : o)),
     }));
   },
 }));

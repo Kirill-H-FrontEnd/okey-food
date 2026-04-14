@@ -34,3 +34,35 @@ export function listSelectableDays(range: string): string[] {
   }
   return days;
 }
+
+/**
+ * Returns the week index (0-3) for a given range string.
+ * 0 = current week, 1 = next week, 2 = week after next, 3 = three weeks out.
+ */
+export function getWeekIndexFromRange(range: string): number {
+  if (!range) return 0;
+  const { start } = parseRange(range);
+
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+
+  // Get current week's Monday
+  const day = now.getDay();
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  const currentMonday = new Date(now);
+  currentMonday.setDate(now.getDate() + diffToMonday);
+
+  const diffMs = start.getTime() - currentMonday.getTime();
+  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+  const diffWeeks = Math.floor(diffDays / 7);
+
+  return Math.max(0, Math.min(3, diffWeeks));
+}
+
+/**
+ * Returns the rotation week number (1-4) for a given range string.
+ */
+export function getWeekNumberFromRange(range: string): 1 | 2 | 3 | 4 {
+  const index = getWeekIndexFromRange(range);
+  return ((index % 4) + 1) as 1 | 2 | 3 | 4;
+}

@@ -24,6 +24,7 @@ export type TRationDish = {
   weight: number;
   image: string;
   description: string;
+  week?: 1 | 2 | 3 | 4;
 };
 
 export type TRation = {

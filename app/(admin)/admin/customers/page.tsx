@@ -10,40 +10,52 @@ import {
 import { Phone } from "lucide-react";
 import { TbRefresh } from "react-icons/tb";
 import { FaUsers } from "react-icons/fa";
+import { FaTelegram } from "react-icons/fa";
 import { FaRegClock } from "react-icons/fa6";
 import { LuShoppingCart } from "react-icons/lu";
 import { IoWalletOutline } from "react-icons/io5";
-import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
+
 const STATUS_LABEL: Record<string, string> = {
   pending: "Ожидает",
   confirmed: "Подтверждён",
-  preparing: "Готовится",
-  delivering: "Доставляется",
   delivered: "Доставлен",
   cancelled: "Отменён",
 };
 
-const STATUS_COLOR: Record<string, string> = {
-  pending: "bg-yellow-100 text-yellow-700",
-  confirmed: "bg-blue-100 text-blue-700",
-  preparing: "bg-orange-100 text-orange-700",
-  delivering: "bg-purple-100 text-purple-700",
-  delivered: "bg-green-100 text-green-700",
-  cancelled: "bg-red-100 text-red-600",
+const STATUS_PILL: Record<string, string> = {
+  pending: "bg-amber-50 text-amber-700 border border-amber-200",
+  confirmed: "bg-blue-50 text-blue-700 border border-blue-200",
+  delivered: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  cancelled: "bg-red-50 text-red-600 border border-red-200",
 };
+
+type ParsedNotes = {
+  social?: string;
+  city?: string;
+  street?: string;
+};
+
+function parseNotes(notes: string): ParsedNotes {
+  try {
+    return JSON.parse(notes) as ParsedNotes;
+  } catch {
+    return {};
+  }
+}
 
 function formatDate(iso: string) {
   if (!iso) return "—";
-  const d = new Date(iso);
-  return d.toLocaleDateString("ru-RU", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+  try {
+    return format(new Date(iso), "d MMMM yyyy", { locale: ru });
+  } catch {
+    return iso;
+  }
 }
 
 export default function CustomersPage() {
-  const { orders, loading, fetchOrders, updateOrderStatus } = useAdminStore();
+  const { orders, loading, fetchOrders } = useAdminStore();
 
   const customers = useMemo(() => {
     const map = new Map<
@@ -51,6 +63,7 @@ export default function CustomersPage() {
       {
         name: string;
         phone: string;
+        social: string;
         orderCount: number;
         totalSpent: number;
         lastOrder: string;
@@ -59,23 +72,24 @@ export default function CustomersPage() {
     >();
 
     for (const order of orders) {
-      const key = order.customerName;
+      const notes = parseNotes(order.notes);
+      const phone = order.phone?.trim() ?? "";
+      const key = phone || `name:${order.customerName}`;
       const existing = map.get(key);
 
       if (existing) {
         existing.orderCount += 1;
         existing.totalSpent += order.amount;
-        if (order.createdAt > existing.lastOrder) {
+        if (order.createdAt > existing.lastOrder)
           existing.lastOrder = order.createdAt;
-        }
-        if (!existing.phone && order.phone) {
-          existing.phone = order.phone;
-        }
+        if (!existing.phone && phone) existing.phone = phone;
+        if (!existing.social && notes.social) existing.social = notes.social;
         existing.orders.push(order);
       } else {
         map.set(key, {
           name: order.customerName,
-          phone: order.phone ?? "",
+          phone,
+          social: notes.social ?? "",
           orderCount: 1,
           totalSpent: order.amount,
           lastOrder: order.createdAt,
@@ -93,7 +107,7 @@ export default function CustomersPage() {
   }, [orders]);
 
   return (
-    <div className="p-4 lg:p-8">
+    <div className="p-4 lg:p-6">
       <div className="mb-6 flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-colorPrimary flex items-center gap-2">
@@ -101,23 +115,23 @@ export default function CustomersPage() {
             <span>Клиенты</span>
           </h1>
           {customers.length > 0 && (
-            <div className="flex items-center gap-1.5 rounded-xl text-greySecondary  py-2">
-              <p>Всего клиентов:</p>
-              <span className="text-sm font-semibold text-yellow-hover">
+            <p className="text-sm text-greySecondary mt-0.5">
+              Всего:{" "}
+              <span className="font-semibold text-yellow-hover">
                 {customers.length}
               </span>
-            </div>
+            </p>
           )}
         </div>
 
-        <Button
+        <button
           onClick={fetchOrders}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 rounded-md bg-white border border-grey-border/50 hover:border-grey-border text-sm font-semibold text-colorPrimary/60 hover:text-colorPrimary cursor-pointer  transition-colors"
+          className="flex items-center gap-2 h-9 px-4 rounded-xl bg-whiteSecondary border border-greySecondary/40 text-sm font-semibold text-colorPrimary/60 hover:text-colorPrimary hover:border-greySecondary/70 transition-all cursor-pointer"
         >
           <TbRefresh size={14} className={loading ? "animate-spin" : ""} />
           Обновить
-        </Button>
+        </button>
       </div>
 
       {customers.length === 0 ? (
@@ -125,7 +139,6 @@ export default function CustomersPage() {
           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-whitePrimary border border-greySecondary/30">
             <FaUsers size={24} className="text-colorPrimary/25" />
           </div>
-
           <p className="font-bold text-colorPrimary/30 text-lg mb-1">
             Клиентов пока нет
           </p>
@@ -134,7 +147,7 @@ export default function CustomersPage() {
           </p>
         </div>
       ) : (
-        <Accordion type="single" collapsible className="space-y-2">
+        <Accordion type="single" collapsible className="space-y-3">
           {customers.map((c) => {
             const initials = c.name
               .split(" ")
@@ -147,25 +160,43 @@ export default function CustomersPage() {
               <AccordionItem
                 key={c.name}
                 value={c.name}
-                className="overflow-hidden rounded-lg border border-greySecondary/50 bg-whiteSecondary  "
+                className="rounded-2xl border border-greySecondary/30 bg-whiteSecondary overflow-hidden shadow-sm shadow-colorPrimary/5"
               >
-                <AccordionTrigger className="bg-whiteSecondary py-4  px-4">
-                  <div className="flex min-w-0 flex-1 items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-colorPrimary/15 text-sm font-bold shadow">
+                <AccordionTrigger className="px-5 py-4 hover:no-underline">
+                  <div className="flex min-w-0 flex-1 items-center gap-3 mr-2">
+                    {/* Avatar */}
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-colorPrimary text-yellowPrimary text-sm font-bold">
                       {initials}
                     </div>
 
+                    {/* Name + contacts */}
                     <div className="min-w-0 flex-1 text-left">
-                      <p className="truncate text-sm font-semibold text-colorPrimary">
+                      <p className="font-bold text-colorPrimary truncate leading-tight">
                         {c.name}
                       </p>
-                      <p className="mt-0.5 text-xs text-greySecondary">
-                        {c.phone}
-                      </p>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5">
+                        {c.phone && (
+                          <span className="flex items-center gap-1 text-xs text-greySecondary">
+                            <Phone size={10} />
+                            {c.phone}
+                          </span>
+                        )}
+                        {c.social && (
+                          <span className="flex items-center gap-1 text-xs text-greySecondary">
+                            <FaTelegram size={10} className="text-sky-400" />@
+                            {c.social.replace(/^@/, "")}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="mr-2 hidden shrink-0 items-center gap-2 sm:flex">
-                      <span className="flex items-center gap-1 rounded-lg bg-green-300/50 px-2.5 py-1 text-xs font-semibold text-colorPrimary">
+                    {/* Stats chips */}
+                    <div className="hidden sm:flex shrink-0 items-center gap-2">
+                      <span className="flex items-center gap-1.5 rounded-xl bg-colorPrimary/5 border border-colorPrimary/10 px-2.5 py-1.5 text-xs font-semibold text-colorPrimary">
+                        <LuShoppingCart size={11} />
+                        {c.orderCount}
+                      </span>
+                      <span className="flex items-center gap-1.5 rounded-xl bg-yellowPrimary/20 border border-yellow-hover/20 px-2.5 py-1.5 text-xs font-bold text-colorPrimary">
                         <IoWalletOutline size={11} />
                         {c.totalSpent} BYN
                       </span>
@@ -173,81 +204,69 @@ export default function CustomersPage() {
                   </div>
                 </AccordionTrigger>
 
-                <AccordionContent className="bg-whiteSecondary px-4">
-                  <div className="bg-whiteSecondary pb-1">
-                    <div className="mb-4  grid-cols-2 md:grid-cols-3 md:gap-3 bg-whiteSecondary grid">
-                      <div className="flex items-center gap-2.5 rounded-xl bg-whiteSecondary  py-2.5">
-                        <div>
-                          <p className="text-[10px] uppercase tracking-wide text-greySecondary">
-                            Заказов
-                          </p>
-                          <p className="text-sm flex gap-2 items-center font-bold text-colorPrimary mt-1">
-                            <LuShoppingCart
-                              size={16}
-                              className="shrink-0 text-yellow-hover"
-                            />
-                            <span>{c.orderCount}</span>
-                          </p>
-                        </div>
+                <AccordionContent className="px-5 border-t border-greySecondary/20 bg-colorPrimary/[0.02]">
+                  <div className="pt-1 space-y-4">
+                    {/* Stats grid */}
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="rounded-xl bg-whitePrimary border border-greySecondary/20 px-3 py-2.5">
+                        <p className="text-[10px] uppercase tracking-wide text-greySecondary mb-1">
+                          Заказов
+                        </p>
+                        <p className="text-sm font-bold text-colorPrimary flex items-center gap-1.5">
+                          <LuShoppingCart
+                            size={14}
+                            className="text-yellow-hover"
+                          />
+                          {c.orderCount}
+                        </p>
                       </div>
-
-                      <div className="flex items-center gap-2.5 rounded-xl bg-whiteSecondary  py-2.5">
-                        <div>
-                          <p className="text-[10px] uppercase tracking-wide text-greySecondary">
-                            Потрачено
-                          </p>
-                          <p className="text-sm flex items-center gap-2 font-bold text-colorPrimary mt-1">
-                            <IoWalletOutline
-                              size={16}
-                              className="shrink-0 text-yellow-hover"
-                            />
-                            <span> {c.totalSpent} BYN</span>
-                          </p>
-                        </div>
+                      <div className="rounded-xl bg-whitePrimary border border-greySecondary/20 px-3 py-2.5">
+                        <p className="text-[10px] uppercase tracking-wide text-greySecondary mb-1">
+                          Потрачено
+                        </p>
+                        <p className="text-sm font-bold text-colorPrimary flex items-center gap-1.5">
+                          <IoWalletOutline
+                            size={14}
+                            className="text-yellow-hover"
+                          />
+                          {c.totalSpent} BYN
+                        </p>
                       </div>
-
-                      <div className="flex items-center gap-2.5 rounded-xl bg-whiteSecondary  py-2.5">
-                        <div>
-                          <p className="text-[10px] uppercase tracking-wide text-greySecondary">
-                            Последний заказ
-                          </p>
-                          <p className="text-sm font-bold flex gap-2 items-center text-colorPrimary mt-1">
-                            <FaRegClock
-                              size={16}
-                              className="shrink-0 text-yellow-hover"
-                            />
-                            <span> {formatDate(c.lastOrder)}</span>
-                          </p>
-                        </div>
+                      <div className="rounded-xl bg-whitePrimary border border-greySecondary/20 px-3 py-2.5">
+                        <p className="text-[10px] uppercase tracking-wide text-greySecondary mb-1">
+                          Последний
+                        </p>
+                        <p className="text-sm font-bold text-colorPrimary flex items-center gap-1.5">
+                          <FaRegClock
+                            size={13}
+                            className="text-yellow-hover shrink-0"
+                          />
+                          <span className="truncate">
+                            {formatDate(c.lastOrder)}
+                          </span>
+                        </p>
                       </div>
                     </div>
 
-                    {c.phone && (
-                      <span className="mb-4 inline-flex items-center gap-2 rounded-xl bg-whiteSecondary  py-2 text-xs text-colorPrimary transition-colors font-semibold">
-                        <Phone className="text-yellow-hover" size={16} />
-                        {c.phone}
-                      </span>
-                    )}
-
+                    {/* Order history */}
                     <div>
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-greySecondary">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-greySecondary mb-2">
                         История заказов
                       </p>
-
                       <div className="space-y-1.5">
                         {c.orders.map((order) => (
                           <div
                             key={order.id}
-                            className="flex items-center justify-between rounded-xl bg-whiteSecondary  py-2.5"
+                            className="flex items-center justify-between gap-3 rounded-xl bg-whitePrimary border border-greySecondary/20 px-3 py-2.5"
                           >
-                            <div className="flex min-w-0 items-center gap-2.5">
-                              <span className="shrink-0 font-mono text-xs text-greySecondary">
+                            <div className="flex min-w-0 items-center gap-2">
+                              <span className="shrink-0 font-mono text-[10px] text-greySecondary/60">
                                 #{order.id.slice(0, 8)}
                               </span>
-                              <span className="truncate text-xs text-colorPrimary">
+                              <span className="truncate text-xs font-medium text-colorPrimary">
                                 {order.ration}
                               </span>
-                              <span className="shrink-0 text-xs text-greySecondary">
+                              <span className="shrink-0 text-[10px] text-greySecondary">
                                 {order.days} дн.
                               </span>
                             </div>
@@ -255,13 +274,13 @@ export default function CustomersPage() {
                             <div className="ml-2 flex shrink-0 items-center gap-2">
                               <span
                                 className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                                  STATUS_COLOR[order.status] ??
-                                  "bg-gray-100 text-gray-600"
+                                  STATUS_PILL[order.status] ??
+                                  "bg-gray-50 text-gray-500 border border-gray-200"
                                 }`}
                               >
                                 {STATUS_LABEL[order.status] ?? order.status}
                               </span>
-                              <span className="text-xs font-bold text-colorPrimary">
+                              <span className="text-xs font-bold text-colorPrimary whitespace-nowrap">
                                 {order.amount} BYN
                               </span>
                             </div>

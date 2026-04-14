@@ -9,6 +9,9 @@ export const MEALS = [
   "Перекус",
 ] as const;
 
+export const WEEKS = [1, 2, 3, 4] as const;
+export type WeekNumber = (typeof WEEKS)[number];
+
 export type MealValue = (typeof MEALS)[number];
 
 export const dishSchema = z.object({
@@ -21,6 +24,8 @@ export const dishSchema = z.object({
   meal: z.string().refine((value): value is MealValue => {
     return MEALS.includes(value as MealValue);
   }, "Выберите приём пищи"),
+
+  week: z.number().int().min(1).max(4).optional().default(1),
 
   calories: z
     .string()
