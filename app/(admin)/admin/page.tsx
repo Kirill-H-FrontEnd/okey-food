@@ -1,13 +1,12 @@
 "use client";
+
 import { useAdminStore } from "@/store/useAdminStore";
-import { HyperText } from "@/components/magicui/hyper-text";
 import {
   ArrowUpRight,
   Clock,
   CheckCircle2,
   Loader2,
   XCircle,
-  Hash,
 } from "lucide-react";
 import {
   HiOutlineHashtag,
@@ -52,6 +51,7 @@ const STATUS_CONFIG = {
 };
 
 type DayStatus = "pending" | "confirmed" | "delivered" | "cancelled";
+
 type NotesShape = {
   deliverySlots?: Array<{ days: string[] }>;
   dayStatuses?: Record<string, DayStatus>;
@@ -60,14 +60,31 @@ type NotesShape = {
 function deriveOrderStatus(order: { status: string; notes: string }): string {
   try {
     const n: NotesShape = JSON.parse(order.notes);
-    const allDays = n.deliverySlots?.flatMap((s) => s.days) ?? [];
-    if (allDays.length === 0) return order.status;
+    const allDays = n.deliverySlots?.flatMap((slot) => slot.days) ?? [];
+
+    if (allDays.length === 0) {
+      return order.status;
+    }
+
     const dayStatuses = n.dayStatuses ?? {};
-    const statuses = allDays.map((d) => dayStatuses[d] ?? "pending");
-    if (statuses.every((s) => s === "delivered")) return "delivered";
-    if (statuses.every((s) => s === "cancelled")) return "cancelled";
-    if (statuses.some((s) => s === "confirmed" || s === "delivered"))
+    const statuses = allDays.map((day) => dayStatuses[day] ?? "pending");
+
+    if (statuses.every((status) => status === "delivered")) {
+      return "delivered";
+    }
+
+    if (statuses.every((status) => status === "cancelled")) {
+      return "cancelled";
+    }
+
+    if (
+      statuses.some(
+        (status) => status === "confirmed" || status === "delivered",
+      )
+    ) {
       return "confirmed";
+    }
+
     return "pending";
   } catch {
     return order.status;
@@ -75,13 +92,15 @@ function deriveOrderStatus(order: { status: string; notes: string }): string {
 }
 
 export default function AdminDashboard() {
-  const { rations, orders, loading } = useAdminStore();
+  const { rations, orders, rationsLoading, ordersLoading } = useAdminStore();
 
   const deliveredRevenue = orders
-    .filter((o) => deriveOrderStatus(o) === "delivered")
-    .reduce((acc, o) => acc + o.amount, 0);
-  const activeRations = rations.filter((r) => r.isActive).length;
-  const uniqueCustomers = new Set(orders.map((o) => o.customerName)).size;
+    .filter((order) => deriveOrderStatus(order) === "delivered")
+    .reduce((acc, order) => acc + order.amount, 0);
+
+  const activeRations = rations.filter((ration) => ration.isActive).length;
+  const uniqueCustomers = new Set(orders.map((order) => order.customerName))
+    .size;
 
   const stats = [
     {
@@ -89,27 +108,21 @@ export default function AdminDashboard() {
       value: orders.length,
       suffix: "",
       icon: RiLuggageCartLine,
-
       lightColor: " text-blue-600",
-      change: "+12%",
     },
     {
       label: "Выручка (BYN)",
       value: deliveredRevenue,
       suffix: " BYN",
       icon: BsCashStack,
-
       lightColor: " text-emerald-600",
-      change: "выполненные",
     },
     {
       label: "Клиентов",
       value: uniqueCustomers,
       suffix: "",
       icon: FaUsers,
-
       lightColor: " text-violet-600",
-      change: "+5%",
     },
     {
       label: "Активных рационов",
@@ -117,7 +130,6 @@ export default function AdminDashboard() {
       suffix: "",
       icon: PiChefHat,
       lightColor: " text-lime-700",
-      change: `${rations.length} всего`,
     },
   ];
 
@@ -127,6 +139,7 @@ export default function AdminDashboard() {
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     )
     .slice(0, 5);
+
   const rowVariants: Variants = {
     hidden: {
       opacity: 0,
@@ -142,67 +155,72 @@ export default function AdminDashboard() {
       },
     }),
   };
+
   return (
-    <div className="p-4 md:p-8 flex flex-col" style={{ minHeight: "100%" }}>
+    <div className="flex flex-col p-4 md:p-8" style={{ minHeight: "100%" }}>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-colorPrimary flex items-center gap-2">
+        <h1 className="flex items-center gap-2 text-2xl font-bold text-colorPrimary">
           <FiTrendingUp className="text-yellow-hover" />
           <span>Статистика</span>
         </h1>
-        <p className="text-greySecondary text-sm mt-1">
+
+        <p className="mt-1 text-sm text-greySecondary">
           Ключевые показатели заказов, клиентов и рационов Okey Food
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
+      <div className="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((stat) => {
           const Icon = stat.icon;
+
           return (
             <div
               key={stat.label}
-              className="bg-whiteSecondary rounded-2xl p-5 border border-greySecondary/40 shadow shadow-colorPrimary/10"
+              className="rounded-2xl border border-greySecondary/40 bg-whiteSecondary p-5 shadow shadow-colorPrimary/10"
             >
-              <div className="flex items-start justify-between mb-3">
+              <div className="mb-3 flex items-start justify-between">
                 <div
-                  className={`w-10 bg-transparent h-10 rounded-xl   ${stat.lightColor}`}
+                  className={`h-10 w-10 rounded-xl bg-transparent ${stat.lightColor}`}
                 >
                   <Icon size={28} />
                 </div>
               </div>
-              <p className="text-greySecondary text-xs font-semibold uppercase tracking-wider mb-1">
+
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-greySecondary">
                 {stat.label}
               </p>
-              <p className="text-colorPrimary text-2xl font-bold flex items-center gap-1 mt-2">
+
+              <p className="mt-2 flex items-center gap-1 text-2xl font-bold text-colorPrimary">
                 <NumberTicker
                   value={stat.value}
                   className="text-colorPrimary"
                 />
-                <span> {stat.suffix}</span>
+                <span>{stat.suffix}</span>
               </p>
             </div>
           );
         })}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 flex-1 min-h-0">
-        {/* Recent orders */}
-        <div className="xl:col-span-2  rounded-2xl border border-greySecondary/40 flex flex-col min-h-0 overflow-hidden shadow shadow-colorPrimary/10">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-greySecondary/40 shrink-0 bg-whiteSecondary">
+      <div className="grid flex-1 min-h-0  gap-5 grid-cols-1">
+        <div className="xl:col-span-2 flex min-h-0 flex-col overflow-hidden rounded-2xl border border-greySecondary/40 shadow shadow-colorPrimary/10">
+          <div className="flex shrink-0 items-center justify-between border-b border-greySecondary/40 bg-whiteSecondary px-6 py-4">
             <h2 className="font-bold text-colorPrimary">Последние заказы</h2>
+
             <Link
+              href="/admin/orders"
               style={{
                 outline: "none",
                 WebkitTapHighlightColor: "transparent",
               }}
-              href="/admin/orders"
-              className="text-xs font-semibold text-greySecondary ring-0 hover:text-yellow-hover transition-colors flex items-center gap-1"
+              className="flex items-center gap-1 text-xs font-semibold text-greySecondary transition-colors hover:text-yellow-hover ring-0"
             >
               Все заказы <ArrowUpRight size={13} />
             </Link>
           </div>
 
-          <div className="flex-1 overflow-y-auto bg-whiteSecondary">
-            <table className="w-full border-collapse table-auto text-sm md:table-fixed">
+          <div className="flex-1 overflow-y-hidden bg-whiteSecondary">
+            <table className="w-full table-auto border-collapse text-sm md:table-fixed">
               <thead>
                 <tr className="border-b border-greySecondary/40">
                   <th className="sticky top-0 z-20 hidden bg-colorPrimary px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-greySecondary md:table-cell">
@@ -243,7 +261,7 @@ export default function AdminDashboard() {
               </thead>
 
               <tbody>
-                {loading ? (
+                {ordersLoading ? (
                   <tr className="bg-whiteSecondary">
                     <td colSpan={5} className="px-6 py-0">
                       <div className="flex min-h-[260px] w-full items-center justify-center">
@@ -275,7 +293,12 @@ export default function AdminDashboard() {
                   </tr>
                 ) : (
                   recentOrders.map((order, i) => {
-                    const status = STATUS_CONFIG[order.status];
+                    const derivedStatus = deriveOrderStatus(order);
+                    const status =
+                      STATUS_CONFIG[
+                        derivedStatus as keyof typeof STATUS_CONFIG
+                      ] ?? STATUS_CONFIG.pending;
+
                     const StatusIcon = status.icon;
 
                     return (
@@ -324,30 +347,31 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Rations */}
-        <div className="bg-whiteSecondary rounded-2xl border border-greySecondary/40 flex flex-col min-h-0 overflow-hidden shadow shadow-colorPrimary/10 s">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-greySecondary/40 shrink-0">
+        {/* <div className="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-greySecondary/40 bg-whiteSecondary shadow shadow-colorPrimary/10">
+          <div className="flex shrink-0 items-center justify-between border-b border-greySecondary/40 px-6 py-4">
             <h2 className="font-bold text-colorPrimary">Рационы</h2>
+
             <Link
+              href="/admin/rations"
               style={{
                 outline: "none",
                 WebkitTapHighlightColor: "transparent",
               }}
-              href="/admin/rations"
-              className="text-xs font-semibold text-greySecondary hover:text-yellow-hover  transition-colors flex items-center gap-1 ring-0"
+              className="flex items-center gap-1 text-xs font-semibold text-greySecondary transition-colors hover:text-yellow-hover ring-0"
             >
               Управление <ArrowUpRight size={13} />
             </Link>
           </div>
+
           <div className="flex-1 overflow-y-auto p-4">
-            {loading ? (
-              <div className="min-h-full flex items-center justify-center">
+            {rationsLoading ? (
+              <div className="flex min-h-full items-center justify-center">
                 <Loader size="medium" />
               </div>
             ) : rations.length === 0 ? (
-              <div className="min-h-full flex items-center justify-center">
-                <div className="w-full max-w-[260px] flex flex-col items-center justify-center text-center py-10">
-                  <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-whitePrimary border border-greySecondary/30">
+              <div className="flex min-h-full items-center justify-center">
+                <div className="flex w-full max-w-[260px] flex-col items-center justify-center py-10 text-center">
+                  <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-greySecondary/30 bg-whitePrimary">
                     <MdOutlineRestaurantMenu
                       size={24}
                       className="text-colorPrimary/25"
@@ -368,41 +392,40 @@ export default function AdminDashboard() {
               <div className="space-y-2.5">
                 {rations.map((ration, i) => (
                   <motion.div
+                    key={ration.id}
                     custom={i}
                     initial="hidden"
                     animate="show"
                     variants={rowVariants}
-                    key={ration.id}
                     className="group relative flex items-center gap-3 rounded-md border border-greySecondary/30 bg-colorPrimary/10 p-3 transition-shadow hover:shadow-sm hover:shadow-colorPrimary/10"
                   >
-                    {/* Icon */}
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-colorPrimary text-yellowPrimary text-xs font-bold">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-colorPrimary text-xs font-bold text-yellowPrimary">
                       {ration.calories}
                     </div>
 
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-colorPrimary truncate leading-tight">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-bold leading-tight text-colorPrimary">
                         {ration.name}
                       </p>
-                      <p className="text-[11px] text-greySecondary mt-0.5">
+
+                      <p className="mt-0.5 text-[11px] text-greySecondary">
                         {ration.calories} ккал · {ration.dishes.length} блюд
                       </p>
                     </div>
 
-                    {/* Price + status */}
-                    <div className="shrink-0 text-right space-y-1">
+                    <div className="shrink-0 space-y-1 text-right">
                       <p className="text-sm font-bold text-colorPrimary">
                         {ration.pricePerDay}{" "}
                         <span className="text-[10px] font-normal text-greySecondary">
                           BYN/д
                         </span>
                       </p>
+
                       <span
-                        className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+                        className={`inline-block rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
                           ration.isActive
-                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                            : "bg-gray-50 text-gray-400 border-gray-200"
+                            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                            : "border-gray-200 bg-gray-50 text-gray-400"
                         }`}
                       >
                         {ration.isActive ? "Активен" : "Скрыт"}
@@ -413,7 +436,7 @@ export default function AdminDashboard() {
               </div>
             )}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

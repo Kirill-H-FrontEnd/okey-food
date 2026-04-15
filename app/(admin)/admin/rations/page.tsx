@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback } from "react";
+import { motion, Variants } from "framer-motion";
 import {
   Controller,
   FieldError,
@@ -23,7 +24,6 @@ import {
   Trash2,
   Eye,
   EyeOff,
-  Utensils,
   ChevronLeft,
   Flame,
   Beef,
@@ -39,6 +39,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Loader } from "@/components/ui/loader";
 import {
   Dialog,
   DialogContent,
@@ -150,9 +151,35 @@ const DISH_FIELD_ID_MAP: Record<DishFormField, string> = {
   description: "dish-description",
 };
 
+const listVariants: Variants = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.06,
+      delayChildren: 0.04,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 18,
+  },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.35,
+      ease: [0.25, 0.46, 0.45, 0.94],
+    },
+  },
+};
+
 export default function RationsPage() {
   const {
     rations,
+    rationsLoading,
     addRation,
     updateRation,
     deleteRation,
@@ -444,7 +471,7 @@ export default function RationsPage() {
     scrollFieldIntoView(DISH_FIELD_ID_MAP[field]);
   };
 
-  const onSubmitRation = (values: RationFormValues) => {
+  const onSubmitRation = async (values: RationFormValues) => {
     const data = {
       name: values.name.trim(),
       description: values.description?.trim() ?? "",
@@ -459,18 +486,26 @@ export default function RationsPage() {
         : [],
     };
 
-    if (editingRationId) {
-      updateRation(editingRationId, data);
-      toast.success("Рацион успешно обновлён");
-    } else {
-      addRation(data);
-      toast.success("Рацион успешно добавлен");
-    }
+    const toastId = toast.loading(
+      editingRationId ? "Рацион сохраняется..." : "Рацион создаётся...",
+    );
 
-    closeRationForm();
+    try {
+      if (editingRationId) {
+        await updateRation(editingRationId, data);
+        toast.success("Рацион успешно обновлён", { id: toastId });
+      } else {
+        await addRation(data);
+        toast.success("Рацион успешно добавлен", { id: toastId });
+      }
+
+      closeRationForm();
+    } catch {
+      toast.error("Не удалось сохранить рацион", { id: toastId });
+    }
   };
 
-  const onSubmitDish = (values: DishFormValues) => {
+  const onSubmitDish = async (values: DishFormValues) => {
     if (!dishPanelRationId) return;
 
     const data = {
@@ -486,15 +521,23 @@ export default function RationsPage() {
       description: values.description?.trim() ?? "",
     };
 
-    if (editingDishId) {
-      updateDish(dishPanelRationId, editingDishId, data);
-      toast.success("Блюдо успешно обновлено");
-    } else {
-      addDish(dishPanelRationId, data);
-      toast.success("Блюдо успешно добавлено");
-    }
+    const toastId = toast.loading(
+      editingDishId ? "Блюдо сохраняется..." : "Блюдо создаётся...",
+    );
 
-    closeDishForm();
+    try {
+      if (editingDishId) {
+        await updateDish(dishPanelRationId, editingDishId, data);
+        toast.success("Блюдо успешно обновлено", { id: toastId });
+      } else {
+        await addDish(dishPanelRationId, data);
+        toast.success("Блюдо успешно добавлено", { id: toastId });
+      }
+
+      closeDishForm();
+    } catch {
+      toast.error("Не удалось сохранить блюдо", { id: toastId });
+    }
   };
 
   const groupedDishes = (dishes: TRationDish[], week: 1 | 2 | 3 | 4) => {
@@ -584,17 +627,16 @@ export default function RationsPage() {
           </Button>
         </div>
 
-        {/* Week tabs */}
-        <div className="mb-6 flex gap-2 flex-wrap">
+        <div className="mb-6 flex flex-wrap gap-2">
           {WEEKS.map((w) => (
             <Button
               key={w}
               type="button"
               onClick={() => setSelectedWeek(w)}
-              className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold transition-all border ${
+              className={`flex items-center gap-1.5 rounded-xl border px-4 py-2 text-sm font-semibold transition-all ${
                 selectedWeek === w
-                  ? "bg-yellowPrimary border-yellowPrimary text-colorPrimary shadow-sm"
-                  : "bg-whiteSecondary border-greySecondary/40 text-greySecondary hover:border-yellow-hover/50 hover:text-colorPrimary"
+                  ? "border-yellowPrimary bg-yellowPrimary text-colorPrimary shadow-sm"
+                  : "border-greySecondary/40 bg-whiteSecondary text-greySecondary hover:border-yellow-hover/50 hover:text-colorPrimary"
               }`}
             >
               Неделя {w}
@@ -646,10 +688,16 @@ export default function RationsPage() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                <motion.div
+                  variants={listVariants}
+                  initial="hidden"
+                  animate="show"
+                  className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
+                >
                   {groups[meal]!.map((dish) => (
-                    <div
+                    <motion.div
                       key={dish.id}
+                      variants={itemVariants}
                       className="flex flex-col overflow-hidden rounded-2xl border border-greySecondary/40 bg-white shadow-sm shadow-colorPrimary/10"
                     >
                       <div className="relative h-36 bg-whitePrimary">
@@ -677,7 +725,7 @@ export default function RationsPage() {
                           </p>
                         )}
 
-                        <div className="mt-auto flex items-center gap-3 border-t border-greySecondary/30 pt-2 text-xs text-colorPrimary/70 font-semibold">
+                        <div className="mt-auto flex items-center gap-3 border-t border-greySecondary/30 pt-2 text-xs font-semibold text-colorPrimary/70">
                           <span className="flex items-center gap-1">
                             <Flame size={11} className="text-orange-400" />
                             {dish.calories} ккал
@@ -717,9 +765,9 @@ export default function RationsPage() {
                           </Button>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
-                </div>
+                </motion.div>
               </div>
             ))}
           </div>
@@ -769,7 +817,7 @@ export default function RationsPage() {
                     />
                   </div>
 
-                  <div className="col-span-2 grid gap-2 min-w-0">
+                  <div className="col-span-2 grid min-w-0 gap-2">
                     <Label htmlFor="dish-meal">
                       Приём пищи<span className="text-red-400">*</span>
                     </Label>
@@ -789,7 +837,7 @@ export default function RationsPage() {
                             id="dish-meal"
                             aria-invalid={dishFieldHasError("meal")}
                             className={cn(
-                              " w-full min-w-0 rounded-[6px] border border-greySecondary/50 bg-white px-4 text-sm text-colorPrimary shadow-none outline-none ring-0 data-[placeholder]:text-colorPrimary/30 focus:outline-none focus:ring-0",
+                              "w-full min-w-0 rounded-[6px] border border-greySecondary/50 bg-white px-4 text-sm text-colorPrimary shadow-none outline-none ring-0 data-[placeholder]:text-colorPrimary/30 focus:outline-none focus:ring-0",
                               withDishErrorStyles("meal"),
                             )}
                           >
@@ -827,7 +875,7 @@ export default function RationsPage() {
                               className={`flex-1 rounded-xl border py-2 text-sm font-semibold transition-all ${
                                 field.value === w
                                   ? "border-yellowPrimary bg-yellowPrimary text-colorPrimary"
-                                  : "border-greySecondary/50 cursor-pointer bg-white text-colorPrimary/50 hover:border-yellow-hover/40 hover:text-colorPrimary"
+                                  : "cursor-pointer border-greySecondary/50 bg-white text-colorPrimary/50 hover:border-yellow-hover/40 hover:text-colorPrimary"
                               }`}
                             >
                               {w}
@@ -1003,10 +1051,15 @@ export default function RationsPage() {
 
               <Button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
                   if (dishPanelRationId && dishDeleteConfirmId) {
-                    deleteDish(dishPanelRationId, dishDeleteConfirmId);
-                    toast.success("Блюдо удалено");
+                    const toastId = toast.loading("Блюдо удаляется...");
+                    try {
+                      await deleteDish(dishPanelRationId, dishDeleteConfirmId);
+                      toast.success("Блюдо удалено", { id: toastId });
+                    } catch {
+                      toast.error("Не удалось удалить блюдо", { id: toastId });
+                    }
                   }
                   setDishDeleteConfirmId(null);
                 }}
@@ -1043,116 +1096,149 @@ export default function RationsPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {rations.map((ration) => (
-          <div
-            key={ration.id}
-            className="flex flex-col overflow-hidden rounded-2xl border border-greySecondary/50 bg-whiteSecondary"
-          >
-            <div className="flex flex-1 flex-col p-5">
-              <div className="mb-3 flex items-start justify-between">
-                <div className="min-w-0 flex-1 pr-2">
-                  <h3 className="text-lg font-bold leading-tight text-colorPrimary">
-                    {ration.name}
-                  </h3>
-                </div>
+      {rationsLoading ? (
+        <div className="flex min-h-[420px] items-center justify-center">
+          <Loader size="medium" />
+        </div>
+      ) : rations.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-greySecondary/30 bg-whitePrimary">
+            <MdOutlineRestaurantMenu
+              size={24}
+              className="text-colorPrimary/25"
+            />
+          </div>
 
-                <span
-                  className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                    ration.isActive
-                      ? "bg-emerald-100 text-emerald-700"
-                      : "bg-gray-100 text-gray-500"
-                  }`}
-                >
-                  {ration.isActive ? "Активен" : "Скрыт"}
-                </span>
-              </div>
+          <p className="mb-1 text-lg font-bold text-colorPrimary/30">
+            Рационов пока нет
+          </p>
+          <p className="text-sm text-colorPrimary/30">
+            Добавьте первый рацион, чтобы он появился в списке
+          </p>
+        </div>
+      ) : (
+        <motion.div
+          variants={listVariants}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3"
+        >
+          {rations.map((ration) => (
+            <motion.div
+              key={ration.id}
+              variants={itemVariants}
+              className="flex flex-col overflow-hidden rounded-2xl border border-greySecondary/50 bg-whiteSecondary"
+            >
+              <div className="flex flex-1 flex-col p-5">
+                <div className="mb-3 flex items-start justify-between">
+                  <div className="min-w-0 flex-1 pr-2">
+                    <h3 className="text-lg font-bold leading-tight text-colorPrimary">
+                      {ration.name}
+                    </h3>
+                  </div>
 
-              <p className="mb-4 flex-1 line-clamp-2 text-sm text-colorPrimary/60">
-                {ration.description}
-              </p>
-
-              <div className="mb-4 flex items-center justify-between text-sm">
-                <div className="text-center">
-                  <p className="font-bold text-colorPrimary">
-                    {ration.calories}
-                  </p>
-                  <p className="text-xs text-colorPrimary/40">ккал</p>
-                </div>
-
-                <div className="text-right">
-                  <p className="text-lg font-bold text-colorPrimary">
-                    {ration.pricePerDay} BYN
-                  </p>
-                  <p className="text-xs text-colorPrimary/40">в день</p>
-                </div>
-              </div>
-
-              <button
-                onClick={() => setDishPanelRationId(ration.id)}
-                className="mb-3 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-greySecondary/40 bg-yellow-hover/15 py-2 text-sm font-semibold text-colorPrimary transition-colors hover:bg-color hover:text-yellow-hover"
-              >
-                <MdOutlineRestaurantMenu size={14} />
-                Блюда
-                {ration.dishes.length > 0 && (
-                  <span className="ml-1 rounded-full bg-yellowPrimary px-2 py-1 text-xs font-bold leading-none text-colorPrimary">
-                    {ration.dishes.length}
+                  <span
+                    className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                      ration.isActive
+                        ? "bg-emerald-100 text-emerald-700"
+                        : "bg-gray-100 text-gray-500"
+                    }`}
+                  >
+                    {ration.isActive ? "Активен" : "Скрыт"}
                   </span>
-                )}
-              </button>
+                </div>
 
-              <div className="flex gap-2">
+                <p className="mb-4 flex-1 line-clamp-2 text-sm text-colorPrimary/60">
+                  {ration.description}
+                </p>
+
+                <div className="mb-4 flex items-center justify-between text-sm">
+                  <div className="text-center">
+                    <p className="font-bold text-colorPrimary">
+                      {ration.calories}
+                    </p>
+                    <p className="text-xs text-colorPrimary/40">ккал</p>
+                  </div>
+
+                  <div className="text-right">
+                    <p className="text-lg font-bold text-colorPrimary">
+                      {ration.pricePerDay} BYN
+                    </p>
+                    <p className="text-xs text-colorPrimary/40">в день</p>
+                  </div>
+                </div>
+
                 <button
-                  onClick={() => toggleRationActive(ration.id)}
-                  className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-semibold transition-colors ${
-                    ration.isActive
-                      ? "cursor-pointer text-red-400 hover:bg-red-400/20"
-                      : "bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
-                  }`}
+                  onClick={() => setDishPanelRationId(ration.id)}
+                  className="mb-3 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-greySecondary/40 bg-yellow-hover/15 py-2 text-sm font-semibold text-colorPrimary transition-colors hover:bg-color hover:text-yellow-hover"
                 >
-                  {ration.isActive ? (
-                    <>
-                      <EyeOff size={14} /> Скрыть
-                    </>
-                  ) : (
-                    <>
-                      <Eye size={14} /> Показать
-                    </>
+                  <MdOutlineRestaurantMenu size={14} />
+                  Блюда
+                  {ration.dishes.length > 0 && (
+                    <span className="ml-1 rounded-full bg-yellowPrimary px-2 py-1 text-xs font-bold leading-none text-colorPrimary">
+                      {ration.dishes.length}
+                    </span>
                   )}
                 </button>
 
-                <button
-                  onClick={() => openEditRation(ration)}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 transition-colors hover:bg-blue-100"
-                >
-                  <Pencil size={15} />
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={async () => {
+                      const toastId = toast.loading(
+                        ration.isActive
+                          ? "Рацион скрывается..."
+                          : "Рацион публикуется...",
+                      );
+                      try {
+                        await toggleRationActive(ration.id);
+                        toast.success(
+                          ration.isActive
+                            ? "Рацион скрыт"
+                            : "Рацион опубликован",
+                          { id: toastId },
+                        );
+                      } catch {
+                        toast.error("Не удалось изменить статус рациона", {
+                          id: toastId,
+                        });
+                      }
+                    }}
+                    className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-semibold transition-colors ${
+                      ration.isActive
+                        ? "cursor-pointer text-red-400 hover:bg-red-400/20"
+                        : "bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
+                    }`}
+                  >
+                    {ration.isActive ? (
+                      <>
+                        <EyeOff size={14} /> Скрыть
+                      </>
+                    ) : (
+                      <>
+                        <Eye size={14} /> Показать
+                      </>
+                    )}
+                  </button>
 
-                <button
-                  onClick={() => setDeleteConfirmId(ration.id)}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-500 transition-colors hover:bg-red-100"
-                >
-                  <Trash2 size={15} />
-                </button>
+                  <button
+                    onClick={() => openEditRation(ration)}
+                    className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 transition-colors hover:bg-blue-100"
+                  >
+                    <Pencil size={15} />
+                  </button>
+
+                  <button
+                    onClick={() => setDeleteConfirmId(ration.id)}
+                    className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-500 transition-colors hover:bg-red-100"
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
-
-        <button
-          onClick={openAddRation}
-          className="group flex min-h-[220px] cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-greySecondary/50 bg-whiteSecondary p-8 transition-all hover:border-yellowPrimary"
-        >
-          <Plus
-            size={22}
-            className="text-colorPrimary transition-colors group-hover:text-yellow-hover"
-          />
-
-          <span className="text-sm font-semibold text-colorPrimary transition-colors group-hover:text-yellow-hover">
-            Добавить рацион
-          </span>
-        </button>
-      </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
 
       <Dialog
         open={isRationFormOpen}
@@ -1334,10 +1420,15 @@ export default function RationsPage() {
 
             <Button
               type="button"
-              onClick={() => {
+              onClick={async () => {
                 if (deleteConfirmId) {
-                  deleteRation(deleteConfirmId);
-                  toast.success("Рацион удалён");
+                  const toastId = toast.loading("Рацион удаляется...");
+                  try {
+                    await deleteRation(deleteConfirmId);
+                    toast.success("Рацион удалён", { id: toastId });
+                  } catch {
+                    toast.error("Не удалось удалить рацион", { id: toastId });
+                  }
                 }
                 setDeleteConfirmId(null);
               }}

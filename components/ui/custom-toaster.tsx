@@ -23,6 +23,7 @@ export const CustomToaster = () => {
             "0 10px 30px rgba(15,23,42,0.10), 0 2px 8px rgba(15,23,42,0.06)",
           border: "1px solid transparent",
         },
+
         success: {
           style: {
             background:
@@ -45,6 +46,18 @@ export const CustomToaster = () => {
           iconTheme: {
             primary: "#dc2626",
             secondary: "#fef2f2",
+          },
+        },
+        loading: {
+          style: {
+            background:
+              "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 45%, #dbeafe 100%)",
+            color: "#1e3a8a",
+            border: "1px solid #bfdbfe",
+          },
+          iconTheme: {
+            primary: "#2563eb",
+            secondary: "#f0f9ff",
           },
         },
       }}

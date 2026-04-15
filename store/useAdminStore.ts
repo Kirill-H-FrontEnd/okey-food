@@ -1,11 +1,14 @@
 "use client";
+
 import { create } from "zustand";
 import { TRation, TRationDish, TOrder } from "@/types/admin";
 
 interface AdminState {
   rations: TRation[];
   orders: TOrder[];
-  loading: boolean;
+
+  rationsLoading: boolean;
+  ordersLoading: boolean;
 
   fetchRations: () => Promise<void>;
   fetchOrders: () => Promise<void>;
@@ -31,29 +34,47 @@ interface AdminState {
 export const useAdminStore = create<AdminState>()((set, get) => ({
   rations: [],
   orders: [],
-  loading: true,
+
+  rationsLoading: true,
+  ordersLoading: true,
 
   fetchRations: async () => {
-    set({ loading: true });
+    set({ rationsLoading: true });
+
     try {
       const res = await fetch("/api/rations");
-      if (!res.ok) throw new Error("Failed to fetch rations");
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch rations");
+      }
+
       const data: TRation[] = await res.json();
       set({ rations: data });
+    } catch (error) {
+      console.error("fetchRations error:", error);
+      set({ rations: [] });
     } finally {
-      set({ loading: false });
+      set({ rationsLoading: false });
     }
   },
 
   fetchOrders: async () => {
-    set({ loading: true });
+    set({ ordersLoading: true });
+
     try {
       const res = await fetch("/api/orders");
-      if (!res.ok) throw new Error("Failed to fetch orders");
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch orders");
+      }
+
       const data: TOrder[] = await res.json();
       set({ orders: data });
+    } catch (error) {
+      console.error("fetchOrders error:", error);
+      set({ orders: [] });
     } finally {
-      set({ loading: false });
+      set({ ordersLoading: false });
     }
   },
 
@@ -63,9 +84,16 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(rationData),
     });
-    if (!res.ok) throw new Error("Failed to add ration");
+
+    if (!res.ok) {
+      throw new Error("Failed to add ration");
+    }
+
     const created: TRation = await res.json();
-    set((state) => ({ rations: [created, ...state.rations] }));
+
+    set((state) => ({
+      rations: [created, ...state.rations],
+    }));
   },
 
   updateRation: async (id, updates) => {
@@ -74,50 +102,82 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updates),
     });
-    if (!res.ok) throw new Error("Failed to update ration");
+
+    if (!res.ok) {
+      throw new Error("Failed to update ration");
+    }
+
     set((state) => ({
-      rations: state.rations.map((r) =>
-        r.id === id ? { ...r, ...updates } : r,
+      rations: state.rations.map((ration) =>
+        ration.id === id ? { ...ration, ...updates } : ration,
       ),
     }));
   },
 
   deleteRation: async (id) => {
-    const res = await fetch(`/api/rations/${id}`, { method: "DELETE" });
-    if (!res.ok) throw new Error("Failed to delete ration");
-    set((state) => ({ rations: state.rations.filter((r) => r.id !== id) }));
+    const res = await fetch(`/api/rations/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to delete ration");
+    }
+
+    set((state) => ({
+      rations: state.rations.filter((ration) => ration.id !== id),
+    }));
   },
 
   toggleRationActive: async (id) => {
-    const ration = get().rations.find((r) => r.id === id);
-    if (!ration) return;
+    const ration = get().rations.find((item) => item.id === id);
+
+    if (!ration) {
+      return;
+    }
+
     await get().updateRation(id, { isActive: !ration.isActive });
   },
 
   addDish: async (rationId, dishData) => {
-    const ration = get().rations.find((r) => r.id === rationId);
-    if (!ration) return;
+    const ration = get().rations.find((item) => item.id === rationId);
+
+    if (!ration) {
+      return;
+    }
+
     const newDish: TRationDish = {
       ...dishData,
       id: `dish-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
     };
+
     const updatedDishes = [...ration.dishes, newDish];
+
     await get().updateRation(rationId, { dishes: updatedDishes });
   },
 
   updateDish: async (rationId, dishId, updates) => {
-    const ration = get().rations.find((r) => r.id === rationId);
-    if (!ration) return;
-    const updatedDishes = ration.dishes.map((d) =>
-      d.id === dishId ? { ...d, ...updates } : d,
+    const ration = get().rations.find((item) => item.id === rationId);
+
+    if (!ration) {
+      return;
+    }
+
+    const updatedDishes = ration.dishes.map((dish) =>
+      dish.id === dishId ? { ...dish, ...updates } : dish,
     );
+
     await get().updateRation(rationId, { dishes: updatedDishes });
   },
 
   deleteDish: async (rationId, dishId) => {
-    const ration = get().rations.find((r) => r.id === rationId);
-    if (!ration) return;
-    const updatedDishes = ration.dishes.filter((d) => d.id !== dishId);
+    const ration = get().rations.find((item) => item.id === rationId);
+
+    if (!ration) {
+      return;
+    }
+
+    const updatedDishes = ration.dishes.filter((dish) => dish.id !== dishId);
+
     await get().updateRation(rationId, { dishes: updatedDishes });
   },
 
@@ -127,9 +187,16 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(orderData),
     });
-    if (!res.ok) throw new Error("Failed to add order");
+
+    if (!res.ok) {
+      throw new Error("Failed to add order");
+    }
+
     const created: TOrder = await res.json();
-    set((state) => ({ orders: [created, ...state.orders] }));
+
+    set((state) => ({
+      orders: [created, ...state.orders],
+    }));
   },
 
   updateOrderStatus: async (id, status) => {
@@ -138,9 +205,15 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
     });
-    if (!res.ok) throw new Error("Failed to update order status");
+
+    if (!res.ok) {
+      throw new Error("Failed to update order status");
+    }
+
     set((state) => ({
-      orders: state.orders.map((o) => (o.id === id ? { ...o, status } : o)),
+      orders: state.orders.map((order) =>
+        order.id === id ? { ...order, status } : order,
+      ),
     }));
   },
 
@@ -150,9 +223,15 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ notes }),
     });
-    if (!res.ok) throw new Error("Failed to update order notes");
+
+    if (!res.ok) {
+      throw new Error("Failed to update order notes");
+    }
+
     set((state) => ({
-      orders: state.orders.map((o) => (o.id === id ? { ...o, notes } : o)),
+      orders: state.orders.map((order) =>
+        order.id === id ? { ...order, notes } : order,
+      ),
     }));
   },
 }));
