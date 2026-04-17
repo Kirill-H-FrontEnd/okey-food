@@ -1,131 +1,153 @@
 "use client";
-import { FC, useMemo, useCallback } from "react";
+import { FC, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { CartItem } from "@/store/useStore";
-import { listSelectableDays } from "@/lib/delivery-days";
-import { Trash2, Plus, Minus } from "lucide-react";
+import { Trash2, CalendarDays, Flame } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { parseISO, isBefore, startOfToday, getDay, format } from "date-fns";
 
 type BasketItemProps = {
   item: CartItem;
   onRemove: (id: string) => void;
-  onIncrement: (id: string) => void;
-  onDecrement: (id: string) => void;
+  onDaysChange: (id: string, days: string[]) => void;
+  onNoteChange: (id: string, note: string) => void;
 };
+
+function isoToDate(iso: string): Date | null {
+  try {
+    const d = parseISO(iso);
+    return isNaN(d.getTime()) ? null : d;
+  } catch {
+    return null;
+  }
+}
+
+function dateToIso(date: Date): string {
+  return format(date, "yyyy-MM-dd");
+}
 
 export const BasketItem: FC<BasketItemProps> = ({
   item,
   onRemove,
-  onIncrement,
-  onDecrement,
+  onDaysChange,
+  onNoteChange,
 }) => {
+  const [open, setOpen] = useState(() => item.selectedDays.length === 0);
+
   const daysCount = item.selectedDays.length;
   const totalPrice = item.pricePerDay * daysCount;
 
-  const maxDays = useMemo(() => {
-    if (!item.range) return null;
-    return listSelectableDays(item.range).length;
-  }, [item.range]);
+  const selectedDates = useMemo(
+    () => item.selectedDays.map(isoToDate).filter((d): d is Date => d !== null),
+    [item.selectedDays],
+  );
 
-  const canIncrement = typeof maxDays === "number" ? daysCount < maxDays : true;
+  const today = startOfToday();
 
-  const canDecrement = daysCount > 1;
+  const isDateDisabled = (date: Date) =>
+    isBefore(date, today) || getDay(date) === 0;
 
-  const handleDec = useCallback(() => {
-    if (!canDecrement) return;
-    onDecrement(item.id);
-  }, [canDecrement, onDecrement, item.id]);
+  const handleSelect = (dates: Date[] | undefined) => {
+    const newDays = (dates ?? [])
+      .filter((d) => !isDateDisabled(d))
+      .map(dateToIso)
+      .sort();
+    onDaysChange(item.id, newDays);
+  };
 
   return (
     <motion.li
-      layout="position"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      transition={{
-        layout: { duration: 0.22, ease: [0.22, 1, 0.36, 1] },
-        duration: 0.2,
-      }}
-      className="group relative flex flex-col gap-3 rounded-2xl border border-greySecondary/50 bg-whiteSecondary p-3 transition-colors hover:border-greenPrimary/25 sm:p-4"
-      aria-label={`Тариф ${item.calories}`}
+      transition={{ duration: 0.2 }}
+      className="flex flex-col rounded-2xl border border-greySecondary/40 bg-whiteSecondary overflow-hidden"
+      aria-label={`Тариф ${item.calories} ккал`}
     >
-      <div className="flex w-full items-start justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-3">
-          <div className="grid h-16 w-16 shrink-0 place-items-center rounded-xl border border-colorPrimary/10 shadow bg-greenPrimary/5 text-colorPrimary">
-            <div className="text-center">
-              <p className="text-lg font-extrabold tracking-tighter">
-                {item.calories}
-              </p>
-              <p className="text-[10px] uppercase font-bold opacity-60">ккал</p>
-            </div>
+      {/* Header row */}
+      <div className="flex items-center justify-between gap-3 px-4 py-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl bg-colorPrimary text-white">
+            <Flame size={12} className="opacity-70" />
+            <span className="text-sm font-extrabold leading-none">
+              {item.calories}
+            </span>
+            <span className="text-[8px] font-semibold uppercase opacity-60">
+              ккал
+            </span>
           </div>
-
-          <div className="min-w-0 flex-1 space-y-1">
-            <h4 className="truncate text-base font-bold text-colorPrimary sm:text-[18px]">
-              Тариф {item.calories}
-            </h4>
-            <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-greySecondary">
-              <span className="rounded-full bg-greenPrimary/10  py-0.5 text-greenPrimary">
-                {item.dishesCount} блюд
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-colorPrimary truncate">
+              {item.calories} ккал
+            </p>
+            <p className="text-xs text-greySecondary">
+              {item.dishesCount} блюд/день ·{" "}
+              <span className="text-yellow-hover font-semibold">
+                {item.pricePerDay} BYN/день
               </span>
-              <span className="rounded-full text-yellow-hover bg-black/5 border border-colorPrimary/10 px-3 py-0.5">
-                {daysCount} {daysCount === 1 ? "день" : "дней"}
-              </span>
-            </div>
+            </p>
           </div>
         </div>
-
         <button
           onClick={() => onRemove(item.id)}
-          className="inline-flex shrink-0 items-center justify-center rounded-lg p-2 text-greySecondary transition-colors hover:bg-red-50 hover:text-red-500 cursor-pointer"
-          aria-label={`Удалить тариф ${item.calories} из корзины`}
-          title="Удалить из корзины"
+          className="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg text-greySecondary hover:bg-red-50 hover:text-red-500 transition-colors cursor-pointer"
+          aria-label="Удалить из корзины"
         >
-          <Trash2 size={18} />
+          <Trash2 size={15} />
         </button>
       </div>
 
-      <div className="flex w-full items-center justify-between border-t border-colorPrimary/10 pt-2">
-        <div className="flex flex-col">
-          <span className="text-[11px] font-semibold text-greySecondary">
-            {item.pricePerDay} BYN / день
-          </span>
-          <span className="text-lg font-bold leading-none text-yellowPrimary">
-            {totalPrice} <span className="text-xs font-semibold">BYN</span>
-          </span>
-        </div>
-
-        <div className="flex items-center rounded-xl border border-black/10 bg-whitePrimary p-1">
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={handleDec}
-            disabled={!canDecrement}
-            className="h-8 w-8 rounded-lg hover:bg-red-50 hover:text-red-500 disabled:opacity-20"
-            aria-label="Уменьшить дни"
-            aria-disabled={!canDecrement}
-            title={!canDecrement ? "Минимум 1 день" : undefined}
+      {/* Popover trigger: date summary row */}
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="flex items-center justify-between gap-2 px-4 py-2.5 border-t border-colorPrimary/10 bg-colorPrimary/5 hover:bg-colorPrimary/10 transition-colors cursor-pointer w-full text-left"
           >
-            <Minus size={14} />
-          </Button>
+            <div className="flex items-center gap-2">
+              <CalendarDays size={14} className="text-yellow-hover shrink-0" />
+              {daysCount > 0 ? (
+                <span className="text-xs font-semibold text-colorPrimary">
+                  {daysCount}{" "}
+                  {daysCount === 1 ? "день" : daysCount < 5 ? "дня" : "дней"}{" "}
+                  выбрано
+                  <span className="text-yellow-hover font-bold">
+                    {" "}
+                    · {totalPrice} BYN
+                  </span>
+                </span>
+              ) : (
+                <span className="text-xs font-semibold text-yellow-hover">
+                  Выберите даты доставки
+                </span>
+              )}
+            </div>
+            <CalendarDays
+              size={13}
+              className="text-greySecondary/60 shrink-0"
+            />
+          </button>
+        </PopoverTrigger>
 
-          <div className="w-10 text-center font-bold text-greenPrimary select-none">
-            {daysCount}
+        <PopoverContent className="w-auto p-0" align="start" sideOffset={6}>
+          <div className="flex flex-col">
+            <div className="px-3 pt-3 pb-3">
+              <Calendar
+                mode="multiple"
+                selected={selectedDates}
+                onSelect={handleSelect}
+                disabled={isDateDisabled}
+                startMonth={today}
+              />
+            </div>
           </div>
-
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={() => onIncrement(item.id)}
-            disabled={!canIncrement}
-            className="h-8 w-8 rounded-lg hover:bg-green-50 hover:text-green-500 disabled:opacity-20"
-            aria-label="Увеличить дни"
-            aria-disabled={!canIncrement}
-          >
-            <Plus size={14} />
-          </Button>
-        </div>
-      </div>
+        </PopoverContent>
+      </Popover>
     </motion.li>
   );
 };

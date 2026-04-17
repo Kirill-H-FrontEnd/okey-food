@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, Variants } from "framer-motion";
 import { useAdminStore } from "@/store/useAdminStore";
 import {
@@ -10,13 +11,14 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { Loader } from "@/components/ui/loader";
-import { Phone } from "lucide-react";
+import { Phone, ExternalLink } from "lucide-react";
 import { TbRefresh } from "react-icons/tb";
 import { FaUsers } from "react-icons/fa";
 import { FaTelegram } from "react-icons/fa";
 import { FaRegClock } from "react-icons/fa6";
 import { LuShoppingCart } from "react-icons/lu";
 import { IoWalletOutline } from "react-icons/io5";
+import { AdminSearch } from "@/components/admin/admin-search";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 
@@ -85,6 +87,8 @@ const itemVariants: Variants = {
 
 export default function CustomersPage() {
   const { orders, ordersLoading, fetchOrders } = useAdminStore();
+  const router = useRouter();
+  const [search, setSearch] = useState("");
 
   const customers = useMemo(() => {
     const map = new Map<
@@ -106,9 +110,12 @@ export default function CustomersPage() {
       const key = phone || `name:${order.customerName}`;
       const existing = map.get(key);
 
+      const isPaid =
+        order.status === "confirmed" || order.status === "delivered";
+
       if (existing) {
         existing.orderCount += 1;
-        existing.totalSpent += order.amount;
+        if (isPaid) existing.totalSpent += order.amount;
 
         if (order.createdAt > existing.lastOrder) {
           existing.lastOrder = order.createdAt;
@@ -129,7 +136,7 @@ export default function CustomersPage() {
           phone,
           social: notes.social ?? "",
           orderCount: 1,
-          totalSpent: order.amount,
+          totalSpent: isPaid ? order.amount : 0,
           lastOrder: order.createdAt,
           orders: [order],
         });
@@ -146,9 +153,19 @@ export default function CustomersPage() {
       }));
   }, [orders]);
 
+  const q = search.trim().toLowerCase();
+  const filteredCustomers = q
+    ? customers.filter(
+        (c) =>
+          c.name.toLowerCase().includes(q) ||
+          c.phone.toLowerCase().includes(q) ||
+          c.social.toLowerCase().includes(q),
+      )
+    : customers;
+
   return (
     <div className="p-4 lg:p-6">
-      <div className="mb-6 flex items-start justify-between">
+      <div className="mb-4 flex items-start justify-between">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold text-colorPrimary">
             <FaUsers className="text-yellow-hover" />
@@ -178,22 +195,32 @@ export default function CustomersPage() {
         </button>
       </div>
 
+      <div className="mb-5">
+        <AdminSearch
+          value={search}
+          onChange={setSearch}
+          placeholder="Поиск по имени, телефону, Telegram..."
+        />
+      </div>
+
       {ordersLoading ? (
         <div className="flex min-h-[420px] items-center justify-center">
           <Loader size="medium" />
         </div>
-      ) : customers.length === 0 ? (
+      ) : filteredCustomers.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-greySecondary/30 bg-whitePrimary">
             <FaUsers size={24} className="text-colorPrimary/25" />
           </div>
 
           <p className="mb-1 text-lg font-bold text-colorPrimary/30">
-            Клиентов пока нет
+            {q ? "Ничего не найдено" : "Клиентов пока нет"}
           </p>
 
           <p className="text-sm text-colorPrimary/30">
-            Клиенты появятся после первых заказов с сайта
+            {q
+              ? "Попробуйте изменить запрос"
+              : "Клиенты появятся после первых заказов с сайта"}
           </p>
         </div>
       ) : (
@@ -204,7 +231,7 @@ export default function CustomersPage() {
           className="space-y-3"
         >
           <Accordion type="single" collapsible className="space-y-3">
-            {customers.map((customer) => {
+            {filteredCustomers.map((customer) => {
               const initials = customer.name
                 .split(" ")
                 .map((word) => word[0])
@@ -321,9 +348,13 @@ export default function CustomersPage() {
 
                           <div className="space-y-1.5">
                             {customer.orders.map((order) => (
-                              <div
+                              <button
                                 key={order.id}
-                                className="flex items-center justify-between gap-3 rounded-sm border border-greySecondary/20 bg-colorPrimary/5 shadow px-3 py-2.5"
+                                type="button"
+                                onClick={() =>
+                                  router.push(`/admin/orders?order=${order.id}`)
+                                }
+                                className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-sm border border-greySecondary/20 bg-colorPrimary/5 px-3 py-2.5 shadow transition-colors hover:bg-colorPrimary/10"
                               >
                                 <div className="flex min-w-0 items-center gap-2">
                                   <span className="truncate text-xs font-medium text-colorPrimary">
@@ -348,8 +379,13 @@ export default function CustomersPage() {
                                   <span className="whitespace-nowrap text-xs font-bold text-colorPrimary">
                                     {order.amount} BYN
                                   </span>
+
+                                  <ExternalLink
+                                    size={11}
+                                    className="shrink-0 text-greySecondary/50"
+                                  />
                                 </div>
-                              </div>
+                              </button>
                             ))}
                           </div>
                         </div>

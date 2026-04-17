@@ -46,7 +46,7 @@ export const Navbar: FC = ({}) => {
       <Container>
         <section className="w-full flex justify-between items-center">
           <div className="flex gap-6 items-center">
-            <Logo />
+            <Logo width={50} height={50} />
             <div className="hidden lg:flex  gap-4">
               <Link
                 className="hover:text-yellow-hover transition-all font-semibold text-primary"

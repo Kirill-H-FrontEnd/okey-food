@@ -25,6 +25,7 @@ export type TRationDish = {
   image: string;
   description: string;
   week?: 1 | 2 | 3 | 4;
+  dayOfWeek?: 1 | 2 | 3 | 4 | 5 | 6;
 };
 
 export type TRation = {

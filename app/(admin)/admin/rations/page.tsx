@@ -63,6 +63,9 @@ import {
   type DishFormValues,
   MEALS,
   WEEKS,
+  DAYS_OF_WEEK,
+  DAY_LABELS,
+  DAY_LABELS_SHORT,
 } from "@/schemas/dish-schema";
 import { rationSchema, type RationFormValues } from "@/schemas/ration-schema";
 
@@ -87,6 +90,7 @@ const defaultDishValues: DishFormValues = {
   name: "",
   meal: "Завтрак",
   week: 1,
+  dayOfWeek: undefined,
   calories: "",
   proteins: "",
   fats: "",
@@ -202,6 +206,7 @@ export default function RationsPage() {
     null,
   );
   const [selectedWeek, setSelectedWeek] = useState<1 | 2 | 3 | 4>(1);
+  const [selectedDay, setSelectedDay] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
 
   const editingRation = useMemo(
     () => rations.find((ration) => ration.id === editingRationId) ?? null,
@@ -375,6 +380,7 @@ export default function RationsPage() {
         name: editingDish.name,
         meal: editingDish.meal,
         week: editingDish.week ?? 1,
+        dayOfWeek: editingDish.dayOfWeek ?? undefined,
         calories: String(editingDish.calories ?? ""),
         proteins: String(editingDish.proteins ?? ""),
         fats: String(editingDish.fats ?? ""),
@@ -386,8 +392,12 @@ export default function RationsPage() {
       return;
     }
 
-    resetDish({ ...defaultDishValues, week: selectedWeek });
-  }, [editingDish, isDishFormOpen, resetDish, selectedWeek]);
+    resetDish({
+      ...defaultDishValues,
+      week: selectedWeek,
+      dayOfWeek: selectedDay,
+    });
+  }, [editingDish, isDishFormOpen, resetDish, selectedWeek, selectedDay]);
 
   const openAddRation = () => {
     setEditingRationId(null);
@@ -473,7 +483,7 @@ export default function RationsPage() {
 
   const onSubmitRation = async (values: RationFormValues) => {
     const data = {
-      name: values.name.trim(),
+      name: `${values.calories.trim()} ккал`,
       description: values.description?.trim() ?? "",
       calories: values.calories.trim(),
       pricePerDay: Number(values.pricePerDay),
@@ -512,6 +522,7 @@ export default function RationsPage() {
       name: values.name.trim(),
       meal: values.meal as TRationMeal,
       week: (values.week ?? selectedWeek) as 1 | 2 | 3 | 4,
+      dayOfWeek: values.dayOfWeek as (1 | 2 | 3 | 4 | 5 | 6) | undefined,
       calories: Number(values.calories),
       proteins: Number(values.proteins),
       fats: Number(values.fats),
@@ -540,9 +551,15 @@ export default function RationsPage() {
     }
   };
 
-  const groupedDishes = (dishes: TRationDish[], week: 1 | 2 | 3 | 4) => {
+  const groupedDishes = (
+    dishes: TRationDish[],
+    week: 1 | 2 | 3 | 4,
+    day: 1 | 2 | 3 | 4 | 5 | 6,
+  ) => {
     const groups: Partial<Record<TRationMeal, TRationDish[]>> = {};
-    const filtered = dishes.filter((d) => (d.week ?? 1) === week);
+    const filtered = dishes.filter(
+      (d) => (d.week ?? 1) === week && d.dayOfWeek === day,
+    );
 
     for (const dish of filtered) {
       if (!groups[dish.meal]) {
@@ -559,6 +576,23 @@ export default function RationsPage() {
     for (const d of dishes) {
       const w = d.week ?? 1;
       counts[w] = (counts[w] ?? 0) + 1;
+    }
+    return counts;
+  };
+
+  const dishCountByDay = (dishes: TRationDish[], week: 1 | 2 | 3 | 4) => {
+    const counts: Record<number, number> = {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0,
+      6: 0,
+    };
+    for (const d of dishes) {
+      if ((d.week ?? 1) === week && d.dayOfWeek) {
+        counts[d.dayOfWeek] = (counts[d.dayOfWeek] ?? 0) + 1;
+      }
     }
     return counts;
   };
@@ -583,9 +617,14 @@ export default function RationsPage() {
       : undefined;
 
   if (dishPanelRation) {
-    const groups = groupedDishes(dishPanelRation.dishes, selectedWeek);
+    const groups = groupedDishes(
+      dishPanelRation.dishes,
+      selectedWeek,
+      selectedDay,
+    );
     const weekCounts = dishCountByWeek(dishPanelRation.dishes);
-    const currentWeekDishCount = weekCounts[selectedWeek] ?? 0;
+    const dayCounts = dishCountByDay(dishPanelRation.dishes, selectedWeek);
+    const currentViewDishCount = dayCounts[selectedDay] ?? 0;
 
     return (
       <div className="p-4 md:p-8">
@@ -627,7 +666,7 @@ export default function RationsPage() {
           </Button>
         </div>
 
-        <div className="mb-6 flex flex-wrap gap-2">
+        <div className="mb-3 flex flex-wrap gap-2">
           {WEEKS.map((w) => (
             <Button
               key={w}
@@ -655,7 +694,35 @@ export default function RationsPage() {
           ))}
         </div>
 
-        {currentWeekDishCount === 0 ? (
+        <div className="mb-6 flex flex-wrap gap-2">
+          {DAYS_OF_WEEK.map((d) => (
+            <Button
+              key={d}
+              type="button"
+              onClick={() => setSelectedDay(d)}
+              className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all ${
+                selectedDay === d
+                  ? "border-colorPrimary bg-colorPrimary text-white shadow-sm"
+                  : "border-greySecondary/40 bg-whiteSecondary text-greySecondary hover:border-colorPrimary/30 hover:text-colorPrimary"
+              }`}
+            >
+              {DAY_LABELS_SHORT[d]}
+              {dayCounts[d] > 0 && (
+                <span
+                  className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold leading-none ${
+                    selectedDay === d
+                      ? "bg-white/20 text-white"
+                      : "bg-greySecondary/20 text-colorPrimary/50"
+                  }`}
+                >
+                  {dayCounts[d]}
+                </span>
+              )}
+            </Button>
+          ))}
+        </div>
+
+        {currentViewDishCount === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-greySecondary/30 bg-whitePrimary">
               <MdOutlineRestaurantMenu
@@ -665,112 +732,122 @@ export default function RationsPage() {
             </div>
 
             <p className="mb-1 text-lg font-bold text-[#302a41]/30">
-              Блюда для недели {selectedWeek} не добавлены
+              Блюда на {DAY_LABELS[selectedDay].toLowerCase()} не добавлены
             </p>
             <p className="text-sm text-[#302a41]/30">
-              Нажмите «Добавить блюдо», чтобы заполнить меню для этой недели
+              Нажмите «Добавить блюдо», чтобы заполнить меню на этот день
             </p>
           </div>
         ) : (
-          <div className="space-y-6">
-            {MEALS.filter((meal) => groups[meal]?.length).map((meal) => (
-              <div key={meal}>
-                <div className="mb-3 flex items-center gap-3">
+          <motion.div
+            variants={listVariants}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {MEALS.flatMap((meal) =>
+              (groups[meal] ?? []).map((dish) => ({ dish, meal })),
+            ).map(({ dish, meal }) => (
+              <motion.div
+                key={dish.id}
+                variants={itemVariants}
+                className="flex flex-col overflow-hidden rounded-2xl border border-greySecondary/20 bg-white shadow-sm shadow-colorPrimary/5"
+              >
+                {/* Image */}
+                <div className="relative h-40 bg-whitePrimary">
+                  {dish.image ? (
+                    <img
+                      src={dish.image}
+                      alt={dish.name}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center bg-colorPrimary/3">
+                      <MdOutlineRestaurantMenu className="h-12 w-12 text-colorPrimary/10" />
+                    </div>
+                  )}
                   <span
-                    className={`rounded-full px-3 py-1 text-xs font-bold ${MEAL_COLORS[meal]}`}
+                    className={`absolute bottom-2 left-2 rounded-full px-2.5 py-0.5 text-[10px] font-bold shadow-sm ${MEAL_COLORS[meal]}`}
                   >
                     {meal}
                   </span>
-
-                  <span className="text-xs text-colorPrimary/30">
-                    {groups[meal]!.length} блюд
-                    {groups[meal]!.length === 1 ? "о" : "а"}
-                  </span>
                 </div>
 
-                <motion.div
-                  variants={listVariants}
-                  initial="hidden"
-                  animate="show"
-                  className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
-                >
-                  {groups[meal]!.map((dish) => (
-                    <motion.div
-                      key={dish.id}
-                      variants={itemVariants}
-                      className="flex flex-col overflow-hidden rounded-2xl border border-greySecondary/40 bg-white shadow-sm shadow-colorPrimary/10"
+                {/* Body */}
+                <div className="flex flex-1 flex-col p-3">
+                  <h4 className="mb-1 text-sm font-bold leading-snug text-colorPrimary">
+                    {dish.name}
+                  </h4>
+
+                  {dish.description && (
+                    <p className="mb-2 line-clamp-2 text-xs text-colorPrimary/50">
+                      {dish.description}
+                    </p>
+                  )}
+
+                  {/* Macro grid */}
+                  <div className="mt-auto grid grid-cols-5 gap-1 pt-2">
+                    <div className="col-span-2 flex flex-col items-center rounded-lg bg-orange-50 py-1">
+                      <span className="text-[9px] font-semibold text-orange-400">
+                        ккал
+                      </span>
+                      <span className="text-xs font-bold text-colorPrimary">
+                        {dish.calories}
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center rounded-lg bg-red-50 py-1">
+                      <span className="text-[9px] font-semibold text-red-400">
+                        Б
+                      </span>
+                      <span className="text-xs font-bold text-colorPrimary">
+                        {dish.proteins}
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center rounded-lg bg-yellow-50 py-1">
+                      <span className="text-[9px] font-semibold text-yellow-500">
+                        Ж
+                      </span>
+                      <span className="text-xs font-bold text-colorPrimary">
+                        {dish.fats}
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center rounded-lg bg-amber-50 py-1">
+                      <span className="text-[9px] font-semibold text-amber-500">
+                        У
+                      </span>
+                      <span className="text-xs font-bold text-colorPrimary">
+                        {dish.carbs}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mt-1 flex items-center justify-between">
+                    <span className="flex items-center gap-1 text-[10px] text-colorPrimary/40">
+                      <Scale size={9} />
+                      {dish.weight} г
+                    </span>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex gap-1.5 pt-2">
+                    <Button
+                      onClick={() => openEditDish(dish)}
+                      className="flex flex-1 cursor-pointer items-center justify-center gap-1 rounded-lg bg-blue-50 py-1.5 text-xs font-semibold text-blue-600 transition-colors hover:bg-blue-100"
                     >
-                      <div className="relative h-36 bg-whitePrimary">
-                        {dish.image ? (
-                          <img
-                            src={dish.image}
-                            alt={dish.name}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <MdOutlineRestaurantMenu className="h-10 w-10 text-colorPrimary/15" />
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex flex-1 flex-col gap-2 p-4">
-                        <h4 className="text-sm font-bold leading-snug text-colorPrimary">
-                          {dish.name}
-                        </h4>
-
-                        {dish.description && (
-                          <p className="line-clamp-2 text-xs text-colorPrimary/50">
-                            {dish.description}
-                          </p>
-                        )}
-
-                        <div className="mt-auto flex items-center gap-3 border-t border-greySecondary/30 pt-2 text-xs font-semibold text-colorPrimary/70">
-                          <span className="flex items-center gap-1">
-                            <Flame size={11} className="text-orange-400" />
-                            {dish.calories} ккал
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Scale size={11} className="text-colorPrimary/30" />
-                            {dish.weight}г
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Beef size={11} className="text-red-400" />Б
-                            {dish.proteins}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Droplets size={11} className="text-yellow-400" />Ж
-                            {dish.fats}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Wheat size={11} className="text-amber-500" />У
-                            {dish.carbs}
-                          </span>
-                        </div>
-
-                        <div className="flex gap-2 pt-1">
-                          <Button
-                            onClick={() => openEditDish(dish)}
-                            className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-blue-50 py-1.5 text-xs font-semibold text-blue-600 transition-colors hover:bg-blue-100"
-                          >
-                            <Pencil size={12} />
-                            Изменить
-                          </Button>
-
-                          <Button
-                            onClick={() => setDishDeleteConfirmId(dish.id)}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-500 transition-colors hover:bg-red-100"
-                          >
-                            <Trash2 size={13} />
-                          </Button>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              </div>
+                      <Pencil size={11} />
+                      Изменить
+                    </Button>
+                    <Button
+                      onClick={() => setDishDeleteConfirmId(dish.id)}
+                      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg bg-red-50 text-red-500 transition-colors hover:bg-red-100"
+                    >
+                      <Trash2 size={12} />
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
 
         <Dialog
@@ -879,6 +956,37 @@ export default function RationsPage() {
                               }`}
                             >
                               {w}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    />
+                  </div>
+
+                  <div className="col-span-2 grid gap-2">
+                    <Label>
+                      День недели<span className="text-red-400">*</span>
+                    </Label>
+                    <p className="text-xs text-colorPrimary/40 -mt-1">
+                      Блюдо будет отображаться только в выбранный день недели.
+                    </p>
+                    <Controller
+                      control={dishControl}
+                      name="dayOfWeek"
+                      render={({ field }) => (
+                        <div className="flex flex-wrap gap-2">
+                          {DAYS_OF_WEEK.map((d) => (
+                            <button
+                              key={d}
+                              type="button"
+                              onClick={() => field.onChange(d)}
+                              className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all ${
+                                field.value === d
+                                  ? "border-colorPrimary bg-colorPrimary text-white"
+                                  : "cursor-pointer border-greySecondary/50 bg-white text-colorPrimary/50 hover:border-colorPrimary/40 hover:text-colorPrimary"
+                              }`}
+                            >
+                              {DAY_LABELS[d]}
                             </button>
                           ))}
                         </div>
@@ -1127,61 +1235,72 @@ export default function RationsPage() {
             <motion.div
               key={ration.id}
               variants={itemVariants}
-              className="flex flex-col overflow-hidden rounded-2xl border border-greySecondary/50 bg-whiteSecondary"
+              className="flex flex-col overflow-hidden rounded-2xl border border-greySecondary/20 bg-white shadow-md shadow-colorPrimary/5"
             >
-              <div className="flex flex-1 flex-col p-5">
-                <div className="mb-3 flex items-start justify-between">
-                  <div className="min-w-0 flex-1 pr-2">
-                    <h3 className="text-lg font-bold leading-tight text-colorPrimary">
-                      {ration.name}
-                    </h3>
+              {/* Colored header */}
+              <div className="relative bg-colorPrimary px-5 pb-4 pt-5">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="mb-1 flex items-center gap-2">
+                      <Flame
+                        size={15}
+                        className="shrink-0 text-yellowPrimary"
+                      />
+                      <span className="text-2xl font-extrabold leading-none text-white">
+                        {ration.calories}
+                      </span>
+                      <span className="mt-0.5 text-sm font-medium text-white/50">
+                        ккал
+                      </span>
+                    </div>
                   </div>
-
                   <span
-                    className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                    className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
                       ration.isActive
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "bg-gray-100 text-gray-500"
+                        ? "bg-emerald-400/20 text-emerald-300"
+                        : "bg-white/10 text-white/40"
                     }`}
                   >
                     {ration.isActive ? "Активен" : "Скрыт"}
                   </span>
                 </div>
+              </div>
 
-                <p className="mb-4 flex-1 line-clamp-2 text-sm text-colorPrimary/60">
-                  {ration.description}
-                </p>
+              {/* Body */}
+              <div className="flex flex-1 flex-col p-4">
+                {ration.description && (
+                  <p className="mb-3 line-clamp-2 text-sm text-colorPrimary/55">
+                    {ration.description}
+                  </p>
+                )}
 
-                <div className="mb-4 flex items-center justify-between text-sm">
-                  <div className="text-center">
-                    <p className="font-bold text-colorPrimary">
-                      {ration.calories}
+                <div className="mb-3 flex items-center justify-between rounded-xl bg-colorPrimary/5 px-4 py-3">
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-wide text-colorPrimary/40">
+                      Цена в день
                     </p>
-                    <p className="text-xs text-colorPrimary/40">ккал</p>
-                  </div>
-
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-colorPrimary">
-                      {ration.pricePerDay} BYN
+                    <p className="text-xl font-extrabold text-colorPrimary">
+                      {ration.pricePerDay}{" "}
+                      <span className="text-sm font-medium text-colorPrimary/50">
+                        BYN
+                      </span>
                     </p>
-                    <p className="text-xs text-colorPrimary/40">в день</p>
                   </div>
+                  <button
+                    onClick={() => setDishPanelRationId(ration.id)}
+                    className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-yellowPrimary/40 bg-yellowPrimary/20 px-3 py-2 text-xs font-bold text-colorPrimary transition-colors hover:bg-yellowPrimary/40"
+                  >
+                    <MdOutlineRestaurantMenu size={13} />
+                    Блюда
+                    {ration.dishes.length > 0 && (
+                      <span className="ml-0.5 rounded-full bg-colorPrimary px-1.5 py-0.5 text-[10px] font-bold leading-none text-yellowPrimary">
+                        {ration.dishes.length}
+                      </span>
+                    )}
+                  </button>
                 </div>
 
-                <button
-                  onClick={() => setDishPanelRationId(ration.id)}
-                  className="mb-3 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-greySecondary/40 bg-yellow-hover/15 py-2 text-sm font-semibold text-colorPrimary transition-colors hover:bg-color hover:text-yellow-hover"
-                >
-                  <MdOutlineRestaurantMenu size={14} />
-                  Блюда
-                  {ration.dishes.length > 0 && (
-                    <span className="ml-1 rounded-full bg-yellowPrimary px-2 py-1 text-xs font-bold leading-none text-colorPrimary">
-                      {ration.dishes.length}
-                    </span>
-                  )}
-                </button>
-
-                <div className="flex gap-2">
+                <div className="mt-auto flex gap-2">
                   <button
                     onClick={async () => {
                       const toastId = toast.loading(
@@ -1203,9 +1322,9 @@ export default function RationsPage() {
                         });
                       }
                     }}
-                    className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-semibold transition-colors ${
+                    className={`flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-semibold transition-colors ${
                       ration.isActive
-                        ? "cursor-pointer text-red-400 hover:bg-red-400/20"
+                        ? "text-red-400 hover:bg-red-50"
                         : "bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
                     }`}
                   >
@@ -1222,14 +1341,14 @@ export default function RationsPage() {
 
                   <button
                     onClick={() => openEditRation(ration)}
-                    className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 transition-colors hover:bg-blue-100"
+                    className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl bg-blue-50 text-blue-600 transition-colors hover:bg-blue-100"
                   >
                     <Pencil size={15} />
                   </button>
 
                   <button
                     onClick={() => setDeleteConfirmId(ration.id)}
-                    className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-500 transition-colors hover:bg-red-100"
+                    className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl bg-red-50 text-red-500 transition-colors hover:bg-red-100"
                   >
                     <Trash2 size={15} />
                   </button>
@@ -1271,19 +1390,6 @@ export default function RationsPage() {
           >
             <div className="flex-1 overflow-y-auto p-6">
               <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2 grid gap-2">
-                  <Label htmlFor="ration-name">
-                    Название рациона<span className="text-red-400">*</span>
-                  </Label>
-                  <Input
-                    {...registerRation("name")}
-                    id="ration-name"
-                    placeholder="Рацион 1200 ккал"
-                    aria-invalid={rationFieldHasError("name")}
-                    className={cn(withRationErrorStyles("name"))}
-                  />
-                </div>
-
                 <div className="grid gap-2">
                   <Label htmlFor="ration-calories">
                     Калорийность (ккал)<span className="text-red-400">*</span>

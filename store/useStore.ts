@@ -9,6 +9,7 @@ export type CartItem = {
   range: string | null;
   pricePerDay: number;
   dishesCount: number;
+  note?: string;
 };
 
 interface BasketState {

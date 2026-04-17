@@ -1,13 +1,23 @@
 "use client";
+
 import { FC } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-type TLogo = { url?: string };
+type TLogo = {
+  url?: string;
+  width?: number;
+  height?: number;
+  rounded?: number;
+};
 
-export const Logo: FC<TLogo> = ({ url = "/okey-food-logo.png" }) => {
-  const handleClick = (e: React.MouseEvent) => {
-    // e.preventDefault();
+export const Logo: FC<TLogo> = ({
+  url = "/okey-food-logo.png",
+  width = 50,
+  height = 50,
+  rounded = 2,
+}) => {
+  const handleClick = () => {
     window.scrollTo({
       top: 0,
       behavior: "smooth",
@@ -19,21 +29,21 @@ export const Logo: FC<TLogo> = ({ url = "/okey-food-logo.png" }) => {
       href="/"
       aria-label="На главную"
       onClick={handleClick}
-      className="cursor-pointer block w-[40px] h-[40px] md:w-[50px] md:h-[50px] overflow-hidden rounded-[2px]"
+      className="cursor-pointer block overflow-hidden shrink-0"
+      style={{
+        width: `${width}px`,
+        height: `${height}px`,
+        borderRadius: `${rounded}px`,
+      }}
     >
       <Image
         src={url}
         alt="OkeyFood логотип"
-        width={50}
-        height={50}
+        width={width}
+        height={height}
         priority
-        sizes="(max-width: 768px) 40px, 50px"
-        style={{
-          objectFit: "contain",
-          width: "100%",
-          height: "100%",
-          display: "block",
-        }}
+        sizes={`${width}px`}
+        className="block h-full w-full object-contain"
       />
     </Link>
   );

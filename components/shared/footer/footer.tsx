@@ -1,114 +1,203 @@
 "use client";
 import { FC } from "react";
-
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
-import { FaInstagram } from "react-icons/fa6";
+import { FaInstagram, FaViber } from "react-icons/fa6";
 import { RiTelegram2Fill } from "react-icons/ri";
-import { Copyright } from "@/components/ui/copyright";
 import { Link as ScrollLink } from "react-scroll";
-type TFooter = {};
+import { Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { FaPhoneAlt } from "react-icons/fa";
+import { IoMail } from "react-icons/io5";
+import { FaMapMarkedAlt } from "react-icons/fa";
+const NAV_LINKS = [
+  { href: "products", label: "Рационы питания", offset: -50 },
+  { href: "aboutUs", label: "О нас", offset: -50 },
+  { href: "calculator", label: "Калькулятор калорий", offset: -50 },
+  { href: "faq", label: "Частые вопросы", offset: -50 },
+  { href: "map", label: "Зона доставки", offset: -50 },
+];
 
-export const Footer: FC = ({}) => {
-  const DATA_LINKS = [
-    {
-      title: "Навигация",
-      links: [
-        { href: "products", label: "Меню", offset: -50 },
-        { href: "aboutUs", label: "О нас", offset: -50 },
+const CONTACTS = [
+  { icon: FaPhoneAlt, label: "+375 44 725 66 66", href: "tel:+375447256666" },
+  {
+    icon: IoMail,
+    label: "okeygood@gmail.com",
+    href: "mailto:okeygood@gmail.com",
+  },
+  { icon: FaMapMarkedAlt, label: "г. Минск, пр. Дзержинского 10", href: null },
+];
 
-        { href: "faq", label: "FAQ", offset: -50 },
-        { href: "map", label: "Доставка", offset: -50 },
-      ],
-    },
-  ];
+const SOCIALS = [
+  { icon: FaInstagram, label: "Instagram", href: "https://instagram.com" },
+  { icon: RiTelegram2Fill, label: "Telegram", href: "https://t.me" },
+  { icon: FaViber, label: "Viber", href: "viber://chat?number=375447256666" },
+];
 
+export const Footer: FC = () => {
   return (
     <footer className="bg-colorPrimary rounded-t-[24px]" id="footer">
-      <Container className="">
-        <section className="py-20 grid grid-cols-1 justify-center lg:grid-cols-[auto_1fr]  gap-5 lg:gap-20 ">
-          <div className="flex flex-col justify-center md:justify-start text-center md:text-left">
-            <div className="grid justify-center md:justify-start">
-              <Logo url="/okey-food-logo.png" />
-            </div>
-            <p className="text-whitePrimary font-semibold mt-2">
-              Доставка рационов питания
+      {/* CTA-полоска */}
+      <div className="border-b border-greySecondary/20">
+        <Container>
+          <div className="py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-greySecondary text-sm font-medium">
+              Есть вопросы? Звоните — ответим быстро!
             </p>
+            <Button
+              className="bg-yellowPrimary text-colorPrimary font-semibold"
+              variant={"default"}
+            >
+              {" "}
+              +375 44 725 66 66
+            </Button>
           </div>
-          <div className="grid text-center md:text-left  md:grid-flow-col md:auto-cols-max gap-5 md:gap-[100px] xl:gap-[200px] ">
-            <nav>
-              <ul className="flex flex-col gap-4 ">
-                {DATA_LINKS.map((item) => (
-                  <li key={item.title} className="text-whitePrimary">
-                    <h3 className="font-bold mb-2 hidden md:block">
-                      {item.title}
-                    </h3>
-                    <ul className="flex justify-center md:justify-start md:flex-col gap-4 md:gap-2">
-                      {item.links.map((link) => (
-                        <li key={link.label}>
-                          <ScrollLink
-                            className={
-                              "cursor-pointer hover:text-yellow-hover transition-colors"
-                            }
-                            to={link.href}
-                            smooth={true}
-                            duration={500}
-                            spy={true}
-                            offset={link.offset}
-                          >
-                            {link.label}
-                          </ScrollLink>
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+        </Container>
+      </div>
+
+      {/* Основной блок */}
+      <Container>
+        <div className="py-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-10 lg:gap-8">
+          {/* Колонка 1: лого + описание + соцсети */}
+          <div className="flex flex-col gap-5">
+            <Logo width={60} height={60} url="/okey-food-logo.png" />
+            <p className="text-greySecondary text-sm leading-relaxed max-w-[260px]">
+              Доставка сбалансированных рационов питания по Минску. Здоровая еда
+              без хлопот каждый день.
+            </p>
             <div>
-              <h3 className=" mb-2 text-whitePrimary font-bold hidden md:block">
-                Контакты
-              </h3>
-              <p className="text-whitePrimary font-normal text-[15px]">
-                +375 44 725 66 66
+              <p className="text-greySecondary text-xs font-semibold uppercase tracking-widest mb-3">
+                Мы в соцсетях
               </p>
-              <p className="text-whitePrimary font-normal text-[15px]">
-                okeygood@gmail.com
-              </p>
-              <div className="flex justify-center md:justify-start items-center mt-4">
-                <div className="flex gap-3">
+              <div className="flex gap-3">
+                {SOCIALS.map(({ icon: Icon, label, href }) => (
                   <Link
-                    aria-label="Instagram"
-                    className="text-whitePrimary hover:text-yellow-hover transition-colors"
-                    href=""
+                    key={label}
+                    href={href}
+                    aria-label={label}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center w-9 h-9 rounded-xl bg-white/10 hover:bg-yellowPrimary hover:text-colorPrimary text-greySecondary  transition-all duration-200"
                   >
-                    <FaInstagram size={26} />
+                    <Icon size={18} />
                   </Link>
-                  <Link
-                    aria-label="Telegram"
-                    className="text-whitePrimary hover:text-yellow-hover transition-colors"
-                    href=""
-                  >
-                    <RiTelegram2Fill size={26} />
-                  </Link>
-                </div>
+                ))}
               </div>
             </div>
-            <div className="text-whitePrimary">
-              <h3 className="font-bold mb-2 text-whitePrimary  hidden md:block">
-                Адрес
-              </h3>
-              <p className="font-normal text-[15px]">г.Минск</p>
-              <p className="font-normal text-[15px]">
-                проспект Дзержинского 10
-              </p>
-              <span>10:00 - 20:00</span>
+          </div>
+
+          {/* Колонка 2: навигация */}
+          <div>
+            <p className="text-whiteSecondary text-xs font-semibold uppercase tracking-widest mb-4">
+              Навигация
+            </p>
+            <ul className="flex flex-col gap-2.5">
+              {NAV_LINKS.map((link) => (
+                <li key={link.href}>
+                  <ScrollLink
+                    to={link.href}
+                    smooth
+                    duration={500}
+                    spy
+                    offset={link.offset}
+                    className="group flex items-center gap-1.5 text-greySecondary  hover:text-yellowPrimary text-sm font-medium cursor-pointer  hover:translate-x-1 transition-all"
+                  >
+                    {link.label}
+                  </ScrollLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Колонка 3: контакты */}
+          <div>
+            <p className="text-whiteSecondary text-xs font-semibold uppercase tracking-widest mb-4">
+              Контакты
+            </p>
+            <ul className="flex flex-col gap-3.5">
+              {CONTACTS.map(({ icon: Icon, label, href }) => (
+                <li key={label}>
+                  {href ? (
+                    <a
+                      href={href}
+                      className="flex items-start gap-2.5 text-greySecondary  hover:text-yellowPrimary text-sm font-medium transition-colors group"
+                    >
+                      <Icon
+                        size={15}
+                        className="mt-0.5 shrink-0 text-text-greySecondary group-hover:text-yellowPrimary transition-colors"
+                      />
+                      {label}
+                    </a>
+                  ) : (
+                    <span className="flex items-start gap-2.5 text-greySecondary  text-sm font-medium">
+                      <Icon
+                        size={15}
+                        className="mt-0.5 shrink-0 text-text-greySecondary"
+                      />
+                      {label}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Колонка 4: график */}
+          <div>
+            <p className="text-whiteSecondary text-xs font-semibold uppercase tracking-widest mb-4">
+              График работы
+            </p>
+            <ul className="flex flex-col gap-2.5 text-sm">
+              {[{ days: "Пн — Сб", time: "10:00 – 20:00" }].map(
+                ({ days, time }) => (
+                  <li key={days} className="flex flex-col gap-0.5">
+                    <span className="text-white/50 text-xs">{days}</span>
+                    <span
+                      className={`font-semibold ${time === "Выходной" ? "text-text-greySecondary" : "text-white"}`}
+                    >
+                      {time}
+                    </span>
+                  </li>
+                ),
+              )}
+              <li className="mt-2 flex items-start gap-2 rounded-xl bg-yellowPrimary/10 border border-yellowPrimary/20 px-3 py-2.5">
+                <Clock
+                  size={14}
+                  className="mt-0.5 shrink-0 text-yellowPrimary"
+                />
+                <div>
+                  <p className="text-yellowPrimary font-semibold text-xs">
+                    Доставка
+                  </p>
+                  <p className="text-greySecondary  text-xs">
+                    19:00 – 23:00 ежедневно
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </Container>
+
+      {/* Нижняя полоска */}
+      <div className="border-t border-greySecondary/20">
+        <Container>
+          <div className="py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p className="text-greySecondary text-xs">
+              © {new Date().getFullYear()} Okey Food. Все права защищены.
+            </p>
+            <div className="flex items-center gap-4">
+              <Link
+                href="/privacy"
+                className="text-greySecondary hover:text-greySecondary  text-xs transition-colors hover:text-yellow-hover"
+              >
+                Политика конфиденциальности
+              </Link>
             </div>
           </div>
-        </section>
-      </Container>
-      <Copyright />
+        </Container>
+      </div>
     </footer>
   );
 };

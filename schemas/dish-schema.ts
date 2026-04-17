@@ -1,5 +1,25 @@
 import { z } from "zod";
 
+export const DAYS_OF_WEEK = [1, 2, 3, 4, 5, 6] as const;
+export type DayOfWeek = (typeof DAYS_OF_WEEK)[number];
+export const DAY_LABELS: Record<DayOfWeek, string> = {
+  1: "Понедельник",
+  2: "Вторник",
+  3: "Среда",
+  4: "Четверг",
+  5: "Пятница",
+  6: "Суббота",
+};
+
+export const DAY_LABELS_SHORT: Record<DayOfWeek, string> = {
+  1: "Пн",
+  2: "Вт",
+  3: "Ср",
+  4: "Чт",
+  5: "Пт",
+  6: "Сб",
+};
+
 export const MEALS = [
   "Завтрак",
   "Второй завтрак",
@@ -26,6 +46,8 @@ export const dishSchema = z.object({
   }, "Выберите приём пищи"),
 
   week: z.number().int().min(1).max(4).optional().default(1),
+
+  dayOfWeek: z.number().int().min(1).max(6).optional(),
 
   calories: z
     .string()

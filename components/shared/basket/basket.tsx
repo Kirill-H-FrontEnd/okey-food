@@ -39,9 +39,7 @@ import { BasketHeader } from "./_components/basket-header";
 import { CheckoutFooter } from "./_components/checkout-footer";
 import { CheckoutForm } from "./_components/checkout-form";
 import { CheckoutSummary } from "./_components/checkout-summary";
-import { DeliverySlotsPicker } from "./_components/delivery-slots-picker";
 import { SuccessOrderDialog } from "./_components/success-order-dialog";
-import { listSelectableDays } from "@/lib/delivery-days";
 
 import type {
   CheckoutFormField,
@@ -92,19 +90,6 @@ const createInitialFormValues = (): Partial<CheckoutFormValues> => ({
   comment: "",
 });
 
-const parseISODate = (value: string) => {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
-  const parsed = new Date(`${value}T00:00:00`);
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
-};
-
-const formatISODate = (date: Date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
-
 export const Basket: FC = () => {
   const pathname = usePathname();
   const isBasketOpen = useBasketStore((s) => s.isBasketOpen);
@@ -119,7 +104,6 @@ export const Basket: FC = () => {
 
   const [isCheckout, setIsCheckout] = useState(false);
   const [isConsentGiven, setIsConsentGiven] = useState(false);
-  const [deliverySlots, setDeliverySlots] = useState<DeliverySlotItem[]>([]);
   const [successOrder, setSuccessOrder] = useState<SuccessOrderSnapshot | null>(
     null,
   );
@@ -211,7 +195,6 @@ export const Basket: FC = () => {
     form.reset(createInitialFormValues());
     form.clearErrors();
     setIsConsentGiven(false);
-    setDeliverySlots([]);
   }, [form]);
 
   useEffect(() => {
@@ -234,64 +217,32 @@ export const Basket: FC = () => {
     }
   }, [sortedItems.length, resetFormState]);
 
-  const handleIncrementDays = (id: string) => {
-    const item = items.find((entry) => entry.id === id);
-    if (!item) return;
-    let next: string | undefined;
+  const handleDaysChange = useCallback(
+    (id: string, days: string[]) => {
+      updateItem(id, (prev) => ({
+        ...prev,
+        selectedDays: days.sort(),
+      }));
+    },
+    [updateItem],
+  );
 
-    if (item.range) {
-      const selectable = listSelectableDays(item.range).sort();
-      if (item.selectedDays.length >= selectable.length) return;
-      next = selectable.find((day) => !item.selectedDays.includes(day));
-    } else {
-      const parsedDays = item.selectedDays
-        .map(parseISODate)
-        .filter((day): day is Date => day !== null)
-        .sort((a, b) => a.getTime() - b.getTime());
-
-      const baseDate =
-        parsedDays.at(-1) ??
-        (() => {
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          return today;
-        })();
-
-      const cursor = new Date(baseDate);
-      do {
-        cursor.setDate(cursor.getDate() + 1);
-      } while (
-        cursor.getDay() === 0 ||
-        item.selectedDays.includes(formatISODate(cursor))
-      );
-
-      next = formatISODate(cursor);
-    }
-
-    if (!next) return;
-    updateItem(id, (prev) => ({
-      ...prev,
-      selectedDays: [...prev.selectedDays, next],
-    }));
-  };
-
-  const handleDecrementDays = (id: string) => {
-    const item = items.find((entry) => entry.id === id);
-    if (!item) return;
-    if (item.selectedDays.length <= 1) {
-      removeItem(id);
-      return;
-    }
-    const sortedDays = [...item.selectedDays].sort();
-    const nextDays = sortedDays.slice(0, -1);
-    updateItem(id, (prev) => ({
-      ...prev,
-      selectedDays: nextDays,
-    }));
-  };
+  const handleNoteChange = useCallback(
+    (id: string, note: string) => {
+      updateItem(id, (prev) => ({ ...prev, note }));
+    },
+    [updateItem],
+  );
 
   const handleProceedToCheckout = () => {
     if (itemCount === 0) return;
+    const missingDays = sortedItems.some(
+      (item) => item.selectedDays.length === 0,
+    );
+    if (missingDays) {
+      toast.error("Выберите даты доставки для всех рационов");
+      return;
+    }
     setIsCheckout(true);
     setIsConsentGiven(false);
     form.clearErrors();
@@ -331,13 +282,23 @@ export const Basket: FC = () => {
   };
 
   const handleSubmit = form.handleSubmit(async (data) => {
+    const derivedSlots: DeliverySlotItem[] = sortedItems.map((item) => ({
+      rationCalories: item.calories,
+      rationName:
+        rations.find((r) => r.calories === item.calories)?.name ??
+        `Рацион ${item.calories} ккал`,
+      days: item.selectedDays,
+      range: item.range,
+      timeSlot: "8-10" as const,
+    }));
+
     try {
       for (const item of sortedItems) {
         const rationName =
           rations.find((r) => r.calories === item.calories)?.name ??
           `Рацион ${item.calories} ккал`;
 
-        const slotForItem = deliverySlots.find(
+        const slotForItem = derivedSlots.find(
           (s) => s.rationCalories === item.calories,
         );
 
@@ -357,7 +318,7 @@ export const Basket: FC = () => {
             apartment: data.apartment,
             floor: data.floor,
             intercom: data.intercom ?? "",
-            deliverySlots: slotForItem ? [slotForItem] : deliverySlots,
+            deliverySlots: slotForItem ? [slotForItem] : derivedSlots,
           }),
         });
       }
@@ -378,7 +339,7 @@ export const Basket: FC = () => {
         intercom: data.intercom ?? "",
       },
       items: sortedItems,
-      deliverySlots,
+      deliverySlots: derivedSlots,
       totalPrice,
     });
     setIsBasketOpen(false);
@@ -386,7 +347,6 @@ export const Basket: FC = () => {
     setIsConsentGiven(false);
     form.reset(createInitialFormValues());
     form.clearErrors();
-    setDeliverySlots([]);
     useBasketStore.getState().clear();
   }, handleSubmitError);
 
@@ -471,15 +431,15 @@ export const Basket: FC = () => {
                     {sortedItems.length === 0 ? (
                       <BasketEmpty />
                     ) : (
-                      <ul className="grid gap-4 mt-0 md:mt-4 pb-6 overflow-hidden">
+                      <ul className="grid gap-4 mt-0 md:mt-4 pb-6">
                         <AnimatePresence initial={false} mode="popLayout">
                           {sortedItems.map((item) => (
                             <BasketItem
                               key={item.id}
                               item={item}
                               onRemove={removeItem}
-                              onIncrement={handleIncrementDays}
-                              onDecrement={handleDecrementDays}
+                              onDaysChange={handleDaysChange}
+                              onNoteChange={handleNoteChange}
                             />
                           ))}
                         </AnimatePresence>
@@ -505,13 +465,6 @@ export const Basket: FC = () => {
                       <FormProvider {...form}>
                         <CheckoutForm cityOptions={CITIES} />
                       </FormProvider>
-
-                      <DeliverySlotsPicker
-                        items={sortedItems}
-                        rations={rations}
-                        slots={deliverySlots}
-                        onSlotsChange={setDeliverySlots}
-                      />
 
                       <CheckoutSummary
                         items={sortedItems}

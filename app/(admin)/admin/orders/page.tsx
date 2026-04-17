@@ -18,7 +18,8 @@ import {
 import { TbRefresh } from "react-icons/tb";
 import { IoReceiptSharp } from "react-icons/io5";
 import { FaTelegram } from "react-icons/fa";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { AdminSearch } from "@/components/admin/admin-search";
 import {
   Accordion,
   AccordionItem,
@@ -175,6 +176,24 @@ export default function OrdersPage() {
 
   const [updatingKey, setUpdatingKey] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [openOrder, setOpenOrder] = useState<string | undefined>(undefined);
+  const highlightRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get("order");
+    if (orderId) {
+      highlightRef.current = orderId;
+      setOpenOrder(orderId);
+      setTimeout(() => {
+        document
+          .getElementById(`order-item-${orderId}`)
+          ?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 200);
+    }
+  }, []);
 
   const handleCopyId = useCallback((id: string) => {
     navigator.clipboard.writeText(id).then(() => {
@@ -186,6 +205,17 @@ export default function OrdersPage() {
   const sorted = [...orders].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
+
+  const q = search.trim().toLowerCase();
+  const filtered = q
+    ? sorted.filter(
+        (o) =>
+          o.customerName.toLowerCase().includes(q) ||
+          (o.phone ?? "").toLowerCase().includes(q) ||
+          o.ration.toLowerCase().includes(q) ||
+          o.id.toLowerCase().includes(q),
+      )
+    : sorted;
 
   const handleDayStatusChange = useCallback(
     async (order: TOrder, dayIso: string, status: DayStatus) => {
@@ -214,7 +244,7 @@ export default function OrdersPage() {
 
   return (
     <div className="p-4 md:p-6">
-      <div className="mb-6 flex items-start justify-between">
+      <div className="mb-4 flex items-start justify-between">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold text-colorPrimary">
             <IoReceiptSharp className="text-yellow-hover" />
@@ -244,22 +274,32 @@ export default function OrdersPage() {
         </button>
       </div>
 
+      <div className="mb-5">
+        <AdminSearch
+          value={search}
+          onChange={setSearch}
+          placeholder="Поиск по имени, телефону, рациону..."
+        />
+      </div>
+
       {ordersLoading ? (
         <div className="flex min-h-[420px] items-center justify-center">
           <Loader size="medium" />
         </div>
-      ) : sorted.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-greySecondary/30 bg-whitePrimary">
             <IoReceiptSharp size={24} className="text-colorPrimary/25" />
           </div>
 
           <p className="mb-1 text-lg font-bold text-colorPrimary/30">
-            Заказов пока нет
+            {q ? "Ничего не найдено" : "Заказов пока нет"}
           </p>
 
           <p className="text-sm text-colorPrimary/30">
-            Заявки с сайта будут появляться здесь
+            {q
+              ? "Попробуйте изменить запрос"
+              : "Заявки с сайта будут появляться здесь"}
           </p>
         </div>
       ) : (
@@ -269,8 +309,14 @@ export default function OrdersPage() {
           animate="show"
           className="space-y-3"
         >
-          <Accordion type="single" collapsible className="space-y-3">
-            {sorted.map((order) => {
+          <Accordion
+            type="single"
+            collapsible
+            value={openOrder}
+            onValueChange={setOpenOrder}
+            className="space-y-3"
+          >
+            {filtered.map((order) => {
               const parsed = parseNotes(order.notes);
               const slots = parsed.deliverySlots ?? [];
               const overallStatus = deriveOverallStatus(parsed);
@@ -289,7 +335,11 @@ export default function OrdersPage() {
               ].filter(Boolean);
 
               return (
-                <motion.div key={order.id} variants={itemVariants}>
+                <motion.div
+                  key={order.id}
+                  variants={itemVariants}
+                  id={`order-item-${order.id}`}
+                >
                   <AccordionItem
                     value={order.id}
                     className="overflow-hidden rounded-2xl border border-greySecondary/30 bg-whiteSecondary shadow-sm shadow-colorPrimary/5"

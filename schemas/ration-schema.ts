@@ -1,11 +1,7 @@
 import { z } from "zod";
 
 export const rationSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, "Введите название рациона")
-    .max(100, "Название слишком длинное"),
+  name: z.string().optional().default(""),
 
   description: z
     .string()

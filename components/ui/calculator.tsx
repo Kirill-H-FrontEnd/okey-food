@@ -18,22 +18,6 @@ const activityMap: Record<ActivityValue, Activity> = {
   3: "high",
 };
 
-interface Plan {
-  cal: number;
-  dishes: number;
-  price: number;
-}
-
-const PLANS: Plan[] = [
-  { cal: 1000, dishes: 3, price: 250 },
-  { cal: 1200, dishes: 4, price: 300 },
-  { cal: 1400, dishes: 5, price: 350 },
-  { cal: 1700, dishes: 5, price: 400 },
-  { cal: 2000, dishes: 5, price: 450 },
-  { cal: 2400, dishes: 6, price: 500 },
-  { cal: 3200, dishes: 6, price: 600 },
-];
-
 const getCalorieLevel = (cal: number) => {
   if (cal <= 1400) return "низкая";
   if (cal <= 2400) return "средняя";
@@ -73,21 +57,6 @@ function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
 }
 
-interface Recommendation {
-  targetCalories: number;
-  maintenanceCalories: number;
-  plan: Plan;
-}
-
-function formatTodayISO() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const y = today.getFullYear();
-  const m = String(today.getMonth() + 1).padStart(2, "0");
-  const d = String(today.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
 function dishesWord(n: number) {
   const mod10 = n % 10;
   const mod100 = n % 100;
@@ -100,13 +69,12 @@ export default function CalorieCalculator() {
   const [gender, setGender] = useState<Gender | "">("");
   const [goal, setGoal] = useState<Goal | "">("");
   const [activity, setActivity] = useState<Activity>("low");
+  const [activityValue, setActivityValue] = useState<ActivityValue>(1);
   const [weight, setWeight] = useState<number | "">("");
   const [height, setHeight] = useState<number | "">("");
   const [age, setAge] = useState<number | "">("");
-  const [activityValue, setActivityValue] = useState<ActivityValue>(1);
 
   const addItem = useBasketStore((state) => state.addItem);
-  const setIsBasketOpen = useBasketStore((state) => state.setIsBasketOpen);
   const allRations = useAdminStore((state) => state.rations);
   const activeRations = useMemo(
     () => allRations.filter((r) => r.isActive),
@@ -118,73 +86,66 @@ export default function CalorieCalculator() {
       Boolean(
         gender &&
         goal &&
-        activityValue !== null &&
         isValidNum(weight, 30, 250) &&
         isValidNum(height, 120, 230) &&
         isValidNum(age, 14, 100),
       ),
-    [gender, goal, activityValue, weight, height, age],
+    [gender, goal, weight, height, age],
   );
 
-  const recommendation = useMemo<Recommendation | null>(() => {
+  const targetCalories = useMemo<number | null>(() => {
     if (!validParams) return null;
-    const w = Number(weight);
-    const h = Number(height);
-    const a = Number(age);
-    const bmr = calcBMR(gender as Gender, w, h, a);
-    const maintenance = bmr * ACTIVITY_FACTORS[activity as Activity];
-    const adjusted = maintenance + GOAL_ADJUSTMENTS[goal as Goal];
-    const target = clamp(Math.round(adjusted), MIN_TARGET_CAL, MAX_TARGET_CAL);
-    const plan = PLANS.reduce(
-      (closest, candidate) =>
-        Math.abs(candidate.cal - target) < Math.abs(closest.cal - target)
-          ? candidate
-          : closest,
-      PLANS[0],
+    const bmr = calcBMR(
+      gender as Gender,
+      Number(weight),
+      Number(height),
+      Number(age),
     );
-    return {
-      plan,
-      targetCalories: target,
-      maintenanceCalories: Math.round(maintenance),
-    };
+    const maintenance = bmr * ACTIVITY_FACTORS[activity];
+    const adjusted = maintenance + GOAL_ADJUSTMENTS[goal as Goal];
+    return clamp(Math.round(adjusted), MIN_TARGET_CAL, MAX_TARGET_CAL);
   }, [gender, goal, activity, weight, height, age, validParams]);
 
-  const isRationAvailable = useMemo(() => {
-    if (!recommendation || activeRations.length === 0) return true;
-    return activeRations.some(
-      (r) => String(r.calories) === String(recommendation.plan.cal),
+  const maintenanceCalories = useMemo<number | null>(() => {
+    if (!validParams) return null;
+    const bmr = calcBMR(
+      gender as Gender,
+      Number(weight),
+      Number(height),
+      Number(age),
     );
-  }, [recommendation, activeRations]);
+    return Math.round(bmr * ACTIVITY_FACTORS[activity]);
+  }, [gender, goal, activity, weight, height, age, validParams]);
+
+  // Находим ближайший активный рацион по калориям
+  const matchedRation = useMemo(() => {
+    if (targetCalories === null || activeRations.length === 0) return null;
+    return activeRations.reduce((closest, candidate) => {
+      const candidateDiff = Math.abs(
+        Number(candidate.calories) - targetCalories,
+      );
+      const closestDiff = Math.abs(Number(closest.calories) - targetCalories);
+      return candidateDiff < closestDiff ? candidate : closest;
+    });
+  }, [targetCalories, activeRations]);
 
   const handleAddToCart = useCallback(() => {
-    if (!recommendation) return;
-    const { plan } = recommendation;
-    const matchedRation = activeRations.find(
-      (r) => String(r.calories) === String(plan.cal),
-    );
     if (!matchedRation) {
-      const available = activeRations
-        .map((r) => `${r.calories} ккал`)
-        .join(", ");
-      toast.error(
-        available
-          ? `Рациона на ${plan.cal} ккал сейчас нет. Доступны: ${available}`
-          : "Рационов пока нет. Загляните позже!",
-        { duration: 5000 },
-      );
+      toast.error("Рационов пока нет. Загляните позже!", { duration: 4000 });
       return;
     }
-    const today = formatTodayISO();
     addItem({
-      id: `calculator-${plan.cal}`,
-      calories: String(plan.cal),
-      selectedDays: [today],
+      id: `calculator-${matchedRation.calories}`,
+      calories: String(matchedRation.calories),
+      selectedDays: [],
       range: null,
       pricePerDay: matchedRation.pricePerDay,
-      dishesCount: matchedRation.dishes?.length || plan.dishes,
+      dishesCount: matchedRation.dishes?.length || 5,
     });
-    setIsBasketOpen(true);
-  }, [recommendation, activeRations, addItem, setIsBasketOpen]);
+    toast.success(`Рацион ${matchedRation.calories} ккал добавлен в корзину`, {
+      duration: 3000,
+    });
+  }, [matchedRation, addItem]);
 
   const ACTIVITY_LABELS = ["Низкая", "Средняя", "Высокая"];
 
@@ -198,6 +159,8 @@ export default function CalorieCalculator() {
     { key: "tone", label: "Тонус", icon: "⚡", desc: "-200 ккал" },
     { key: "gain", label: "Набор массы", icon: "💪", desc: "+300 ккал" },
   ];
+
+  const hasResult = targetCalories !== null && maintenanceCalories !== null;
 
   return (
     <section className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 xl:gap-16">
@@ -341,42 +304,48 @@ export default function CalorieCalculator() {
       <div className="flex flex-col gap-4">
         <div
           className={`flex-1 flex flex-col items-center justify-center rounded-3xl p-8 transition-all duration-300 ${
-            recommendation
+            hasResult
               ? "bg-whiteSecondary shadow-xl shadow-black/20"
               : "bg-whitePrimary/5 border border-whitePrimary/10"
           }`}
         >
-          {recommendation ? (
+          {hasResult &&
+          targetCalories !== null &&
+          maintenanceCalories !== null ? (
             <>
               <p className="text-xs font-semibold uppercase tracking-widest text-greySecondary mb-1">
                 Рекомендуемый калораж
               </p>
               <HyperText
-                key={recommendation.targetCalories}
+                key={targetCalories}
                 duration={400}
                 startOnView={false}
                 animateOnHover={false}
                 className="text-[64px] font-extrabold leading-none tabular-nums text-colorPrimary my-3"
               >
-                {String(recommendation.targetCalories)}
+                {String(targetCalories)}
               </HyperText>
               <p className="text-xs text-greySecondary mb-5">
-                Поддержание: {recommendation.maintenanceCalories} ккал
+                Поддержание: {maintenanceCalories} ккал
               </p>
 
               <div className="w-full grid grid-cols-3 gap-2 mb-4">
                 {[
                   {
                     label: "Калорийность",
-                    value: getCalorieLevel(recommendation.targetCalories),
+                    value: getCalorieLevel(targetCalories),
                   },
                   {
-                    label: "Блюд в день",
-                    value: `${recommendation.plan.dishes} ${dishesWord(recommendation.plan.dishes)}`,
+                    label: "Подобранный рацион",
+                    value: matchedRation
+                      ? `${matchedRation.calories} ккал`
+                      : "—",
                   },
                   {
                     label: "Цена / день",
-                    value: `от ${recommendation.plan.price} BYN`,
+                    value: matchedRation
+                      ? `${matchedRation.pricePerDay} BYN`
+                      : "—",
                   },
                 ].map((stat) => (
                   <div
@@ -393,10 +362,10 @@ export default function CalorieCalculator() {
                 ))}
               </div>
 
-              {!isRationAvailable && (
+              {activeRations.length === 0 && (
                 <div className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-700 font-semibold w-full justify-center">
                   <span>⚠</span>
-                  <span>Этот рацион сейчас недоступен</span>
+                  <span>Рационов пока нет</span>
                 </div>
               )}
             </>
@@ -416,10 +385,10 @@ export default function CalorieCalculator() {
         </div>
 
         <button
-          disabled={!recommendation}
+          disabled={!hasResult || activeRations.length === 0}
           onClick={handleAddToCart}
           className={`w-full py-4 rounded-2xl font-bold text-sm transition-all duration-200 ${
-            recommendation
+            hasResult && activeRations.length > 0
               ? "bg-yellowPrimary text-colorPrimary hover:bg-yellow-hover cursor-pointer shadow-lg shadow-yellowPrimary/20"
               : "bg-whitePrimary/10 text-whitePrimary/30 cursor-not-allowed"
           }`}

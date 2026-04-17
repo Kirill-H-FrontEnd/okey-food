@@ -3,6 +3,7 @@
 import React, { FC } from "react";
 import { motion, type Transition, type Variants } from "framer-motion";
 import { Link as ScrollLink } from "react-scroll";
+import toast from "react-hot-toast";
 
 import { MdOutlineRestaurantMenu } from "react-icons/md";
 import { ProductCard } from "@/components/ui/product-card";
@@ -17,15 +18,31 @@ import {
   listSelectableDays,
   getWeekNumberFromRange,
 } from "@/lib/delivery-days";
+
 import { genProductsForDiet } from "./lib/products-config";
 import { useBasketStore } from "@/store/useStore";
 import { useAdminStore } from "@/store/useAdminStore";
 import type { TProduct } from "@/types/product-card-type";
 
+function getFirstAvailableDay(): string {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  while (d.getDay() === 0) d.setDate(d.getDate() + 1);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 const RANGE_STORAGE_KEY = "okey-food:products-range";
 const DEFAULT_DISHES_COUNT = 5;
 
 export const Products: FC = () => {
+  const [isMounted, setIsMounted] = React.useState(false);
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const allRations = useAdminStore((state) => state.rations);
   const activeRations = React.useMemo(
     () => allRations.filter((r) => r.isActive),
@@ -57,6 +74,8 @@ export const Products: FC = () => {
         return {
           calories: r.calories,
           countProduct: countForWeek || DEFAULT_DISHES_COUNT,
+          pricePerDay: r.pricePerDay,
+          name: r.name,
         };
       }),
     [activeRations, currentWeek],
@@ -65,7 +84,9 @@ export const Products: FC = () => {
   const [activeCal, setActiveCal] = React.useState<string>(
     () => activeRations[0]?.calories ?? "",
   );
-  const [activeDay, setActiveDay] = React.useState<string | null>(null);
+  const [activeDay, setActiveDay] = React.useState<string | null>(() =>
+    getFirstAvailableDay(),
+  );
 
   const lastActiveCalRef = React.useRef(activeCal);
 
@@ -77,26 +98,17 @@ export const Products: FC = () => {
 
   const items = useBasketStore((state) => state.items);
   const addItem = useBasketStore((state) => state.addItem);
-  const updateItem = useBasketStore((state) => state.updateItem);
   const removeItem = useBasketStore((state) => state.removeItem);
   const setIsBasketOpen = useBasketStore((state) => state.setIsBasketOpen);
 
-  const dishesByCal = React.useMemo(
-    () =>
-      Object.fromEntries(
-        rationTabs.map((tab) => [tab.calories, tab.countProduct] as const),
-      ),
-    [rationTabs],
+  const cartCalories = React.useMemo(
+    () => items.map((i) => i.calories),
+    [items],
   );
 
   const itemForActiveCal = React.useMemo(
     () => items.find((item) => item.calories === activeCal) ?? null,
     [items, activeCal],
-  );
-
-  const selectedDays = React.useMemo(
-    () => itemForActiveCal?.selectedDays ?? [],
-    [itemForActiveCal],
   );
 
   React.useEffect(() => {
@@ -125,28 +137,25 @@ export const Products: FC = () => {
     }
   }, [selectedRange]);
 
-  const dishesCount = dishesByCal[activeCal] ?? 0;
+  const dishesCount =
+    rationTabs.find((t) => t.calories === activeCal)?.countProduct ??
+    DEFAULT_DISHES_COUNT;
   const pricePerDay = priceByCalMap[activeCal] ?? 0;
-  const totalPrice = pricePerDay * selectedDays.length;
 
   React.useEffect(() => {
     if (!selectedRange) {
-      setActiveDay(null);
+      setActiveDay(getFirstAvailableDay());
       return;
     }
     const selectable = listSelectableDays(selectedRange);
-    if (activeDay && !selectable.includes(activeDay)) {
-      setActiveDay(null);
+    if (!activeDay || !selectable.includes(activeDay)) {
+      setActiveDay(selectable[0] ?? getFirstAvailableDay());
     }
   }, [selectedRange, activeDay]);
 
   React.useEffect(() => {
-    if (lastActiveCalRef.current === activeCal) return;
-    const nextActive =
-      selectedDays.length > 0 ? [...selectedDays].sort()[0] : null;
-    setActiveDay(nextActive);
     lastActiveCalRef.current = activeCal;
-  }, [activeCal, selectedDays]);
+  }, [activeCal]);
 
   const realDishesByCal = React.useMemo(
     () =>
@@ -159,6 +168,15 @@ export const Products: FC = () => {
   const productsByDiet = React.useMemo(() => {
     const map: Record<string, TProduct[]> = {};
     const seedDay = activeDay || "default";
+
+    // Преобразуем выбранную дату (YYYY-MM-DD) в день недели (1=Пн..6=Сб)
+    // getDay() возвращает: 0=Вс, 1=Пн, 2=Вт, 3=Ср, 4=Чт, 5=Пт, 6=Сб
+    const activeDayOfWeek: number | null = (() => {
+      if (!activeDay) return null;
+      const dow = new Date(activeDay + "T12:00:00").getDay();
+      return dow >= 1 && dow <= 6 ? dow : null;
+    })();
+
     for (const tab of rationTabs) {
       const allDishes = realDishesByCal[tab.calories] ?? [];
 
@@ -166,7 +184,16 @@ export const Products: FC = () => {
         (d) => !d.week || d.week === currentWeek,
       );
 
-      const dishesToShow = weekDishes.length > 0 ? weekDishes : allDishes;
+      const baseSet = weekDishes.length > 0 ? weekDishes : allDishes;
+
+      // Если выбран конкретный день — показываем только блюда этого дня
+      const dayDishes =
+        activeDayOfWeek !== null
+          ? baseSet.filter((d) => d.dayOfWeek === activeDayOfWeek)
+          : baseSet;
+
+      // Если для выбранного дня блюд нет — показываем всё меню недели
+      const dishesToShow = dayDishes.length > 0 ? dayDishes : baseSet;
 
       if (dishesToShow.length > 0) {
         map[tab.calories] = dishesToShow.map((d) => ({
@@ -193,142 +220,35 @@ export const Products: FC = () => {
     return map;
   }, [activeDay, rationTabs, realDishesByCal, currentWeek]);
 
-  const createCartItem = React.useCallback(
-    (days: string[], range: string | null) => ({
-      id: activeCal,
-      calories: activeCal,
-      selectedDays: days,
-      range,
-      pricePerDay,
-      dishesCount,
-    }),
-    [activeCal, pricePerDay, dishesCount],
-  );
-
-  const handleRangeChange = React.useCallback(
-    (value: string) => {
-      setSelectedRange(value);
-      const selectable = new Set(listSelectableDays(value));
-      if (!itemForActiveCal) return;
-      const filteredDays = itemForActiveCal.selectedDays.filter((day) =>
-        selectable.has(day),
-      );
-      if (filteredDays.length === 0) {
-        removeItem(itemForActiveCal.id);
-        return;
-      }
-      updateItem(itemForActiveCal.id, (prev) => ({
-        ...prev,
-        selectedDays: filteredDays,
-        range: value,
-      }));
-    },
-    [itemForActiveCal, removeItem, updateItem],
-  );
-
-  const handleToggleDay = React.useCallback(
-    (day: string) => {
-      const isSelected = selectedDays.includes(day);
-      if (isSelected) {
-        const nextDays = selectedDays.filter((d) => d !== day);
-        if (nextDays.length === 0) {
-          removeItem(activeCal);
-        } else {
-          updateItem(activeCal, (prev) => ({
-            ...prev,
-            selectedDays: nextDays,
-          }));
-        }
-        return;
-      }
-      const nextDays = [...selectedDays, day];
-      if (itemForActiveCal) {
-        updateItem(activeCal, (prev) => ({
-          ...prev,
-          selectedDays: nextDays,
-          range: selectedRange ?? prev.range,
-        }));
-      } else {
-        addItem(createCartItem(nextDays, selectedRange ?? null));
-      }
-    },
-    [
-      selectedDays,
-      itemForActiveCal,
-      updateItem,
-      removeItem,
-      addItem,
-      createCartItem,
-      selectedRange,
-      activeCal,
-    ],
-  );
-
-  const handleIncDays = React.useCallback(() => {
-    if (!selectedRange) return;
-    const selectable = listSelectableDays(selectedRange).sort();
-    if (selectedDays.length >= selectable.length) return;
-    const next = selectable.find((day) => !selectedDays.includes(day));
-    if (!next) return;
-    if (itemForActiveCal) {
-      updateItem(activeCal, (prev) => ({
-        ...prev,
-        selectedDays: [...prev.selectedDays, next],
-        range: selectedRange,
-      }));
-    } else {
-      addItem(createCartItem([next], selectedRange));
-    }
-  }, [
-    selectedRange,
-    selectedDays,
-    itemForActiveCal,
-    updateItem,
-    activeCal,
-    addItem,
-    createCartItem,
-  ]);
-
-  const handleDecDays = React.useCallback(() => {
-    if (selectedDays.length === 0) return;
-    const nextDays = [...selectedDays].sort().slice(0, -1);
-    if (nextDays.length === 0) {
-      removeItem(activeCal);
-      return;
-    }
-    updateItem(activeCal, (prev) => ({
-      ...prev,
-      selectedDays: nextDays,
-    }));
-  }, [selectedDays, updateItem, removeItem, activeCal]);
+  const handleRangeChange = React.useCallback((value: string) => {
+    setSelectedRange(value);
+  }, []);
 
   const handleAdd = React.useCallback(() => {
-    if (!selectedRange) return;
-    const daysToAdd =
-      selectedDays.length > 0
-        ? selectedDays
-        : listSelectableDays(selectedRange);
-    if (daysToAdd.length === 0) return;
-    if (itemForActiveCal) {
-      updateItem(activeCal, (prev) => ({
-        ...prev,
-        selectedDays: Array.from(new Set(daysToAdd)),
-        range: selectedRange,
-      }));
-    } else {
-      addItem(createCartItem(daysToAdd, selectedRange));
-    }
-    setIsBasketOpen(true);
+    if (itemForActiveCal) return;
+    addItem({
+      id: activeCal,
+      calories: activeCal,
+      selectedDays: [],
+      range: selectedRange ?? null,
+      pricePerDay,
+      dishesCount,
+    });
+    toast.success(`Рацион ${activeCal} ккал добавлен в корзину`, {
+      duration: 3000,
+    });
   }, [
-    selectedRange,
-    selectedDays,
     itemForActiveCal,
-    updateItem,
-    activeCal,
     addItem,
-    createCartItem,
-    setIsBasketOpen,
+    activeCal,
+    selectedRange,
+    pricePerDay,
+    dishesCount,
   ]);
+
+  const handleRemove = React.useCallback(() => {
+    if (itemForActiveCal) removeItem(itemForActiveCal.id);
+  }, [itemForActiveCal, removeItem]);
 
   const containerV: Variants = {
     hidden: {},
@@ -356,14 +276,49 @@ export const Products: FC = () => {
     },
   };
 
+  if (!isMounted) {
+    return (
+      <section id="products" className="bg-whitePrimary py-14 lg:py-20">
+        <Container>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-2">
+            <div>
+              <p className="text-xs font-semibold text-yellow-hover uppercase tracking-widest mb-1">
+                Меню
+              </p>
+              <h3 className="text-[28px] font-bold text-colorPrimary lg:text-[32px]">
+                Рационы питания
+              </h3>
+            </div>
+          </div>
+          <div className="mt-6 h-[320px] rounded-2xl bg-whiteSecondary animate-pulse" />
+        </Container>
+      </section>
+    );
+  }
+
   return (
     <section id="products" className="bg-whitePrimary py-14 lg:py-20">
       <Container>
-        <article className="w-full max-w-[450px] lg:max-w-full">
-          <h3 className="text-[28px] font-bold text-colorPrimary lg:text-[32px]">
-            Рационы питания
-          </h3>
-        </article>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-2">
+          <div>
+            <p className="text-xs font-semibold text-yellow-hover uppercase tracking-widest mb-1">
+              Меню
+            </p>
+            <h3 className="text-[28px] font-bold text-colorPrimary lg:text-[32px]">
+              Рационы питания
+            </h3>
+          </div>
+          <ScrollLink
+            className="hidden cursor-pointer text-sm font-semibold text-colorPrimary/50 transition-colors hover:text-yellow-hover md:block mb-1"
+            to="calculator"
+            smooth
+            duration={500}
+            spy
+            offset={100}
+          >
+            Рассчитать калорийность →
+          </ScrollLink>
+        </div>
 
         {activeRations.length === 0 ? (
           <div className="mt-10 flex flex-col items-center justify-center gap-4 py-20 rounded-2xl border border-dashed border-greySecondary/50 bg-whiteSecondary text-center px-4">
@@ -385,26 +340,9 @@ export const Products: FC = () => {
             className="mt-6 grid gap-4"
             onValueChange={(value) => {
               setActiveCal(value.replace("calories-", ""));
-              setActiveDay(null);
             }}
           >
-            <div className="flex items-center justify-between">
-              <h4 className="text-[18px] font-bold text-colorPrimary lg:text-[22px]">
-                Выберите калорийность
-              </h4>
-              <ScrollLink
-                className="hidden cursor-pointer text-colorPrimary transition-colors hover:text-yellow-hover md:block"
-                to="calculator"
-                smooth
-                duration={500}
-                spy
-                offset={100}
-              >
-                Рассчитать калорийность
-              </ScrollLink>
-            </div>
-
-            <CaloriesTabsList tabs={rationTabs} />
+            <CaloriesTabsList tabs={rationTabs} cartCalories={cartCalories} />
 
             <section>
               <h5 className="text-[16px] font-bold text-colorPrimary lg:text-[20px]">
@@ -419,8 +357,6 @@ export const Products: FC = () => {
               {selectedRange && (
                 <SelectDaysButtons
                   range={selectedRange}
-                  onToggleDay={handleToggleDay}
-                  selectedDays={selectedDays}
                   activeDay={activeDay}
                   onSetActiveDay={setActiveDay}
                 />
@@ -462,13 +398,12 @@ export const Products: FC = () => {
             <OrderSummary
               activeCal={activeCal}
               dishesCount={dishesCount}
-              hasRange={!!selectedRange}
-              daysCount={selectedDays.length}
               pricePerDay={pricePerDay}
-              totalPrice={totalPrice}
-              onInc={handleIncDays}
-              onDec={handleDecDays}
+              isInCart={!!itemForActiveCal}
+              totalInCart={items.length}
               onAdd={handleAdd}
+              onRemove={handleRemove}
+              onOpenBasket={() => setIsBasketOpen(true)}
             />
           </Tabs>
         )}
