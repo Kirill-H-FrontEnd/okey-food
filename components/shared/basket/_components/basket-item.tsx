@@ -9,7 +9,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { parseISO, isBefore, startOfToday, getDay, format } from "date-fns";
+import { parseISO, isBefore, startOfToday, format } from "date-fns";
 
 type BasketItemProps = {
   item: CartItem;
@@ -49,8 +49,7 @@ export const BasketItem: FC<BasketItemProps> = ({
 
   const today = startOfToday();
 
-  const isDateDisabled = (date: Date) =>
-    isBefore(date, today) || getDay(date) === 0;
+  const isDateDisabled = (date: Date) => isBefore(date, today);
 
   const handleSelect = (dates: Date[] | undefined) => {
     const newDays = (dates ?? [])
@@ -122,15 +121,11 @@ export const BasketItem: FC<BasketItemProps> = ({
                   </span>
                 </span>
               ) : (
-                <span className="text-xs font-semibold text-yellow-hover">
+                <span className="text-xs font-medium text-yellow-hover">
                   Выберите даты доставки
                 </span>
               )}
             </div>
-            <CalendarDays
-              size={13}
-              className="text-greySecondary/60 shrink-0"
-            />
           </button>
         </PopoverTrigger>
 

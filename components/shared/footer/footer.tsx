@@ -23,7 +23,7 @@ const CONTACTS = [
   { icon: FaPhoneAlt, label: "+375 44 725 66 66", href: "tel:+375447256666" },
   {
     icon: IoMail,
-    label: "okeygood@gmail.com",
+    label: "okeyfood@gmail.com",
     href: "mailto:okeygood@gmail.com",
   },
   { icon: FaMapMarkedAlt, label: "г. Минск, пр. Дзержинского 10", href: null },
@@ -46,11 +46,13 @@ export const Footer: FC = () => {
               Есть вопросы? Звоните — ответим быстро!
             </p>
             <Button
-              className="bg-yellowPrimary text-colorPrimary font-semibold"
+              className="bg-yellowPrimary text-colorPrimary font-semibold "
               variant={"default"}
             >
               {" "}
-              +375 44 725 66 66
+              <a className="flex items-center gap-2" href={"tel:+375447256666"}>
+                <FaPhoneAlt /> <span>+375 44 725 66 66</span>
+              </a>
             </Button>
           </div>
         </Container>
@@ -61,7 +63,12 @@ export const Footer: FC = () => {
         <div className="py-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-10 lg:gap-8">
           {/* Колонка 1: лого + описание + соцсети */}
           <div className="flex flex-col gap-5">
-            <Logo width={60} height={60} url="/okey-food-logo.png" />
+            <Logo
+              className="relative right-3"
+              width={60}
+              height={60}
+              url="/okey-food-logo.png"
+            />
             <p className="text-greySecondary text-sm leading-relaxed max-w-[260px]">
               Доставка сбалансированных рационов питания по Минску. Здоровая еда
               без хлопот каждый день.
@@ -149,7 +156,7 @@ export const Footer: FC = () => {
               График работы
             </p>
             <ul className="flex flex-col gap-2.5 text-sm">
-              {[{ days: "Пн — Сб", time: "10:00 – 20:00" }].map(
+              {[{ days: "Пн — Вс", time: "10:00 – 20:00" }].map(
                 ({ days, time }) => (
                   <li key={days} className="flex flex-col gap-0.5">
                     <span className="text-white/50 text-xs">{days}</span>

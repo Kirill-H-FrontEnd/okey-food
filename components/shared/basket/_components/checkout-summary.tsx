@@ -8,8 +8,9 @@ import {
   CalendarDays,
   CheckCircle2,
   CreditCard,
+  Flame,
   Info,
-  UtensilsCrossed,
+  Utensils,
 } from "lucide-react";
 
 type CheckoutSummaryProps = {
@@ -121,41 +122,55 @@ export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
           {enrichedItems.map((item) => (
             <article
               key={`summary-${item.id}`}
-              className="rounded-2xl border border-colorPrimary/10 bg-whitePrimary p-4  transition-transform"
+              className="overflow-hidden rounded-2xl border border-colorPrimary/10 bg-whitePrimary"
             >
-              <div className="mb-4 flex items-start justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="grid h-11 min-w-11 place-items-center rounded-xl border border-colorPrimary/10 shadow bg-whiteSecondary px-2 text-xs font-extrabold text-colorPrimary">
-                    {item.calories}
+              {/* ── Шапка карточки ── */}
+              <div className="flex items-center justify-between gap-3 bg-colorPrimary px-4 py-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-xl bg-white/10">
+                    <Flame size={10} className="text-white/60" />
+                    <span className="text-sm font-extrabold leading-none text-white">
+                      {item.calories}
+                    </span>
+                    <span className="text-[7px] font-bold uppercase tracking-wide text-white/50">
+                      ккал
+                    </span>
                   </div>
-
                   <div>
-                    <p className="text-sm font-extrabold text-colorPrimary sm:text-base">
+                    <p className="text-sm font-extrabold text-white">
                       Тариф {item.calories} ккал
                     </p>
-                    <p className="mt-0.5 text-xs font-medium text-greySecondary">
-                      {item.daysCount} {daysWord(item.daysCount)}
+                    <p className="text-[11px] text-white/55">
+                      {item.daysCount} {daysWord(item.daysCount)} доставки
                     </p>
                   </div>
                 </div>
 
-                <div className="rounded-full border border-yellow-hover/15 bg-yellow-hover/10 px-3 py-1.5 text-xs font-bold text-yellow-hover">
-                  {item.itemTotal} BYN
+                <div className="rounded-xl bg-yellowPrimary px-3 py-1.5 text-right">
+                  <p className="text-[10px] font-semibold text-colorPrimary/70 leading-none mb-0.5">
+                    Итого
+                  </p>
+                  <p className="text-sm font-extrabold text-colorPrimary leading-none">
+                    {item.itemTotal} BYN
+                  </p>
                 </div>
               </div>
 
-              <div className="grid gap-3">
-                <div className="rounded-xl border border-black/5 bg-whiteSecondary p-3">
-                  <div className="mb-2 flex items-center gap-2 text-xs font-semibold tracking-[0.08em] text-greySecondary">
+              {/* ── Тело карточки ── */}
+              <div className="grid gap-3 p-4">
+                {/* Выбранные дни */}
+                <div>
+                  <div className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-greySecondary">
+                    <CalendarDays size={12} />
                     Выбранные дни
                   </div>
 
                   {item.formattedDays.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1.5">
                       {item.formattedDays.map((day) => (
                         <span
                           key={day}
-                          className="rounded-sm border border-colorPrimary/10 bg-colorPrimary/5 px-3 py-1 text-xs font-semibold text-colorPrimary"
+                          className="rounded-lg border border-colorPrimary/10 bg-colorPrimary/5 px-2.5 py-1 text-[11px] font-semibold text-colorPrimary"
                         >
                           {day}
                         </span>
@@ -168,13 +183,13 @@ export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
                   )}
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-black/5 bg-whiteSecondary p-3">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-colorPrimary">
-                    <UtensilsCrossed size={15} className="text-yellow-hover" />
-                    <span>{item.dishesCount} полноценных блюд в день</span>
+                {/* Нижняя строка: блюда + цена за день */}
+                <div className="flex items-center justify-between rounded-xl border border-black/5 bg-whiteSecondary px-3 py-2.5">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-colorPrimary">
+                    <Utensils size={13} className="text-yellow-hover" />
+                    {item.dishesCount} блюд в день
                   </div>
-
-                  <div className="text-xs font-semibold text-greySecondary">
+                  <div className="text-xs font-bold text-greySecondary">
                     {item.pricePerDay} BYN / день
                   </div>
                 </div>

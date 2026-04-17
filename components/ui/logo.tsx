@@ -3,12 +3,14 @@
 import { FC } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 type TLogo = {
   url?: string;
   width?: number;
   height?: number;
   rounded?: number;
+  className?: string;
 };
 
 export const Logo: FC<TLogo> = ({
@@ -16,6 +18,7 @@ export const Logo: FC<TLogo> = ({
   width = 50,
   height = 50,
   rounded = 2,
+  className,
 }) => {
   const handleClick = () => {
     window.scrollTo({
@@ -29,7 +32,7 @@ export const Logo: FC<TLogo> = ({
       href="/"
       aria-label="На главную"
       onClick={handleClick}
-      className="cursor-pointer block overflow-hidden shrink-0"
+      className={cn("cursor-pointer block overflow-hidden shrink-0", className)}
       style={{
         width: `${width}px`,
         height: `${height}px`,

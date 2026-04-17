@@ -1,5 +1,3 @@
-// components/ui/accordion.tsx
-
 "use client";
 
 import * as React from "react";
@@ -37,7 +35,7 @@ function AccordionTrigger({
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          "flex flex-1 items-center cursor-pointer justify-between  gap-4 rounded-md py-4 text-left text-sm font-medium  outline-none disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180",
+          "flex flex-1 items-center cursor-pointer justify-between gap-4 py-4 text-left text-sm font-medium outline-none disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180",
           className,
         )}
         {...props}
@@ -61,7 +59,7 @@ function AccordionContent({
     <AccordionPrimitive.Content
       data-slot="accordion-content"
       className={cn(
-        " data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm rounded-[6px]",
+        "data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm",
         className,
       )}
       {...props}
