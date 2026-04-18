@@ -361,7 +361,7 @@ export default function OrdersPage() {
                     value={order.id}
                     className={`overflow-hidden rounded-2xl border bg-whiteSecondary shadow-sm shadow-colorPrimary/5 transition-colors ${
                       isUnseen
-                        ? "border-red-300 ring-1 ring-red-200"
+                        ? " ring-1 ring-green-600"
                         : "border-greySecondary/30"
                     }`}
                   >
@@ -371,7 +371,7 @@ export default function OrdersPage() {
                           <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-colorPrimary text-sm font-bold text-yellowPrimary">
                             {order.customerName.charAt(0).toUpperCase()}
                             {isUnseen && (
-                              <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-red-500 ring-2 ring-white" />
+                              <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-green-600 ring-2 ring-white" />
                             )}
                           </div>
 
@@ -381,7 +381,7 @@ export default function OrdersPage() {
                                 {order.customerName}
                               </p>
                               {isUnseen && (
-                                <span className="shrink-0 rounded-full bg-red-500 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white leading-none">
+                                <span className="shrink-0 rounded-full bg-green-600 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white leading-none">
                                   Новый
                                 </span>
                               )}

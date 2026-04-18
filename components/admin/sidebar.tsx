@@ -87,7 +87,7 @@ export function AdminSidebar() {
               <span className="w-[45px] flex items-center justify-center shrink-0 relative">
                 <Icon size={17} />
                 {showBadge && (
-                  <span className="absolute top-0 right-2 w-2 h-2 rounded-full bg-red-500 ring-2 ring-colorPrimary" />
+                  <span className="absolute top-0 right-2 w-2 h-2 rounded-full bg-green-600 ring-2 ring-colorPrimary" />
                 )}
               </span>
               <span
@@ -99,7 +99,7 @@ export function AdminSidebar() {
               >
                 {item.label}
                 {showBadge && !collapsed && (
-                  <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white leading-none">
+                  <span className="ml-auto flex h-4 min-w-4 items-center justify-center rounded-full bg-green-600 px-1.5 text-[10px] font-bold text-whiteSecondary leading-none">
                     {unseenCount}
                   </span>
                 )}
