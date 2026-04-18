@@ -22,10 +22,11 @@ export default function RootLayout({
         <link rel="canonical" href={`https://okey-food.vercel.app`} />
         <link rel="icon" href="/okey-food-logo.png" />
       </head>
-      <body style={font.style} className={` antialiased bg-whitePrimary`}>
+      <body style={font.style} className={` antialiased bg-whitePrimary `}>
         <RationsProvider>{children}</RationsProvider>
         <AnalyticsConsentModal />
         <Analytics />
+        {/*  */}
         <CustomToaster />
       </body>
     </html>
