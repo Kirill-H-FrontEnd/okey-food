@@ -14,8 +14,9 @@ function formatISODate(d: Date) {
   return `${y}-${m}-${day}`;
 }
 
-function isSunday(d: Date) {
-  return d.getDay() === 0;
+function formatShortDate(d: Date) {
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  return `${d.getDate()}.${m}`;
 }
 
 function isPast(d: Date) {
@@ -24,13 +25,14 @@ function isPast(d: Date) {
   return d < today;
 }
 
+/** Mon-Sun — all 7 days, excluding past ones */
 export function listSelectableDays(range: string): string[] {
   if (!range) return [];
   const { start, end } = parseRange(range);
   const days: string[] = [];
   for (let t = new Date(start); t <= end; t.setDate(t.getDate() + 1)) {
     const cur = new Date(t);
-    if (!isSunday(cur) && !isPast(cur)) days.push(formatISODate(cur));
+    if (!isPast(cur)) days.push(formatISODate(cur));
   }
   return days;
 }
@@ -65,4 +67,43 @@ export function getWeekIndexFromRange(range: string): number {
 export function getWeekNumberFromRange(range: string): 1 | 2 | 3 | 4 {
   const index = getWeekIndexFromRange(range);
   return ((index % 4) + 1) as 1 | 2 | 3 | 4;
+}
+
+/**
+ * Returns `count` upcoming Mon–Sun delivery weeks (past weeks are skipped).
+ * Always returns exactly `count` weeks starting from the first non-past week.
+ */
+export function getDeliveryWeeks(
+  count = 4,
+): { label: string; value: string }[] {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Current week's Monday
+  const dow = today.getDay();
+  const diffToMonday = dow === 0 ? -6 : 1 - dow;
+  const cursor = new Date(today);
+  cursor.setDate(today.getDate() + diffToMonday);
+
+  const result: { label: string; value: string }[] = [];
+  let safety = 0;
+
+  while (result.length < count && safety < 12) {
+    const rangeStart = new Date(cursor);
+    const rangeEnd = new Date(cursor);
+    rangeEnd.setDate(cursor.getDate() + 6); // Mon → Sun
+
+    // Include week only if it's not completely past
+    if (rangeEnd >= today) {
+      result.push({
+        value: `${formatISODate(rangeStart)}_${formatISODate(rangeEnd)}`,
+        label: `${formatShortDate(rangeStart)}–${formatShortDate(rangeEnd)}`,
+      });
+    }
+
+    cursor.setDate(cursor.getDate() + 7);
+    safety++;
+  }
+
+  return result;
 }

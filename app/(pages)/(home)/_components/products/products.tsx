@@ -6,32 +6,27 @@ import { Link as ScrollLink } from "react-scroll";
 import toast from "react-hot-toast";
 
 import { MdOutlineRestaurantMenu } from "react-icons/md";
+import { Flame, ShoppingBag, ShoppingCart, Trash2, Check } from "lucide-react";
 import { ProductCard } from "@/components/ui/product-card";
 import { Container } from "@/components/ui/container";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { SelectDate } from "@/components/ui/select-date";
+import { Button } from "@/components/ui/button";
 import { SelectDaysButtons } from "./_components/SelectDaysButtons";
-import { OrderSummary } from "./_components/order-summary";
 import { CaloriesTabsList } from "./_components/calories-tabs-list";
 
-import {
-  listSelectableDays,
-  getWeekNumberFromRange,
-} from "@/lib/delivery-days";
+import { getWeekNumberFromRange, getDeliveryWeeks } from "@/lib/delivery-days";
 
 import { genProductsForDiet } from "./lib/products-config";
 import { useBasketStore } from "@/store/useStore";
 import { useAdminStore } from "@/store/useAdminStore";
 import type { TProduct } from "@/types/product-card-type";
 
-function getFirstAvailableDay(): string {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  while (d.getDay() === 0) d.setDate(d.getDate() + 1);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
+function dishesWord(n: number) {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return "блюдо";
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return "блюда";
+  return "блюд";
 }
 
 const RANGE_STORAGE_KEY = "okey-food:products-range";
@@ -54,6 +49,13 @@ export const Products: FC = () => {
       Object.fromEntries(activeRations.map((r) => [r.calories, r.pricePerDay])),
     [activeRations],
   );
+
+  const [weeks, setWeeks] = React.useState<{ label: string; value: string }[]>(
+    [],
+  );
+  React.useEffect(() => {
+    setWeeks(getDeliveryWeeks(4));
+  }, []);
 
   const [selectedRange, setSelectedRange] = React.useState<string | null>(null);
 
@@ -84,11 +86,7 @@ export const Products: FC = () => {
   const [activeCal, setActiveCal] = React.useState<string>(
     () => activeRations[0]?.calories ?? "",
   );
-  const [activeDay, setActiveDay] = React.useState<string | null>(() =>
-    getFirstAvailableDay(),
-  );
-
-  const lastActiveCalRef = React.useRef(activeCal);
+  const [activeDay, setActiveDay] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     if (!activeCal && rationTabs[0]) {
@@ -144,18 +142,19 @@ export const Products: FC = () => {
 
   React.useEffect(() => {
     if (!selectedRange) {
-      setActiveDay(getFirstAvailableDay());
+      setActiveDay(null);
       return;
     }
-    const selectable = listSelectableDays(selectedRange);
-    if (!activeDay || !selectable.includes(activeDay)) {
-      setActiveDay(selectable[0] ?? getFirstAvailableDay());
-    }
-  }, [selectedRange, activeDay]);
+    const startStr = selectedRange.split("_")[0];
+    setActiveDay(startStr);
+  }, [selectedRange]);
 
+  // Auto-select first week when weeks load and no range stored
   React.useEffect(() => {
-    lastActiveCalRef.current = activeCal;
-  }, [activeCal]);
+    if (weeks.length > 0 && !selectedRange) {
+      setSelectedRange(weeks[0].value);
+    }
+  }, [weeks, selectedRange]);
 
   const realDishesByCal = React.useMemo(
     () =>
@@ -169,30 +168,26 @@ export const Products: FC = () => {
     const map: Record<string, TProduct[]> = {};
     const seedDay = activeDay || "default";
 
-    // Преобразуем выбранную дату (YYYY-MM-DD) в день недели (1=Пн..6=Сб)
-    // getDay() возвращает: 0=Вс, 1=Пн, 2=Вт, 3=Ср, 4=Чт, 5=Пт, 6=Сб
+    // getDay(): 0=Sun,1=Mon,...,6=Sat → map to our system: Sun=7,Mon=1,...,Sat=6
     const activeDayOfWeek: number | null = (() => {
       if (!activeDay) return null;
       const dow = new Date(activeDay + "T12:00:00").getDay();
-      return dow >= 1 && dow <= 6 ? dow : null;
+      const mapped = dow === 0 ? 7 : dow;
+      return mapped >= 1 && mapped <= 7 ? mapped : null;
     })();
 
     for (const tab of rationTabs) {
       const allDishes = realDishesByCal[tab.calories] ?? [];
-
       const weekDishes = allDishes.filter(
         (d) => !d.week || d.week === currentWeek,
       );
-
       const baseSet = weekDishes.length > 0 ? weekDishes : allDishes;
 
-      // Если выбран конкретный день — показываем только блюда этого дня
       const dayDishes =
         activeDayOfWeek !== null
           ? baseSet.filter((d) => d.dayOfWeek === activeDayOfWeek)
           : baseSet;
 
-      // Если для выбранного дня блюд нет — показываем всё меню недели
       const dishesToShow = dayDishes.length > 0 ? dayDishes : baseSet;
 
       if (dishesToShow.length > 0) {
@@ -252,12 +247,7 @@ export const Products: FC = () => {
 
   const containerV: Variants = {
     hidden: {},
-    show: {
-      transition: {
-        staggerChildren: 0.06,
-        delayChildren: 0.05,
-      },
-    },
+    show: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
   };
 
   const itemTransition: Transition = {
@@ -268,13 +258,11 @@ export const Products: FC = () => {
 
   const itemV: Variants = {
     hidden: { opacity: 0, scale: 0.95, y: 20 },
-    show: {
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      transition: itemTransition,
-    },
+    show: { opacity: 1, scale: 1, y: 0, transition: itemTransition },
   };
+
+  const isInCart = !!itemForActiveCal;
+  const totalInCart = items.length;
 
   if (!isMounted) {
     return (
@@ -299,7 +287,7 @@ export const Products: FC = () => {
   return (
     <section id="products" className="bg-whitePrimary py-14 lg:py-20">
       <Container>
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-2">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-6">
           <div>
             <p className="text-xs font-semibold text-yellow-hover uppercase tracking-widest mb-1">
               Меню
@@ -337,31 +325,154 @@ export const Products: FC = () => {
         ) : (
           <Tabs
             value={`calories-${activeCal}`}
-            className="mt-6 grid gap-4"
+            className="grid gap-4"
             onValueChange={(value) => {
               setActiveCal(value.replace("calories-", ""));
             }}
           >
             <CaloriesTabsList tabs={rationTabs} cartCalories={cartCalories} />
 
-            <section>
-              <h5 className="text-[16px] font-bold text-colorPrimary lg:text-[20px]">
-                Меню на неделю
-              </h5>
-              <div className="mt-2">
-                <SelectDate
-                  onChange={handleRangeChange}
-                  defaultValue={selectedRange ?? undefined}
-                />
-              </div>
-              {selectedRange && (
-                <SelectDaysButtons
-                  range={selectedRange}
-                  activeDay={activeDay}
-                  onSetActiveDay={setActiveDay}
-                />
-              )}
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4">
+              {/* LEFT: week tabs + day buttons */}
+              <div className="rounded-2xl border border-greySecondary/50 bg-whiteSecondary p-4">
+                <p className="text-xs font-semibold text-greySecondary uppercase tracking-widest mb-3">
+                  Неделя доставки
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {weeks.map((w) => {
+                    const isActive = selectedRange === w.value;
+                    return (
+                      <button
+                        key={w.value}
+                        type="button"
+                        onClick={() => handleRangeChange(w.value)}
+                        className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-all border cursor-pointer ${
+                          isActive
+                            ? "bg-colorPrimary text-white border-greySecondary/50"
+                            : "bg-white text-colorPrimary border-grey-border hover:border-colorPrimary/40"
+                        }`}
+                      >
+                        {w.label}
+                      </button>
+                    );
+                  })}
+                </div>
 
+                {selectedRange && (
+                  <>
+                    <p className="text-xs font-semibold text-greySecondary uppercase tracking-widest mt-4 mb-3">
+                      День
+                    </p>
+                    <SelectDaysButtons
+                      range={selectedRange}
+                      activeDay={activeDay}
+                      onSetActiveDay={setActiveDay}
+                    />
+                  </>
+                )}
+              </div>
+
+              {/* RIGHT: order summary */}
+              <div
+                className={`rounded-2xl border border-greySecondary/50 flex flex-col justify-between gap-4 p-4 transition-all duration-300 min-w-[220px] ${
+                  isInCart
+                    ? "border-colorPrimary/20 bg-colorPrimary"
+                    : "border-grey-border bg-whiteSecondary"
+                }`}
+              >
+                {/* Ration info */}
+                <div className="flex items-start gap-3">
+                  <div
+                    className={`flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl ${
+                      isInCart
+                        ? "bg-white/15 text-white"
+                        : "bg-colorPrimary text-white"
+                    }`}
+                  >
+                    <Flame size={11} className="opacity-70 text-orange-400" />
+                    <span className="text-sm font-extrabold leading-none">
+                      {activeCal}
+                    </span>
+                    <span className="text-[8px] font-bold uppercase opacity-60">
+                      ккал
+                    </span>
+                  </div>
+                  <div>
+                    <p
+                      className={`text-base font-extrabold leading-tight ${isInCart ? "text-white" : "text-colorPrimary"}`}
+                    >
+                      {activeCal}{" "}
+                      <span
+                        className={`text-sm font-semibold ${isInCart ? "text-white/70" : "text-greySecondary"}`}
+                      >
+                        ккал
+                      </span>
+                    </p>
+                    <p
+                      className={`text-xs mt-1 ${isInCart ? "text-white/70" : "text-greySecondary"}`}
+                    >
+                      {dishesCount} {dishesWord(dishesCount)} в день
+                    </p>
+                    <p
+                      className={`text-sm font-bold mt-0.5 ${isInCart ? "text-yellowPrimary" : "text-yellow-hover"}`}
+                    >
+                      {pricePerDay} BYN/день
+                    </p>
+                    {isInCart && (
+                      <p className="text-xs text-white/50 mt-1">
+                        Выберите даты в корзине
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <div className="flex flex-col gap-2">
+                  {isInCart ? (
+                    <>
+                      <Button
+                        size="default"
+                        className="w-full bg-yellowPrimary text-colorPrimary font-bold hover:bg-yellow-hover hover:text-white"
+                        onClick={() => setIsBasketOpen(true)}
+                      >
+                        <ShoppingCart size={14} />
+                        Корзина
+                        {totalInCart > 0 && (
+                          <span className="ml-1 bg-colorPrimary/15 text-colorPrimary rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">
+                            {totalInCart}
+                          </span>
+                        )}
+                      </Button>
+                      <button
+                        onClick={handleRemove}
+                        className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors cursor-pointer text-xs font-semibold"
+                        aria-label="Убрать рацион"
+                      >
+                        <Trash2 size={13} />
+                        Убрать
+                      </button>
+                    </>
+                  ) : (
+                    <Button
+                      size="default"
+                      className="w-full bg-yellowPrimary text-colorPrimary font-bold hover:bg-yellow-hover hover:text-white"
+                      onClick={handleAdd}
+                    >
+                      <ShoppingBag size={14} />В корзину
+                      {totalInCart > 0 && (
+                        <span className="ml-1.5 flex items-center gap-0.5 text-[11px] font-bold bg-colorPrimary/10 text-colorPrimary rounded-full px-1.5">
+                          <Check size={9} strokeWidth={3} />
+                          {totalInCart}
+                        </span>
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* ── PRODUCT GRIDS ── */}
+            <section>
               {rationTabs.map((tab) => {
                 const tabValue = `calories-${tab.calories}`;
                 const products = productsByDiet[tab.calories];
@@ -370,7 +481,7 @@ export const Products: FC = () => {
                   <TabsContent
                     key={tab.calories}
                     value={tabValue}
-                    className="mt-6 font-medium text-colorPrimary"
+                    className="mt-2 font-medium text-colorPrimary"
                   >
                     <motion.div
                       key={`${tab.calories}-${activeDay}`}
@@ -394,17 +505,6 @@ export const Products: FC = () => {
                 );
               })}
             </section>
-
-            <OrderSummary
-              activeCal={activeCal}
-              dishesCount={dishesCount}
-              pricePerDay={pricePerDay}
-              isInCart={!!itemForActiveCal}
-              totalInCart={items.length}
-              onAdd={handleAdd}
-              onRemove={handleRemove}
-              onOpenBasket={() => setIsBasketOpen(true)}
-            />
           </Tabs>
         )}
       </Container>
