@@ -34,11 +34,13 @@ const DEFAULT_DISHES_COUNT = 5;
 
 export const Products: FC = () => {
   const [isMounted, setIsMounted] = React.useState(false);
+
   React.useEffect(() => {
     setIsMounted(true);
   }, []);
 
   const allRations = useAdminStore((state) => state.rations);
+
   const activeRations = React.useMemo(
     () => allRations.filter((r) => r.isActive),
     [allRations],
@@ -53,6 +55,7 @@ export const Products: FC = () => {
   const [weeks, setWeeks] = React.useState<{ label: string; value: string }[]>(
     [],
   );
+
   React.useEffect(() => {
     setWeeks(getDeliveryWeeks(4));
   }, []);
@@ -73,6 +76,7 @@ export const Products: FC = () => {
         );
         const countForWeek =
           weekDishes.length > 0 ? weekDishes.length : allDishes.length;
+
         return {
           calories: r.calories,
           countProduct: countForWeek || DEFAULT_DISHES_COUNT,
@@ -110,21 +114,29 @@ export const Products: FC = () => {
   );
 
   React.useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || weeks.length === 0) return;
+
     try {
       const stored = window.localStorage.getItem(RANGE_STORAGE_KEY);
-      if (!stored) return;
-      const parsed = JSON.parse(stored) as { range?: string | null };
-      if (parsed && typeof parsed.range === "string") {
-        setSelectedRange(parsed.range);
-      }
+      const parsed = stored
+        ? (JSON.parse(stored) as { range?: string | null })
+        : null;
+
+      const storedRange =
+        parsed && typeof parsed.range === "string" ? parsed.range : null;
+
+      const isStoredRangeValid =
+        !!storedRange && weeks.some((week) => week.value === storedRange);
+
+      setSelectedRange(isStoredRangeValid ? storedRange : weeks[0].value);
     } catch {
-      return;
+      setSelectedRange(weeks[0].value);
     }
-  }, []);
+  }, [weeks]);
 
   React.useEffect(() => {
     if (typeof window === "undefined") return;
+
     if (selectedRange) {
       window.localStorage.setItem(
         RANGE_STORAGE_KEY,
@@ -138,6 +150,7 @@ export const Products: FC = () => {
   const dishesCount =
     rationTabs.find((t) => t.calories === activeCal)?.countProduct ??
     DEFAULT_DISHES_COUNT;
+
   const pricePerDay = priceByCalMap[activeCal] ?? 0;
 
   React.useEffect(() => {
@@ -145,16 +158,10 @@ export const Products: FC = () => {
       setActiveDay(null);
       return;
     }
+
     const startStr = selectedRange.split("_")[0];
     setActiveDay(startStr);
   }, [selectedRange]);
-
-  // Auto-select first week when weeks load and no range stored
-  React.useEffect(() => {
-    if (weeks.length > 0 && !selectedRange) {
-      setSelectedRange(weeks[0].value);
-    }
-  }, [weeks, selectedRange]);
 
   const realDishesByCal = React.useMemo(
     () =>
@@ -168,7 +175,6 @@ export const Products: FC = () => {
     const map: Record<string, TProduct[]> = {};
     const seedDay = activeDay || "default";
 
-    // getDay(): 0=Sun,1=Mon,...,6=Sat → map to our system: Sun=7,Mon=1,...,Sat=6
     const activeDayOfWeek: number | null = (() => {
       if (!activeDay) return null;
       const dow = new Date(activeDay + "T12:00:00").getDay();
@@ -212,6 +218,7 @@ export const Products: FC = () => {
         );
       }
     }
+
     return map;
   }, [activeDay, rationTabs, realDishesByCal, currentWeek]);
 
@@ -221,6 +228,7 @@ export const Products: FC = () => {
 
   const handleAdd = React.useCallback(() => {
     if (itemForActiveCal) return;
+
     addItem({
       id: activeCal,
       calories: activeCal,
@@ -229,6 +237,7 @@ export const Products: FC = () => {
       pricePerDay,
       dishesCount,
     });
+
     toast.success(`Рацион ${activeCal} ккал добавлен в корзину`, {
       duration: 3000,
     });
@@ -268,9 +277,9 @@ export const Products: FC = () => {
     return (
       <section id="products" className="bg-whitePrimary py-14 lg:py-20">
         <Container>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-2">
+          <div className="mb-2 flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
             <div>
-              <p className="text-xs font-semibold text-yellow-hover uppercase tracking-widest mb-1">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-yellow-hover">
                 Меню
               </p>
               <h3 className="text-[28px] font-bold text-colorPrimary lg:text-[32px]">
@@ -278,7 +287,7 @@ export const Products: FC = () => {
               </h3>
             </div>
           </div>
-          <div className="mt-6 h-[320px] rounded-2xl bg-whiteSecondary animate-pulse" />
+          <div className="mt-6 h-[320px] animate-pulse rounded-2xl bg-whiteSecondary" />
         </Container>
       </section>
     );
@@ -287,17 +296,18 @@ export const Products: FC = () => {
   return (
     <section id="products" className="bg-whitePrimary py-14 lg:py-20">
       <Container>
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-6">
+        <div className="mb-6 flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
           <div>
-            <p className="text-xs font-semibold text-yellow-hover uppercase tracking-widest mb-1">
+            <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-yellow-hover">
               Меню
             </p>
             <h3 className="text-[28px] font-bold text-colorPrimary lg:text-[32px]">
               Рационы питания
             </h3>
           </div>
+
           <ScrollLink
-            className="hidden cursor-pointer text-sm font-semibold text-colorPrimary/50 transition-colors hover:text-yellow-hover md:block mb-1"
+            className="mb-1 hidden cursor-pointer text-sm font-semibold text-colorPrimary/50 transition-colors hover:text-yellow-hover md:block"
             to="calculator"
             smooth
             duration={500}
@@ -309,15 +319,15 @@ export const Products: FC = () => {
         </div>
 
         {activeRations.length === 0 ? (
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 py-20 rounded-2xl border border-dashed border-greySecondary/50 bg-whiteSecondary text-center px-4">
-            <div className="w-16 h-16 rounded-2xl bg-colorPrimary/10 flex items-center justify-center">
-              <MdOutlineRestaurantMenu className="w-8 h-8 text-colorPrimary" />
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-greySecondary/50 bg-whiteSecondary px-4 py-20 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-colorPrimary/10">
+              <MdOutlineRestaurantMenu className="h-8 w-8 text-colorPrimary" />
             </div>
             <div>
-              <p className="text-colorPrimary font-bold text-lg">
+              <p className="text-lg font-bold text-colorPrimary">
                 Рационы скоро появятся
               </p>
-              <p className="text-colorPrimary/50 text-sm mt-1">
+              <p className="mt-1 text-sm text-colorPrimary/50">
                 Мы готовим вкусные и сбалансированные рационы питания
               </p>
             </div>
@@ -332,24 +342,25 @@ export const Products: FC = () => {
           >
             <CaloriesTabsList tabs={rationTabs} cartCalories={cartCalories} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4">
-              {/* LEFT: week tabs + day buttons */}
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_auto]">
               <div className="rounded-2xl border border-greySecondary/50 bg-whiteSecondary p-4">
-                <p className="text-xs font-semibold text-greySecondary uppercase tracking-widest mb-3">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-greySecondary">
                   Неделя доставки
                 </p>
+
                 <div className="flex flex-wrap gap-2">
                   {weeks.map((w) => {
                     const isActive = selectedRange === w.value;
+
                     return (
                       <button
                         key={w.value}
                         type="button"
                         onClick={() => handleRangeChange(w.value)}
-                        className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-all border cursor-pointer ${
+                        className={`cursor-pointer rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all ${
                           isActive
-                            ? "bg-colorPrimary text-white border-greySecondary/50"
-                            : "bg-white text-colorPrimary border-grey-border hover:border-colorPrimary/40"
+                            ? "border-greySecondary/50 bg-colorPrimary text-white"
+                            : "border-grey-border bg-white text-colorPrimary hover:border-colorPrimary/40"
                         }`}
                       >
                         {w.label}
@@ -360,7 +371,7 @@ export const Products: FC = () => {
 
                 {selectedRange && (
                   <>
-                    <p className="text-xs font-semibold text-greySecondary uppercase tracking-widest mt-4 mb-3">
+                    <p className="mb-3 mt-4 text-xs font-semibold uppercase tracking-widest text-greySecondary">
                       День
                     </p>
                     <SelectDaysButtons
@@ -372,15 +383,13 @@ export const Products: FC = () => {
                 )}
               </div>
 
-              {/* RIGHT: order summary */}
               <div
-                className={`rounded-2xl border border-greySecondary/50 flex flex-col justify-between gap-4 p-4 transition-all duration-300 min-w-[220px] ${
+                className={`min-w-[220px] rounded-2xl border p-4 transition-all duration-300 ${
                   isInCart
                     ? "border-colorPrimary/20 bg-colorPrimary"
                     : "border-grey-border bg-whiteSecondary"
-                }`}
+                } flex flex-col justify-between gap-4 border-greySecondary/50`}
               >
-                {/* Ration info */}
                 <div className="flex items-start gap-3">
                   <div
                     className={`flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl ${
@@ -389,7 +398,7 @@ export const Products: FC = () => {
                         : "bg-colorPrimary text-white"
                     }`}
                   >
-                    <Flame size={11} className="opacity-70 text-orange-400" />
+                    <Flame size={11} className="text-orange-400 opacity-70" />
                     <span className="text-sm font-extrabold leading-none">
                       {activeCal}
                     </span>
@@ -397,55 +406,68 @@ export const Products: FC = () => {
                       ккал
                     </span>
                   </div>
+
                   <div>
                     <p
-                      className={`text-base font-extrabold leading-tight ${isInCart ? "text-white" : "text-colorPrimary"}`}
+                      className={`text-base font-extrabold leading-tight ${
+                        isInCart ? "text-white" : "text-colorPrimary"
+                      }`}
                     >
                       {activeCal}{" "}
                       <span
-                        className={`text-sm font-semibold ${isInCart ? "text-white/70" : "text-greySecondary"}`}
+                        className={`text-sm font-semibold ${
+                          isInCart ? "text-white/70" : "text-greySecondary"
+                        }`}
                       >
                         ккал
                       </span>
                     </p>
+
                     <p
-                      className={`text-xs mt-1 ${isInCart ? "text-white/70" : "text-greySecondary"}`}
+                      className={`mt-1 text-xs ${
+                        isInCart ? "text-white/70" : "text-greySecondary"
+                      }`}
                     >
                       {dishesCount} {dishesWord(dishesCount)} в день
                     </p>
+
                     <p
-                      className={`text-sm font-bold mt-0.5 ${isInCart ? "text-yellowPrimary" : "text-yellow-hover"}`}
+                      className={`mt-0.5 text-sm font-bold ${
+                        isInCart ? "text-yellowPrimary" : "text-yellow-hover"
+                      }`}
                     >
                       {pricePerDay} BYN/день
                     </p>
+
                     {isInCart && (
-                      <p className="text-xs text-white/50 mt-1">
+                      <p className="mt-1 text-xs text-white/50">
                         Выберите даты в корзине
                       </p>
                     )}
                   </div>
                 </div>
 
-                {/* CTA */}
                 <div className="flex flex-col gap-2">
                   {isInCart ? (
                     <>
                       <Button
                         size="default"
-                        className="w-full bg-yellowPrimary text-colorPrimary font-bold hover:bg-yellow-hover hover:text-white"
+                        className="w-full bg-yellowPrimary font-bold text-colorPrimary hover:bg-yellow-hover hover:text-white"
                         onClick={() => setIsBasketOpen(true)}
                       >
                         <ShoppingCart size={14} />
                         Корзина
                         {totalInCart > 0 && (
-                          <span className="ml-1 bg-colorPrimary/15 text-colorPrimary rounded-full w-5 h-5 flex items-center justify-center text-[11px] font-bold">
+                          <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-colorPrimary/15 text-[11px] font-bold text-colorPrimary">
                             {totalInCart}
                           </span>
                         )}
                       </Button>
+
                       <button
+                        type="button"
                         onClick={handleRemove}
-                        className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors cursor-pointer text-xs font-semibold"
+                        className="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-white/10 py-2 text-xs font-semibold text-white/70 transition-colors hover:bg-white/20 hover:text-white"
                         aria-label="Убрать рацион"
                       >
                         <Trash2 size={13} />
@@ -455,12 +477,12 @@ export const Products: FC = () => {
                   ) : (
                     <Button
                       size="default"
-                      className="w-full bg-yellowPrimary text-colorPrimary font-bold hover:bg-yellow-hover hover:text-white"
+                      className="w-full bg-yellowPrimary font-bold text-colorPrimary hover:bg-yellow-hover hover:text-white"
                       onClick={handleAdd}
                     >
                       <ShoppingBag size={14} />В корзину
                       {totalInCart > 0 && (
-                        <span className="ml-1.5 flex items-center gap-0.5 text-[11px] font-bold bg-colorPrimary/10 text-colorPrimary rounded-full px-1.5">
+                        <span className="ml-1.5 flex items-center gap-0.5 rounded-full bg-colorPrimary/10 px-1.5 text-[11px] font-bold text-colorPrimary">
                           <Check size={9} strokeWidth={3} />
                           {totalInCart}
                         </span>
@@ -471,7 +493,6 @@ export const Products: FC = () => {
               </div>
             </div>
 
-            {/* ── PRODUCT GRIDS ── */}
             <section>
               {rationTabs.map((tab) => {
                 const tabValue = `calories-${tab.calories}`;
