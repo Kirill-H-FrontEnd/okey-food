@@ -119,6 +119,18 @@ export const FormBanner: FC = () => {
           notes: "",
         });
       }
+
+      fetch("/api/telegram", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "contact",
+          name: data.name,
+          phone: data.phone,
+          hasBasket: basketItems.length > 0,
+        }),
+      }).catch((err) => console.error("[Telegram notify] contact:", err));
+
       toast.success(
         `Спасибо ${data.name}! Мы свяжемся с вами в ближайшее время.`,
       );

@@ -326,7 +326,7 @@ export const Basket: FC = () => {
       toast.error("Не удалось сохранить заказ. Попробуйте ещё раз.");
       return;
     }
-    setSuccessOrder({
+    const snapshot: SuccessOrderSnapshot = {
       customer: {
         firstName: data.firstName,
         phone: data.phone,
@@ -341,7 +341,26 @@ export const Basket: FC = () => {
       items: sortedItems,
       deliverySlots: derivedSlots,
       totalPrice,
-    });
+    };
+    setSuccessOrder(snapshot);
+
+    fetch("/api/telegram", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "order",
+        customer: snapshot.customer,
+        items: snapshot.items.map((item) => ({
+          calories: item.calories,
+          rationName:
+            rations.find((r) => r.calories === item.calories)?.name ??
+            `Рацион ${item.calories} ккал`,
+          pricePerDay: item.pricePerDay,
+          selectedDays: item.selectedDays,
+        })),
+        totalPrice: snapshot.totalPrice,
+      }),
+    }).catch((err) => console.error("[Telegram notify] order:", err));
     setIsBasketOpen(false);
     setIsCheckout(false);
     setIsConsentGiven(false);
