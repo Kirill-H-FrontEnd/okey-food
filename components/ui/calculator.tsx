@@ -6,7 +6,7 @@ import { HyperText } from "@/components/magicui/hyper-text";
 import { useBasketStore } from "@/store/useStore";
 import { useAdminStore } from "@/store/useAdminStore";
 import toast from "react-hot-toast";
-
+import { IoWarningOutline } from "react-icons/io5";
 type Gender = "male" | "female";
 type Goal = "loss" | "tone" | "gain";
 type Activity = "low" | "medium" | "high";
@@ -117,35 +117,62 @@ export default function CalorieCalculator() {
     return Math.round(bmr * ACTIVITY_FACTORS[activity]);
   }, [gender, goal, activity, weight, height, age, validParams]);
 
-  // Находим ближайший активный рацион по калориям
-  const matchedRation = useMemo(() => {
-    if (targetCalories === null || activeRations.length === 0) return null;
-    return activeRations.reduce((closest, candidate) => {
-      const candidateDiff = Math.abs(
-        Number(candidate.calories) - targetCalories,
-      );
-      const closestDiff = Math.abs(Number(closest.calories) - targetCalories);
-      return candidateDiff < closestDiff ? candidate : closest;
+  // Рационы, отсортированные по близости к цели
+  const sortedRations = useMemo(() => {
+    if (targetCalories === null || activeRations.length === 0) return [];
+    return [...activeRations].sort((a, b) => {
+      const aDiff = Math.abs(Number(a.calories) - targetCalories);
+      const bDiff = Math.abs(Number(b.calories) - targetCalories);
+      return aDiff - bDiff;
     });
   }, [targetCalories, activeRations]);
 
+  const [selectedRationCalories, setSelectedRationCalories] = useState<
+    string | null
+  >(null);
+
+  // При пересчёте автоматически выбираем ближайший
+  const selectedRation = useMemo(() => {
+    if (sortedRations.length === 0) return null;
+    if (selectedRationCalories) {
+      const found = sortedRations.find(
+        (r) => String(r.calories) === selectedRationCalories,
+      );
+      if (found) return found;
+    }
+    return sortedRations[0];
+  }, [sortedRations, selectedRationCalories]);
+
+  // Разница между целью и ближайшим рационом
+  const MATCH_THRESHOLD = 350; // ккал — максимально допустимая разница
+  const bestDiff = useMemo(() => {
+    if (!targetCalories || sortedRations.length === 0) return null;
+    return Math.abs(Number(sortedRations[0].calories) - targetCalories);
+  }, [targetCalories, sortedRations]);
+  const hasNoSuitableRation = bestDiff !== null && bestDiff > MATCH_THRESHOLD;
+
+  // Сбрасываем выбор при пересчёте
+  React.useEffect(() => {
+    setSelectedRationCalories(null);
+  }, [targetCalories]);
+
   const handleAddToCart = useCallback(() => {
-    if (!matchedRation) {
+    if (!selectedRation) {
       toast.error("Рационов пока нет. Загляните позже!", { duration: 4000 });
       return;
     }
     addItem({
-      id: `calculator-${matchedRation.calories}`,
-      calories: String(matchedRation.calories),
+      id: `calculator-${selectedRation.calories}`,
+      calories: String(selectedRation.calories),
       selectedDays: [],
       range: null,
-      pricePerDay: matchedRation.pricePerDay,
-      dishesCount: matchedRation.dishes?.length || 5,
+      pricePerDay: selectedRation.pricePerDay,
+      dishesCount: selectedRation.dishes?.length ?? 0,
     });
-    toast.success(`Рацион ${matchedRation.calories} ккал добавлен в корзину`, {
-      duration: 3000,
+    toast.success(`Рацион ${selectedRation.calories} ккал добавлен в корзину`, {
+      duration: 2000,
     });
-  }, [matchedRation, addItem]);
+  }, [selectedRation, addItem]);
 
   const ACTIVITY_LABELS = ["Низкая", "Средняя", "Высокая"];
 
@@ -329,43 +356,85 @@ export default function CalorieCalculator() {
                 Поддержание: {maintenanceCalories} ккал
               </p>
 
-              <div className="w-full grid grid-cols-3 gap-2 mb-4">
-                {[
-                  {
-                    label: "Калорийность",
-                    value: getCalorieLevel(targetCalories),
-                  },
-                  {
-                    label: "Подобранный рацион",
-                    value: matchedRation
-                      ? `${matchedRation.calories} ккал`
-                      : "—",
-                  },
-                  {
-                    label: "Цена / день",
-                    value: matchedRation
-                      ? `${matchedRation.pricePerDay} BYN`
-                      : "—",
-                  },
-                ].map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="flex flex-col items-center gap-0.5 bg-colorPrimary/5 rounded-2xl py-3 px-2"
-                  >
-                    <span className="text-[10px] text-greySecondary font-medium uppercase tracking-wide leading-tight text-center">
-                      {stat.label}
-                    </span>
-                    <span className="text-xs font-bold text-colorPrimary text-center leading-tight mt-1">
-                      {stat.value}
-                    </span>
-                  </div>
-                ))}
+              {/* Уровень калорийности */}
+              <div className="w-full flex items-center justify-between rounded-2xl bg-colorPrimary/5 px-4 py-2.5 mb-3">
+                <span className="text-xs text-greySecondary font-medium uppercase tracking-wide">
+                  Уровень калорийности
+                </span>
+                <span className="text-xs font-bold text-colorPrimary">
+                  {getCalorieLevel(targetCalories)}
+                </span>
               </div>
 
-              {activeRations.length === 0 && (
-                <div className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-700 font-semibold w-full justify-center">
-                  <span>⚠</span>
+              {/* Список рационов */}
+              {sortedRations.length === 0 ? (
+                <div className="flex items-center gap-2 rounded-md bg-red-50 border border-red-200 px-3 py-2 text-xs text-red-700 font-semibold w-full justify-center mb-3">
+                  <IoWarningOutline size={18} />
                   <span>Рационов пока нет</span>
+                </div>
+              ) : hasNoSuitableRation ? (
+                <div className="w-full rounded-lg border border-orange-200 bg-orange-50 px-2 py-3 mb-3 text-center">
+                  <p className="flex items-center gap-2 justify-center text-sm font-bold text-orange-700 mb-1">
+                    <IoWarningOutline size={18} />
+                    <span>Подходящего рациона нет</span>
+                  </p>
+                </div>
+              ) : (
+                <div className="w-full grid gap-2 mb-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-greySecondary">
+                    Выберите рацион
+                  </p>
+                  {sortedRations.map((r, i) => {
+                    const diff = Math.abs(Number(r.calories) - targetCalories);
+                    const isSelected =
+                      String(r.calories) === String(selectedRation?.calories);
+                    const isBest = i === 0;
+                    return (
+                      <button
+                        key={r.id}
+                        type="button"
+                        onClick={() =>
+                          setSelectedRationCalories(String(r.calories))
+                        }
+                        className={`w-full flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left transition-all border cursor-pointer ${
+                          isSelected
+                            ? "bg-colorPrimary text-white border-colorPrimary"
+                            : "bg-colorPrimary/5 text-colorPrimary border-colorPrimary/10 hover:border-colorPrimary/30"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`text-sm font-extrabold ${isSelected ? "text-white" : "text-colorPrimary"}`}
+                          >
+                            {r.calories} ккал
+                          </span>
+                          {isBest && (
+                            <span
+                              className={`text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full ${
+                                isSelected
+                                  ? "bg-white/20 text-white"
+                                  : "bg-yellowPrimary text-colorPrimary"
+                              }`}
+                            >
+                              Лучший
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span
+                            className={`text-[10px] font-semibold ${isSelected ? "text-white/60" : "text-greySecondary"}`}
+                          >
+                            {diff === 0 ? "совпадение" : `±${diff} ккал`}
+                          </span>
+                          <span
+                            className={`text-xs font-bold ${isSelected ? "text-yellowPrimary" : "text-colorPrimary"}`}
+                          >
+                            {r.pricePerDay} BYN/д
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </>
@@ -385,15 +454,19 @@ export default function CalorieCalculator() {
         </div>
 
         <button
-          disabled={!hasResult || activeRations.length === 0}
+          disabled={!hasResult || !selectedRation || hasNoSuitableRation}
           onClick={handleAddToCart}
           className={`w-full py-4 rounded-2xl font-bold text-sm transition-all duration-200 ${
-            hasResult && activeRations.length > 0
+            hasResult && selectedRation && !hasNoSuitableRation
               ? "bg-yellowPrimary text-colorPrimary hover:bg-yellow-hover cursor-pointer shadow-lg shadow-yellowPrimary/20"
               : "bg-whitePrimary/10 text-whitePrimary/30 cursor-not-allowed"
           }`}
         >
-          Добавить в корзину
+          {hasNoSuitableRation
+            ? "Нет подходящего рациона"
+            : selectedRation
+              ? `Добавить ${selectedRation.calories} ккал в корзину`
+              : "Добавить в корзину"}
         </button>
       </div>
     </section>
