@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getEffectivePricePerDay, getTotalPrice } from "@/lib/pricing";
 
 const TELEGRAM_API = "https://api.telegram.org";
 
@@ -47,9 +48,13 @@ function buildOrderMessage(body: OrderPayload): string {
   lines.push("📦 *Состав заказа:*");
 
   for (const item of body.items) {
-    const itemTotal = item.pricePerDay * item.selectedDays.length;
+    const effectivePpd = getEffectivePricePerDay(
+      item.pricePerDay,
+      item.selectedDays.length,
+    );
+    const itemTotal = getTotalPrice(item.pricePerDay, item.selectedDays.length);
     lines.push(
-      `  • ${escapeMarkdown(item.rationName ?? `Рацион ${item.calories} ккал`)} — ${item.selectedDays.length} дн\\. — *${itemTotal} BYN*`,
+      `  • ${escapeMarkdown(item.rationName ?? `Рацион ${item.calories} ккал`)} — ${item.selectedDays.length} дн\\. × ${effectivePpd} BYN — *${itemTotal} BYN*`,
     );
     if (item.selectedDays.length > 0) {
       const daysFormatted = item.selectedDays.map(formatDate).join(", ");

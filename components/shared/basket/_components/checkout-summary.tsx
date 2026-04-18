@@ -4,6 +4,7 @@ import { FC, useMemo } from "react";
 import { AnimatedAmount } from "@/components/magicui/animated-amount";
 import { daysWord } from "@/components/shared/basket/utils";
 import { CartItem } from "@/store/useStore";
+import { getEffectivePricePerDay, getTotalPrice } from "@/lib/pricing";
 import {
   CalendarDays,
   CheckCircle2,
@@ -56,11 +57,16 @@ export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
   const enrichedItems = useMemo(() => {
     return items.map((item) => {
       const daysCount = item.selectedDays.length;
-      const itemTotal = item.pricePerDay * daysCount;
+      const effectivePricePerDay = getEffectivePricePerDay(
+        item.pricePerDay,
+        daysCount,
+      );
+      const itemTotal = getTotalPrice(item.pricePerDay, daysCount);
 
       return {
         ...item,
         daysCount,
+        effectivePricePerDay,
         itemTotal,
         formattedDays: item.selectedDays.map(formatSelectedDay),
       };
@@ -127,9 +133,9 @@ export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
               {/* ── Шапка карточки ── */}
               <div className="flex items-center justify-between gap-3 bg-colorPrimary px-4 py-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-xl bg-white/10">
-                    <Flame size={10} className="text-orange-400" />
-                    <span className="text-sm font-bold leading-none text-white">
+                  <div className="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-xl bg-white/10">
+                    <Flame size={10} className="text-white/60" />
+                    <span className="text-sm font-extrabold leading-none text-white">
                       {item.calories}
                     </span>
                     <span className="text-[7px] font-bold uppercase tracking-wide text-white/50">
@@ -190,7 +196,7 @@ export const CheckoutSummary: FC<CheckoutSummaryProps> = ({
                     {item.dishesCount} блюд в день
                   </div>
                   <div className="text-xs font-bold text-greySecondary">
-                    {item.pricePerDay} BYN / день
+                    {item.effectivePricePerDay} BYN / день
                   </div>
                 </div>
               </div>

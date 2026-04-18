@@ -1,5 +1,3 @@
-"use client";
-
 import { FC, useMemo } from "react";
 import Image from "next/image";
 import {
@@ -31,6 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import { daysWord } from "../utils";
 import type { SuccessOrderSnapshot } from "../types";
+import { getEffectivePricePerDay, getTotalPrice } from "@/lib/pricing";
 
 const CITY_LABELS: Record<string, string> = {
   minsk: "Минск",
@@ -262,8 +261,14 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                     <AccordionContent className="px-3 pb-3">
                       <div className="grid gap-2">
                         {order.items.map((item) => {
-                          const itemTotal =
-                            item.pricePerDay * item.selectedDays.length;
+                          const effectivePricePerDay = getEffectivePricePerDay(
+                            item.pricePerDay,
+                            item.selectedDays.length,
+                          );
+                          const itemTotal = getTotalPrice(
+                            item.pricePerDay,
+                            item.selectedDays.length,
+                          );
                           return (
                             <article
                               key={`success-${item.id}`}
@@ -331,7 +336,7 @@ export const SuccessOrderDialog: FC<SuccessOrderDialogProps> = ({
                                     {item.dishesCount} блюд в день
                                   </div>
                                   <div className="text-xs font-bold text-greySecondary">
-                                    {item.pricePerDay} BYN/день
+                                    {effectivePricePerDay} BYN/день
                                   </div>
                                 </div>
                               </div>

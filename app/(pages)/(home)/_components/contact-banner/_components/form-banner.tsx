@@ -19,6 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useBasketStore } from "@/store/useStore";
 import { useAdminStore } from "@/store/useAdminStore";
+import { getTotalPrice } from "@/lib/pricing";
 
 export const FormBanner: FC = () => {
   const basketItems = useBasketStore((state) => state.items);
@@ -102,7 +103,7 @@ export const FormBanner: FC = () => {
             phone: data.phone,
             ration: rationName,
             days: item.selectedDays.length,
-            amount: item.pricePerDay * item.selectedDays.length,
+            amount: getTotalPrice(item.pricePerDay, item.selectedDays.length),
             status: "pending",
             notes: "",
           });

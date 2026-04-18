@@ -32,6 +32,7 @@ import {
 } from "@/schemas/checkout-schema";
 import { useBasketStore } from "@/store/useStore";
 import { useAdminStore } from "@/store/useAdminStore";
+import { getEffectivePricePerDay, getTotalPrice } from "@/lib/pricing";
 import { BasketItem } from "./_components/basket-item";
 import { BasketEmpty } from "./_components/basket-empty";
 import { BasketFooter } from "./_components/basket-footer";
@@ -183,7 +184,8 @@ export const Basket: FC = () => {
   const totalPrice = useMemo(
     () =>
       items.reduce(
-        (sum, item) => sum + item.pricePerDay * item.selectedDays.length,
+        (sum, item) =>
+          sum + getTotalPrice(item.pricePerDay, item.selectedDays.length),
         0,
       ),
     [items],
@@ -307,7 +309,7 @@ export const Basket: FC = () => {
           phone: data.phone,
           ration: rationName,
           days: item.selectedDays.length,
-          amount: item.pricePerDay * item.selectedDays.length,
+          amount: getTotalPrice(item.pricePerDay, item.selectedDays.length),
           status: "pending",
           notes: JSON.stringify({
             comment: data.comment ?? "",
