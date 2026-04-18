@@ -4,7 +4,7 @@ import React, { FC } from "react";
 import { motion, type Transition, type Variants } from "framer-motion";
 import { Link as ScrollLink } from "react-scroll";
 import toast from "react-hot-toast";
-
+import { FaChevronRight } from "react-icons/fa6";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
 import {
   CalendarDays,
@@ -298,14 +298,14 @@ export const Products: FC = () => {
             </h3>
           </div>
           <ScrollLink
-            className="hidden cursor-pointer text-sm font-semibold text-colorPrimary/50 transition-colors hover:text-yellow-hover md:block mb-1"
+            className="hidden cursor-pointer text-sm font-semibold text-colorPrimary/50 transition-colors hover:text-yellow-hover md:flex md:items-center gap-2 mb-1 "
             to="calculator"
             smooth
             duration={500}
             spy
             offset={100}
           >
-            Рассчитать калорийность →
+            Рассчитать калорийность
           </ScrollLink>
         </div>
 
