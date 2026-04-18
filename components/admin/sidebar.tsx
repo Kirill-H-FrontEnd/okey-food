@@ -10,10 +10,12 @@ import { LuExternalLink } from "react-icons/lu";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
 import { ChevronLeft } from "lucide-react";
 import { FiTrendingUp } from "react-icons/fi";
+import { useAdminStore } from "@/store/useAdminStore";
+
 const NAV_ITEMS = [
   { label: "Статистика", href: "/admin", icon: FiTrendingUp },
   { label: "Рационы", href: "/admin/rations", icon: MdOutlineRestaurantMenu },
-  { label: "Заказы", href: "/admin/orders", icon: IoReceiptSharp },
+  { label: "Заказы", href: "/admin/orders", icon: IoReceiptSharp, badge: true },
   { label: "Клиенты", href: "/admin/customers", icon: FaUsers },
   { label: "Настройки", href: "/admin/settings", icon: IoSettingsSharp },
 ];
@@ -21,6 +23,8 @@ const NAV_ITEMS = [
 export function AdminSidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const unseenOrderIds = useAdminStore((s) => s.unseenOrderIds);
+  const unseenCount = unseenOrderIds.length;
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";
@@ -68,6 +72,7 @@ export function AdminSidebar() {
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.href);
+          const showBadge = item.badge && unseenCount > 0;
           return (
             <Link
               key={item.href}
@@ -79,17 +84,25 @@ export function AdminSidebar() {
                   : "text-whiteSecondary  hover:bg-white/10"
               }`}
             >
-              <span className="w-[45px] flex items-center justify-center shrink-0">
+              <span className="w-[45px] flex items-center justify-center shrink-0 relative">
                 <Icon size={17} />
+                {showBadge && (
+                  <span className="absolute top-0 right-2 w-2 h-2 rounded-full bg-red-500 ring-2 ring-colorPrimary" />
+                )}
               </span>
               <span
-                className={`overflow-hidden whitespace-nowrap transition-all duration-300 font-semibold ${
+                className={`overflow-hidden whitespace-nowrap transition-all duration-300 font-semibold flex items-center gap-2 ${
                   collapsed
                     ? "max-w-0 opacity-0"
-                    : "max-w-[140px] opacity-100 pr-3"
+                    : "max-w-[160px] opacity-100 pr-3"
                 }`}
               >
                 {item.label}
+                {showBadge && !collapsed && (
+                  <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white leading-none">
+                    {unseenCount}
+                  </span>
+                )}
               </span>
             </Link>
           );

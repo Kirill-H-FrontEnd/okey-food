@@ -3,12 +3,37 @@
 import { create } from "zustand";
 import { TRation, TRationDish, TOrder } from "@/types/admin";
 
+const SEEN_KEY = "okey-food:seen-order-ids";
+
+function loadSeenIds(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = window.localStorage.getItem(SEEN_KEY);
+    if (!raw) return new Set();
+    return new Set(JSON.parse(raw) as string[]);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveSeenIds(ids: Set<string>) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(SEEN_KEY, JSON.stringify([...ids]));
+  } catch {}
+}
+
 interface AdminState {
   rations: TRation[];
   orders: TOrder[];
 
   rationsLoading: boolean;
   ordersLoading: boolean;
+
+  unseenOrderIds: string[];
+  addUnseenOrder: (id: string) => void;
+  markOrderSeen: (id: string) => void;
+  markAllOrdersSeen: () => void;
 
   fetchRations: () => Promise<void>;
   fetchOrders: () => Promise<void>;
@@ -37,6 +62,33 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
 
   rationsLoading: true,
   ordersLoading: true,
+
+  unseenOrderIds: [],
+
+  addUnseenOrder: (id) => {
+    const seen = loadSeenIds();
+    if (seen.has(id)) return;
+    set((s) => ({
+      unseenOrderIds: s.unseenOrderIds.includes(id)
+        ? s.unseenOrderIds
+        : [...s.unseenOrderIds, id],
+    }));
+  },
+
+  markOrderSeen: (id) => {
+    const seen = loadSeenIds();
+    seen.add(id);
+    saveSeenIds(seen);
+    set((s) => ({ unseenOrderIds: s.unseenOrderIds.filter((x) => x !== id) }));
+  },
+
+  markAllOrdersSeen: () => {
+    const seen = loadSeenIds();
+    get().orders.forEach((o) => seen.add(o.id));
+    get().unseenOrderIds.forEach((id) => seen.add(id));
+    saveSeenIds(seen);
+    set({ unseenOrderIds: [] });
+  },
 
   fetchRations: async () => {
     set({ rationsLoading: true });
@@ -69,7 +121,19 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
       }
 
       const data: TOrder[] = await res.json();
-      set({ orders: data });
+
+      // При первой загрузке помечаем все существующие заказы просмотренными
+      const seen = loadSeenIds();
+      const isFirstLoad = seen.size === 0 && get().orders.length === 0;
+      if (isFirstLoad) {
+        data.forEach((o) => seen.add(o.id));
+        saveSeenIds(seen);
+      }
+
+      // Восстанавливаем непрочитанные из localStorage
+      const unseen = data.filter((o) => !seen.has(o.id)).map((o) => o.id);
+
+      set({ orders: data, unseenOrderIds: unseen });
     } catch (error) {
       console.error("fetchOrders error:", error);
       set({ orders: [] });

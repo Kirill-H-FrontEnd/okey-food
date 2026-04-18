@@ -11,12 +11,12 @@ import { FiTrendingUp } from "react-icons/fi";
 import Image from "next/image";
 import { Sheet, SheetContent, SheetClose } from "@/components/ui/sheet";
 import { BurgerMenu } from "@/components/ui/burger-menu/burger-menu";
-import { Button } from "../ui/button";
+import { useAdminStore } from "@/store/useAdminStore";
 
 const NAV_ITEMS = [
   { label: "Статистика", href: "/admin", icon: FiTrendingUp },
   { label: "Рационы", href: "/admin/rations", icon: MdOutlineRestaurantMenu },
-  { label: "Заказы", href: "/admin/orders", icon: IoReceiptSharp },
+  { label: "Заказы", href: "/admin/orders", icon: IoReceiptSharp, badge: true },
   { label: "Клиенты", href: "/admin/customers", icon: FaUsers },
   { label: "Настройки", href: "/admin/settings", icon: IoSettingsSharp },
 ];
@@ -24,6 +24,8 @@ const NAV_ITEMS = [
 export function AdminMobileNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const unseenOrderIds = useAdminStore((s) => s.unseenOrderIds);
+  const unseenCount = unseenOrderIds.length;
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";
@@ -34,7 +36,7 @@ export function AdminMobileNav() {
     <Sheet open={open} onOpenChange={setOpen}>
       <header className="lg:hidden flex items-center justify-between px-4 py-2 bg-whiteSecondary border-b border-colorPrimary/10 shrink-0 z-[1000]">
         <div className="flex items-center gap-3">
-          <div className="w-[35px] h-[35px]   flex items-center justify-center ">
+          <div className="w-[35px] h-[35px] flex items-center justify-center">
             <Image
               src={"/okey-food-logo.png"}
               alt="OkeyFood логотип"
@@ -55,11 +57,18 @@ export function AdminMobileNav() {
             <p className="text-colorPrimary font-bold text-sm leading-tight">
               Okey Food
             </p>
-            <p className="text-greySecondary 40 text-xs">Админ панель</p>
+            <p className="text-greySecondary text-xs">Админ панель</p>
           </div>
         </div>
 
-        <BurgerMenu isOpen={open} onToggle={() => setOpen((v) => !v)} />
+        <div className="flex items-center gap-2">
+          {unseenCount > 0 && (
+            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white leading-none">
+              {unseenCount}
+            </span>
+          )}
+          <BurgerMenu isOpen={open} onToggle={() => setOpen((v) => !v)} />
+        </div>
       </header>
 
       {/* Slide-out drawer */}
@@ -67,25 +76,29 @@ export function AdminMobileNav() {
         side="left"
         className="bg-colorPrimary border-0 p-0 w-72 flex flex-col gap-0"
       >
-        {/* Drawer header */}
-
         {/* Nav items */}
         <nav className="mt-14 flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);
+            const showBadge = item.badge && unseenCount > 0;
             return (
               <SheetClose asChild key={item.href}>
                 <Link
                   href={item.href}
-                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm  transition-colors font-semibold ${
+                  className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-colors font-semibold ${
                     active
                       ? "bg-yellowPrimary text-colorPrimary"
                       : "text-whiteSecondary hover:text-white hover:bg-white/10"
                   }`}
                 >
                   <Icon size={17} className="shrink-0" />
-                  {item.label}
+                  <span className="flex-1">{item.label}</span>
+                  {showBadge && (
+                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white leading-none">
+                      {unseenCount}
+                    </span>
+                  )}
                 </Link>
               </SheetClose>
             );
@@ -98,7 +111,7 @@ export function AdminMobileNav() {
             <Link
               href="/"
               target="_blank"
-              className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-whiteSecondary "
+              className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-whiteSecondary"
             >
               <LuExternalLink size={15} className="shrink-0" />
               Открыть сайт

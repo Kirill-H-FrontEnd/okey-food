@@ -5,6 +5,7 @@ import { useAdminStore } from "@/store/useAdminStore";
 export function AdminDataProvider({ children }: { children: React.ReactNode }) {
   const fetchRations = useAdminStore((s) => s.fetchRations);
   const fetchOrders = useAdminStore((s) => s.fetchOrders);
+  const addUnseenOrder = useAdminStore((s) => s.addUnseenOrder);
 
   useEffect(() => {
     fetchRations();
@@ -30,7 +31,23 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
         .channel("admin-orders-realtime")
         .on(
           "postgres_changes",
-          { event: "*", schema: "public", table: "orders" },
+          { event: "INSERT", schema: "public", table: "orders" },
+          (payload) => {
+            const newId = (payload.new as { id?: string })?.id;
+            if (newId) addUnseenOrder(newId);
+            fetchOrders();
+          },
+        )
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "orders" },
+          () => {
+            fetchOrders();
+          },
+        )
+        .on(
+          "postgres_changes",
+          { event: "DELETE", schema: "public", table: "orders" },
           () => {
             fetchOrders();
           },
@@ -42,7 +59,7 @@ export function AdminDataProvider({ children }: { children: React.ReactNode }) {
         supabaseClient.removeChannel(orderChannel);
       };
     });
-  }, [fetchRations, fetchOrders]);
+  }, [fetchRations, fetchOrders, addUnseenOrder]);
 
   return <>{children}</>;
 }

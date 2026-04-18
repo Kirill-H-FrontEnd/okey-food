@@ -172,6 +172,9 @@ export default function OrdersPage() {
     fetchOrders,
     updateOrderNotes,
     updateOrderStatus,
+    unseenOrderIds,
+    markOrderSeen,
+    markAllOrdersSeen,
   } = useAdminStore();
 
   const [updatingKey, setUpdatingKey] = useState<string | null>(null);
@@ -179,6 +182,11 @@ export default function OrdersPage() {
   const [search, setSearch] = useState("");
   const [openOrder, setOpenOrder] = useState<string | undefined>(undefined);
   const highlightRef = useRef<string | null>(null);
+
+  // Сброс бейджа на сайдбаре при входе на страницу
+  useEffect(() => {
+    markAllOrdersSeen();
+  }, [markAllOrdersSeen]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -194,6 +202,14 @@ export default function OrdersPage() {
       }, 200);
     }
   }, []);
+
+  const handleAccordionChange = useCallback(
+    (value: string | undefined) => {
+      setOpenOrder(value);
+      if (value) markOrderSeen(value);
+    },
+    [markOrderSeen],
+  );
 
   const handleCopyId = useCallback((id: string) => {
     navigator.clipboard.writeText(id).then(() => {
@@ -313,7 +329,7 @@ export default function OrdersPage() {
             type="single"
             collapsible
             value={openOrder}
-            onValueChange={setOpenOrder}
+            onValueChange={handleAccordionChange}
             className="space-y-3"
           >
             {filtered.map((order) => {
@@ -324,6 +340,7 @@ export default function OrdersPage() {
                 STATUS_CONFIG[overallStatus as DayStatus] ??
                 STATUS_CONFIG.pending;
               const allDays = slots.flatMap((slot) => slot.days);
+              const isUnseen = unseenOrderIds.includes(order.id);
 
               const addressParts = [
                 parsed.city,
@@ -342,19 +359,33 @@ export default function OrdersPage() {
                 >
                   <AccordionItem
                     value={order.id}
-                    className="overflow-hidden rounded-2xl border border-greySecondary/30 bg-whiteSecondary shadow-sm shadow-colorPrimary/5"
+                    className={`overflow-hidden rounded-2xl border bg-whiteSecondary shadow-sm shadow-colorPrimary/5 transition-colors ${
+                      isUnseen
+                        ? "border-red-300 ring-1 ring-red-200"
+                        : "border-greySecondary/30"
+                    }`}
                   >
                     <div className="px-5 pb-3 pt-4">
                       <div className="mb-3 flex items-center justify-between gap-3">
                         <div className="flex min-w-0 items-center gap-3">
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-colorPrimary text-sm font-bold text-yellowPrimary">
+                          <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-colorPrimary text-sm font-bold text-yellowPrimary">
                             {order.customerName.charAt(0).toUpperCase()}
+                            {isUnseen && (
+                              <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-red-500 ring-2 ring-white" />
+                            )}
                           </div>
 
                           <div className="min-w-0">
-                            <p className="truncate font-bold leading-tight text-colorPrimary">
-                              {order.customerName}
-                            </p>
+                            <div className="flex items-center gap-2">
+                              <p className="truncate font-bold leading-tight text-colorPrimary">
+                                {order.customerName}
+                              </p>
+                              {isUnseen && (
+                                <span className="shrink-0 rounded-full bg-red-500 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white leading-none">
+                                  Новый
+                                </span>
+                              )}
+                            </div>
 
                             <p className="mt-0.5 text-xs text-greySecondary">
                               {formatCreatedAt(order.createdAt)}
